@@ -39,6 +39,9 @@ const serviceSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    imageUrl: {
+        type: String  // Optional cover image for the service listing
+    },
     createdAt: {
         type: Date,
         default: Date.now

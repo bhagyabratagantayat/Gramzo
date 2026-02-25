@@ -5,7 +5,7 @@ const Agent = require('../models/Agent');
 // @route   POST /api/services/add
 exports.addService = async (req, res) => {
     try {
-        const { title, description, price, category, agent, availableTime, location, locationName, latitude, longitude, requiresAppointment } = req.body;
+        const { title, description, price, category, agent, availableTime, location, locationName, latitude, longitude, requiresAppointment, imageUrl } = req.body;
 
         // Check if agent exists and is approved
         const agentData = await Agent.findById(agent);
@@ -35,7 +35,10 @@ exports.addService = async (req, res) => {
             ...(longitude !== undefined && { longitude }),
             // Appointment flag
             ...(requiresAppointment !== undefined && { requiresAppointment }),
+            // Cover image
+            ...(imageUrl !== undefined && { imageUrl }),
         });
+
 
         res.status(201).json({ success: true, data: service });
     } catch (error) {

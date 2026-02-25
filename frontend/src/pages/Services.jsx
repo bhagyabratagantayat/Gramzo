@@ -119,8 +119,11 @@ const Services = () => {
                         return (
                             <div key={service._id} className="service-card">
                                 {/* Card image / icon area */}
-                                <div className="service-card-img">
-                                    <span style={{ fontSize: '3.5rem' }}>{icon(catName)}</span>
+                                <div className="service-card-img" style={service.imageUrl ? { padding: 0 } : {}}>
+                                    {service.imageUrl
+                                        ? <img src={service.imageUrl} alt={service.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        : <span style={{ fontSize: '3.5rem' }}>{icon(catName)}</span>
+                                    }
                                     {service.requiresAppointment && (
                                         <span className="service-card-badge">Appointment</span>
                                     )}
