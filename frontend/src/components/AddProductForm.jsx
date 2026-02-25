@@ -9,7 +9,8 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
         category: '',
         sellerName: '',
         phone: '',
-        location: ''
+        location: '',
+        imageUrl: ''
     });
     const [categories, setCategories] = useState([]);
     const [catLoading, setCatLoading] = useState(true);
@@ -136,6 +137,9 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
 
                     <label>Location:</label>
                     <input type="text" name="location" value={formData.location} onChange={handleChange} required style={inputStyle} />
+
+                    <label>Product Image URL (e.g., Unsplash):</label>
+                    <input type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder="https://images.unsplash.com/..." style={inputStyle} />
 
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                         <button type="submit" disabled={loading} style={{ flex: 1, padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
