@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { getUser } from '../services/auth';
 import {
@@ -6,7 +6,10 @@ import {
     HiOutlineCheckCircle,
     HiOutlineClock,
     HiOutlineChartBar,
-    HiOutlineInformationCircle
+    HiOutlineInformationCircle,
+    HiOutlineX,
+    HiOutlineThumbUp,
+    HiOutlineThumbDown
 } from 'react-icons/hi';
 
 const StatCard = ({ icon: Icon, label, value, accent, sub }) => (
@@ -26,36 +29,58 @@ const StatCard = ({ icon: Icon, label, value, accent, sub }) => (
     </div>
 );
 
+const STATUS_MAP = {
+    completed: { label: 'Completed', color: '#065f46', bg: '#ecfdf5', border: '#6ee7b7' },
+    accepted: { label: 'Accepted', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
+    rejected: { label: 'Rejected', color: '#991b1b', bg: '#fef2f2', border: '#fca5a5' },
+    pending: { label: 'Pending', color: '#92400e', bg: '#fffbeb', border: '#fde68a' },
+};
+
 const Earnings = () => {
     const [data, setData] = useState(null);
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [responding, setResponding] = useState({}); // bookingId → 'accepting'|'rejecting'
 
     const user = getUser();
 
-    useEffect(() => {
-        const fetchEarnings = async () => {
-            if (!user?.agentId) { setLoading(false); return; }
-            try {
-                const [earningsRes, bookingsRes] = await Promise.all([
-                    api.get(`/agents/earnings/${user.agentId}`),
-                    api.get('/bookings')
-                ]);
-                setData(earningsRes.data.data);
-                // Filter bookings for this agent
-                const all = bookingsRes.data.data || [];
-                setBookings(all.filter(b => b.agent?._id === user.agentId || b.agent === user.agentId));
-            } catch (err) {
-                setError('Could not load earnings data.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchEarnings();
-    }, []);
+    const fetchAll = useCallback(async () => {
+        if (!user?.agentId) { setLoading(false); return; }
+        try {
+            const [earningsRes, bookingsRes] = await Promise.all([
+                api.get(`/agents/earnings/${user.agentId}`),
+                api.get('/bookings')
+            ]);
+            setData(earningsRes.data.data);
+            const all = bookingsRes.data.data || [];
+            setBookings(all.filter(b => b.agent?._id === user.agentId || b.agent === user.agentId));
+        } catch {
+            setError('Could not load earnings data.');
+        } finally {
+            setLoading(false);
+        }
+    }, [user?.agentId]);
 
-    const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+    useEffect(() => { fetchAll(); }, [fetchAll]);
+
+    const respond = async (bookingId, status) => {
+        setResponding(prev => ({ ...prev, [bookingId]: status === 'accepted' ? 'accepting' : 'rejecting' }));
+        try {
+            await api.patch(`/bookings/respond/${bookingId}`, { status });
+            // Optimistic UI — update booking status in place
+            setBookings(prev =>
+                prev.map(b => b._id === bookingId ? { ...b, status } : b)
+            );
+        } catch (err) {
+            setError(err.response?.data?.error || 'Action failed, please try again.');
+        } finally {
+            setResponding(prev => { const n = { ...prev }; delete n[bookingId]; return n; });
+        }
+    };
+
+    const formatDate = (d) =>
+        d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
     if (loading) return (
         <div className="page-loading">
@@ -77,7 +102,10 @@ const Earnings = () => {
     const totalEarnings = data?.earnings ?? 0;
     const completedCount = bookings.filter(b => b.status === 'completed').length;
     const pendingCount = bookings.filter(b => b.status === 'pending').length;
-    const pendingAmount = bookings.filter(b => b.status !== 'completed').reduce((sum, b) => sum + (b.agentEarning || 0), 0);
+    const pendingAmount = bookings.filter(b => b.status !== 'completed')
+        .reduce((s, b) => s + (b.agentEarning || 0), 0);
+
+    const pendingBookings = bookings.filter(b => b.status === 'pending');
 
     return (
         <div className="page-wrapper">
@@ -85,10 +113,18 @@ const Earnings = () => {
             <header className="section-header">
                 <div className="section-eyebrow">Agent Finance</div>
                 <h1 className="section-title">Earnings Overview</h1>
-                <p className="section-sub">Track your revenue and completed appointments.</p>
+                <p className="section-sub">Track your revenue, respond to bookings, and review history.</p>
             </header>
 
-            {error && <div className="alert alert-error" style={{ marginBottom: '28px' }}><HiOutlineInformationCircle />{error}</div>}
+            {error && (
+                <div className="alert alert-error" style={{ marginBottom: '28px' }}>
+                    <HiOutlineInformationCircle style={{ flexShrink: 0 }} />
+                    {error}
+                    <button onClick={() => setError(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+                        <HiOutlineX />
+                    </button>
+                </div>
+            )}
 
             {/* Stat Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '40px' }}>
@@ -98,7 +134,87 @@ const Earnings = () => {
                 <StatCard icon={HiOutlineChartBar} label="Pending Payout" value={`₹${pendingAmount.toLocaleString('en-IN')}`} accent="#7c3aed" sub="Unlocks on completion" />
             </div>
 
-            {/* Bookings Table */}
+            {/* ── Pending Bookings — action required ── */}
+            {pendingBookings.length > 0 && (
+                <div className="table-card" style={{ marginBottom: '32px' }}>
+                    <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{
+                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            width: '22px', height: '22px', borderRadius: '50%',
+                            backgroundColor: '#f59e0b', color: '#fff', fontSize: '0.75rem', fontWeight: '800'
+                        }}>
+                            {pendingBookings.length}
+                        </span>
+                        <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800' }}>Action Required — Pending Requests</h2>
+                    </div>
+                    <div className="table-scroll">
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
+                                <tr>
+                                    {['Customer', 'Service', 'Date', 'Fee', 'Action'].map(h => (
+                                        <th key={h} style={{ padding: '12px 20px', fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pendingBookings.map(b => (
+                                    <tr key={b._id} style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#fffbeb' }}>
+                                        <td style={{ padding: '14px 20px', fontWeight: '700' }}>{b.userName}<br /><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500' }}>{b.phone}</span></td>
+                                        <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>{b.service?.title || '—'}</td>
+                                        <td style={{ padding: '14px 20px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                                            {formatDate(b.date)}
+                                            {b.time && <><br /><span style={{ fontSize: '0.82rem' }}>🕐 {b.time}</span></>}
+                                        </td>
+                                        <td style={{ padding: '14px 20px', fontWeight: '700', color: '#059669' }}>₹{b.agentEarning ?? '—'}</td>
+                                        <td style={{ padding: '14px 20px' }}>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button
+                                                    onClick={() => respond(b._id, 'accepted')}
+                                                    disabled={!!responding[b._id]}
+                                                    style={{
+                                                        display: 'flex', alignItems: 'center', gap: '5px',
+                                                        padding: '7px 14px', borderRadius: '8px', border: 'none',
+                                                        backgroundColor: responding[b._id] === 'accepting' ? '#6ee7b7' : '#059669',
+                                                        color: '#fff', fontWeight: '700', fontSize: '0.82rem',
+                                                        cursor: responding[b._id] ? 'not-allowed' : 'pointer',
+                                                        opacity: responding[b._id] && responding[b._id] !== 'accepting' ? 0.5 : 1,
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                >
+                                                    {responding[b._id] === 'accepting'
+                                                        ? <span className="spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }} />
+                                                        : <HiOutlineThumbUp />}
+                                                    Accept
+                                                </button>
+                                                <button
+                                                    onClick={() => respond(b._id, 'rejected')}
+                                                    disabled={!!responding[b._id]}
+                                                    style={{
+                                                        display: 'flex', alignItems: 'center', gap: '5px',
+                                                        padding: '7px 14px', borderRadius: '8px', border: 'none',
+                                                        backgroundColor: responding[b._id] === 'rejecting' ? '#fca5a5' : '#dc2626',
+                                                        color: '#fff', fontWeight: '700', fontSize: '0.82rem',
+                                                        cursor: responding[b._id] ? 'not-allowed' : 'pointer',
+                                                        opacity: responding[b._id] && responding[b._id] !== 'rejecting' ? 0.5 : 1,
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                >
+                                                    {responding[b._id] === 'rejecting'
+                                                        ? <span className="spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }} />
+                                                        : <HiOutlineThumbDown />}
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Full Booking History ── */}
             <div className="table-card">
                 <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)' }}>
                     <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800' }}>Booking History</h2>
@@ -116,12 +232,7 @@ const Earnings = () => {
                             {bookings.length === 0 ? (
                                 <tr><td colSpan="5" style={{ padding: '52px', textAlign: 'center', color: 'var(--text-muted)' }}>No bookings found.</td></tr>
                             ) : bookings.map(b => {
-                                const statusMap = {
-                                    completed: { label: 'Completed', color: '#065f46', bg: '#ecfdf5', border: '#6ee7b7' },
-                                    accepted: { label: 'Accepted', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
-                                    pending: { label: 'Pending', color: '#92400e', bg: '#fffbeb', border: '#fde68a' }
-                                };
-                                const cfg = statusMap[b.status] || statusMap.pending;
+                                const cfg = STATUS_MAP[b.status] || STATUS_MAP.pending;
                                 return (
                                     <tr key={b._id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                         <td style={{ padding: '16px 20px', fontWeight: '700' }}>{b.userName}</td>

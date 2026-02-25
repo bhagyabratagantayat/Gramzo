@@ -108,3 +108,41 @@ exports.payBooking = async (req, res) => {
         res.status(400).json({ success: false, error: error.message });
     }
 };
+
+// @desc    Agent responds to a pending booking
+// @route   PATCH /api/bookings/respond/:id
+// Body:    { status: "accepted" | "rejected" }
+exports.respondToBooking = async (req, res) => {
+    try {
+        const { status } = req.body;
+
+        // Only these two actions are allowed via this endpoint
+        if (!['accepted', 'rejected'].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Status must be "accepted" or "rejected".'
+            });
+        }
+
+        const booking = await Booking.findById(req.params.id);
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found' });
+        }
+
+        // Guard: can only respond to pending bookings
+        if (booking.status !== 'pending') {
+            return res.status(400).json({
+                success: false,
+                error: `Cannot respond to a booking that is already "${booking.status}".`
+            });
+        }
+
+        booking.status = status;
+        await booking.save();
+
+        res.status(200).json({ success: true, data: booking });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
