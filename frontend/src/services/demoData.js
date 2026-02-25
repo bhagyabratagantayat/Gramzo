@@ -12,7 +12,12 @@ const IMG = {
     agriculture: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=600&q=80',
     vaccination: 'https://images.unsplash.com/photo-1584036561566-baf245fec96b?w=600&q=80',
     powerCut: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80',
-    jobPortal: 'https://images.unsplash.com/photo-1521791136366-3e44c5980df9?w=600&q=80'
+    jobPortal: 'https://images.unsplash.com/photo-1521791136366-3e44c5980df9?w=600&q=80',
+    potato: 'https://images.unsplash.com/photo-1518977676601-b53f02bad67b?w=600&q=80',
+    tomato: 'https://images.unsplash.com/photo-1590779033100-9f60705a6781?w=600&q=80',
+    onion: 'https://images.unsplash.com/photo-1580145032338-3f53835e5828?w=600&q=80',
+    iphone: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80',
+    samosa: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&q=80'
 };
 
 export const demoServices = [
@@ -151,37 +156,34 @@ export const demoNotices = [
 export const demoPrices = [
     {
         _id: 'demo-pr1',
-        item: 'Wheat',
-        price: 2450,
-        location: 'Hapur Mandi',
-        agent: { name: 'Kishan Mitra' }
+        itemName: 'Potato',
+        category: 'Vegetables',
+        price: 20,
+        location: 'Bhubaneswar Mandi',
+        imageUrl: IMG.potato
     },
     {
         _id: 'demo-pr2',
-        item: 'Mustard Seeds',
-        price: 5800,
-        location: 'Bharatpur',
-        agent: { name: 'Oil Traders' }
+        itemName: 'Tomato',
+        category: 'Vegetables',
+        price: 30,
+        location: 'Unit 4 Market',
+        imageUrl: IMG.tomato
     },
     {
         _id: 'demo-pr3',
-        item: 'Potato',
-        price: 1200,
-        location: 'Agra',
-        agent: { name: 'Mandi Reporter' }
+        itemName: 'Mobile Phone',
+        category: 'Electronics',
+        price: 10000,
+        location: 'Reliance Trends',
+        imageUrl: IMG.iphone
     },
     {
         _id: 'demo-pr4',
-        item: 'Onion',
-        price: 3200,
-        location: 'Nashik',
-        agent: { name: 'Export Agent' }
-    },
-    {
-        _id: 'demo-pr5',
-        item: 'Sugar',
-        price: 4100,
-        location: 'Muzaffarnagar',
-        agent: { name: 'Basant' }
+        itemName: 'Samosa',
+        category: 'Food',
+        price: 10,
+        location: 'Local Snack Stall',
+        imageUrl: IMG.samosa
     }
 ];

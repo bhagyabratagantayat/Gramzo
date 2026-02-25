@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import api from '../services/api';
+import { demoPrices } from '../services/demoData';
 import { getUser } from '../services/auth';
 import {
     HiOutlineCalendar,
     HiOutlineShoppingBag,
     HiOutlineSpeakerphone,
     HiOutlineLightningBolt,
-    HiArrowRight
+    HiArrowRight,
+    HiOutlineTrendingUp,
+    HiOutlineLocationMarker,
+    HiOutlineRefresh,
+    HiOutlineX
 } from 'react-icons/hi';
 
 const features = [
@@ -40,6 +47,60 @@ const features = [
 
 const Home = () => {
     const user = getUser();
+    const [prices, setPrices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [newPrice, setNewPrice] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const fetchPrices = async () => {
+        try {
+            const response = await api.get('/market');
+            const data = response.data.data;
+            setPrices(data.length > 0 ? data : demoPrices);
+        } catch (err) {
+            console.error('Failed to fetch market prices');
+            setPrices(demoPrices);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPrices();
+    }, []);
+
+    const openUpdateModal = (item) => {
+        setSelectedItem(item);
+        setNewPrice(item.price);
+        setShowUpdateModal(true);
+    };
+
+    const handleUpdateSubmit = async (e) => {
+        e.preventDefault();
+        if (!newPrice || isSubmitting) return;
+
+        setIsSubmitting(true);
+        try {
+            await api.post('/market/add', {
+                itemName: selectedItem.itemName,
+                category: selectedItem.category,
+                location: selectedItem.location,
+                image: selectedItem.imageUrl || selectedItem.image,
+                price: Number(newPrice),
+                updatedBy: user?.name || 'Guest User',
+                role: (user?.role?.toLowerCase() === 'agent' ? 'agent' : 'user')
+            });
+            await fetchPrices(); // Refresh UI
+            setShowUpdateModal(false);
+        } catch (err) {
+            console.error('Failed to update price');
+            alert('Failed to update price. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div style={{ backgroundColor: 'var(--bg-color)' }}>
@@ -157,6 +218,122 @@ const Home = () => {
                     ))}
                 </div>
             </section>
+
+            {/* ── Market Prices ────────────────────────── */}
+            <section style={{ padding: '0 24px 72px', maxWidth: '1200px', margin: '0 auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
+                    <div>
+                        <div className="section-eyebrow">Real-time Updates</div>
+                        <h2 style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', fontWeight: '900', margin: '8px 0 0', letterSpacing: '-0.03em' }}>
+                            Live Market Prices
+                        </h2>
+                    </div>
+                    <button
+                        onClick={() => fetchPrices()}
+                        className="btn-ghost"
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <HiOutlineRefresh className={loading ? 'spinner' : ''} /> Refresh List
+                    </button>
+                </div>
+
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-muted)' }}>
+                        <div className="spinner" style={{ margin: '0 auto 16px' }}></div>
+                        Fetching latest market data...
+                    </div>
+                ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '24px' }}>
+                        {prices.map(item => (
+                            <div key={item._id} className="card hover-lift" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ height: '160px', width: '100%', overflow: 'hidden', position: 'relative' }}>
+                                    <img
+                                        src={item.imageUrl || item.image || 'https://via.placeholder.com/400x300?text=No+Image'}
+                                        alt={item.itemName}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                    <div style={{
+                                        position: 'absolute', top: '12px', left: '12px',
+                                        backgroundColor: 'rgba(0,0,0,0.6)', color: '#fff',
+                                        padding: '4px 10px', borderRadius: '6px',
+                                        fontSize: '0.75rem', fontWeight: '700', backdropFilter: 'blur(4px)'
+                                    }}>
+                                        {item.category}
+                                    </div>
+                                </div>
+                                <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800' }}>{item.itemName}</h3>
+                                        <div style={{ color: 'var(--primary-color)', fontWeight: '900', fontSize: '1.25rem' }}>
+                                            ₹{item.price}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '16px' }}>
+                                        <HiOutlineLocationMarker /> {item.location}
+                                    </div>
+                                    <button
+                                        onClick={() => openUpdateModal(item)}
+                                        className="btn-primary"
+                                        style={{
+                                            width: '100%', marginTop: 'auto',
+                                            padding: '10px', fontSize: '0.9rem',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                        }}
+                                    >
+                                        <HiOutlineTrendingUp /> Update Price
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            {/* ── Update Modal ────────────────────────── */}
+            {showUpdateModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                    backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 1000, padding: '20px'
+                }}>
+                    <div className="card" style={{ width: '400px', padding: '32px', position: 'relative', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
+                        <button
+                            onClick={() => setShowUpdateModal(false)}
+                            style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '1.5rem' }}
+                        >
+                            <HiOutlineX />
+                        </button>
+
+                        <h3 style={{ margin: '0 0 8px', fontSize: '1.25rem', fontWeight: '900' }}>Update Market Price</h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px' }}>
+                            Contribute to the community by correcting the price of <strong>{selectedItem?.itemName}</strong>.
+                        </p>
+
+                        <form onSubmit={handleUpdateSubmit}>
+                            <div className="form-group" style={{ marginBottom: '24px' }}>
+                                <label className="form-label">New Price (₹)</label>
+                                <input
+                                    type="number"
+                                    className="form-input"
+                                    value={newPrice}
+                                    onChange={(e) => setNewPrice(e.target.value)}
+                                    autoFocus
+                                    required
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="btn-primary"
+                                style={{ width: '100%', padding: '12px' }}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? <><HiOutlineRefresh className="spinner" /> Updating...</> : 'Confirm Update'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* ── CTA Banner ────────────────────────────── */}
             {!user && (
