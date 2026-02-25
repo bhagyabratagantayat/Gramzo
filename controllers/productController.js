@@ -26,7 +26,8 @@ exports.addProduct = async (req, res) => {
             sellerName,
             phone,
             location,
-            agent: agentId
+            agent: agentId,
+            imageUrl
         });
         res.status(201).json({ success: true, data: product });
     } catch (error) {
