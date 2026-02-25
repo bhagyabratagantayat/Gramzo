@@ -1,74 +1,150 @@
+/* ─── Unsplash image URLs (stable, no auth needed) ─── */
+const IMG = {
+    haircut: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80',
+    electrical: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=600&q=80',
+    cleaning: 'https://images.unsplash.com/photo-1584622781867-1c5fe959d7f2?w=600&q=80',
+    doctor: 'https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=600&q=80',
+    tomatoes: 'https://images.unsplash.com/photo-1582284540020-8acbe03f4924?w=600&q=80',
+    milk: 'https://images.unsplash.com/photo-1550583724-125581f77033?w=600&q=80',
+    bicycle: 'https://images.unsplash.com/photo-1485965120184-a220f721d03e?w=600&q=80',
+    rice: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&q=80',
+    healthCamp: 'https://images.unsplash.com/photo-1576089172869-4f5f6f315620?w=600&q=80',
+    agriculture: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=600&q=80',
+    vaccination: 'https://images.unsplash.com/photo-1584036561566-baf245fec96b?w=600&q=80',
+    powerCut: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80',
+    jobPortal: 'https://images.unsplash.com/photo-1521791136366-3e44c5980df9?w=600&q=80'
+};
+
 export const demoServices = [
     {
         _id: 'demo-s1',
         title: 'Community Electrical Help',
         description: 'Verified electrician services for household repairs, wiring, and appliance setup.',
-        price: 500,
-        location: 'Rampur Village',
-        agent: { name: 'Ram Singh' }
+        price: 450,
+        location: 'Patia, Bhubaneswar',
+        agent: { name: 'Ram Singh' },
+        imageUrl: IMG.electrical,
+        category: { name: 'Electrical' }
     },
     {
         _id: 'demo-s2',
-        title: 'Agricultural Consultation',
-        description: 'Get advice on crop rotation, pest control, and maximizing yield from local experts.',
-        price: 300,
-        location: 'Samastipur',
-        agent: { name: 'Dr. Kumar' }
+        title: 'General Physician Consultation',
+        description: 'MBBS-qualified doctor available for home visits and general health checkups.',
+        price: 500,
+        location: 'Nayapalli, Bhubaneswar',
+        agent: { name: 'Dr. Kumar' },
+        imageUrl: IMG.doctor,
+        category: { name: 'Professional' }
     },
     {
         _id: 'demo-s3',
-        title: 'Plumbing & Pipe Repair',
-        description: 'Quick fix for water pumps, taps, and irrigation systems. Available 24/7 for emergencies.',
-        price: 450,
-        location: 'Darbhanga',
-        agent: { name: 'Vikram Sahni' }
+        title: 'Men Haircut & Style',
+        description: 'Modern haircut and grooming at your doorstep by professional barbers.',
+        price: 199,
+        location: 'Saheed Nagar, Bhubaneswar',
+        agent: { name: 'Vikram Barua' },
+        imageUrl: IMG.haircut,
+        category: { name: 'Salon' }
     },
     {
         _id: 'demo-s4',
-        title: 'Mobile & Device Repair',
-        description: 'On-site repair for smartphones, tablets, and basic computing needs for villagers.',
-        price: 200,
-        location: 'Rampur Village',
-        agent: { name: 'Rahul Tech' }
+        title: 'Full Home Deep Cleaning',
+        description: 'Thorough cleaning of all rooms, kitchen, and bathrooms using premium supplies.',
+        price: 1999,
+        location: 'Jayadev Vihar, Bhubaneswar',
+        agent: { name: 'Clean Odisha' },
+        imageUrl: IMG.cleaning,
+        category: { name: 'Cleaning' }
     }
 ];
 
 export const demoProducts = [
     {
         _id: 'demo-p1',
-        title: 'Organic Basmati Rice (5kg)',
-        description: 'Pure, pesticide-free rice grown using traditional cow-manure methods. High aroma.',
-        price: 850,
-        location: 'Burdwan',
+        title: 'Fresh Organic Tomatoes (1kg)',
+        description: 'Naturally grown, succulent organic tomatoes from local Mandi.',
+        price: 35,
+        location: 'Unit 4 Market, BBSR',
         sellerName: 'Amit Mondal',
-        phone: '9876543210'
+        phone: '9876543210',
+        imageUrl: IMG.tomatoes,
+        category: { name: 'Groceries' }
     },
     {
         _id: 'demo-p2',
-        title: 'Handmade Bamboo Baskets',
-        description: 'Set of 3 durable baskets made from locally sourced bamboo. Perfect for kitchen storage.',
-        price: 350,
-        location: 'Agartala',
-        sellerName: 'Rita Debbarma',
-        phone: '9123456780'
+        title: 'Hero Mountain Bike (Used)',
+        description: '2-year-old mountain bike in excellent condition. New tires.',
+        price: 4500,
+        location: 'Puri Market',
+        sellerName: 'Rajesh Swain',
+        phone: '9123456780',
+        imageUrl: IMG.bicycle,
+        category: { name: 'Vehicles' }
     },
     {
         _id: 'demo-p3',
-        title: 'Traditional Clay Pots',
-        description: 'Cool your water naturally with these premium earthen pots. Hand-turned by local potters.',
-        price: 150,
-        location: 'Jaipur',
-        sellerName: 'Gopal Prajapat',
-        phone: '9334455667'
+        title: 'Premium Basmati Rice (5kg)',
+        description: 'Long-grain aromatic basmati rice, aged for 1 year.',
+        price: 550,
+        location: 'Cuttack Mandi',
+        sellerName: 'Manoj Sahoo',
+        phone: '9334455667',
+        imageUrl: IMG.rice,
+        category: { name: 'Groceries' }
     },
     {
         _id: 'demo-p4',
-        title: 'Pure Mustard Oil (1L)',
-        description: 'Cold-pressed mustard oil, high in nutrients and sharp in flavour. No additives.',
-        price: 195,
-        location: 'Bhiwani',
-        sellerName: 'Deepak Kumar',
-        phone: '9445566778'
+        title: 'Pure Cow Milk (1L)',
+        description: 'Fresh milk delivered daily. No preservatives.',
+        price: 60,
+        location: 'Khandagiri, BBSR',
+        sellerName: 'Dairy Fresh',
+        phone: '9445566778',
+        imageUrl: IMG.milk,
+        category: { name: 'Groceries' }
+    }
+];
+
+export const demoNotices = [
+    {
+        _id: 'demo-n1',
+        title: 'Free Health Camp on Sunday',
+        description: 'Free medical checkup, BP, and sugar tests for all villagers at Panchayat Hall.',
+        location: 'Pipili, Puri',
+        createdAt: new Date().toISOString(),
+        imageUrl: IMG.healthCamp
+    },
+    {
+        _id: 'demo-n2',
+        title: 'Government Subsidy for Farmers',
+        description: 'Apply for 50% subsidy on solar water pumps under the new Krishi Vikas Yojana.',
+        location: 'District Agriculture Office, BBSR',
+        createdAt: new Date().toISOString(),
+        imageUrl: IMG.agriculture
+    },
+    {
+        _id: 'demo-n3',
+        title: 'Vaccination Drive: Phase 4',
+        description: 'Join the pulse polio and routine immunization drive this Saturday at local clinic.',
+        location: 'Health Center, Cuttack',
+        createdAt: new Date().toISOString(),
+        imageUrl: IMG.vaccination
+    },
+    {
+        _id: 'demo-n4',
+        title: 'Electricity Maintenance Alert',
+        description: 'Planned power cut from 10 AM to 4 PM this Wednesday for line maintenance.',
+        location: 'Nayapalli Area, BBSR',
+        createdAt: new Date().toISOString(),
+        imageUrl: IMG.powerCut
+    },
+    {
+        _id: 'demo-n5',
+        title: 'Job Opening: Local Retail Store',
+        description: 'Looking for 2 delivery partners and 1 store manager. Contact 9000000001.',
+        location: 'Market Building, BBSR',
+        createdAt: new Date().toISOString(),
+        imageUrl: IMG.jobPortal
     }
 ];
 

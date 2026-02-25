@@ -24,7 +24,7 @@ const Marketplace = () => {
             setLoading(false);
         } catch (err) {
             console.error('Failed to fetch products');
-            setProducts([]);
+            setProducts(demoProducts);
             setLoading(false);
         }
     };

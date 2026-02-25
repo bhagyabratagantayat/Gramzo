@@ -45,7 +45,7 @@ const Services = () => {
             const data = response.data.data;
             setServices(data.length > 0 ? data : (user?.role === 'Agent' ? [] : demoServices));
         } catch {
-            setServices([]);
+            setServices(demoServices);
         } finally {
             setLoading(false);
         }

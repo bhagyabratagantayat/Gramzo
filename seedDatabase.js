@@ -9,6 +9,7 @@ const Service = require('./models/Service');
 const Agent = require('./models/Agent');
 const Product = require('./models/Product');
 const Booking = require('./models/Booking');
+const Notice = require('./models/Notice');
 
 /* ─── Unsplash image URLs (stable, no auth needed) ─── */
 const IMG = {
@@ -529,6 +530,35 @@ const bookingsData = [
     }
 ];
 
+/* ─── Notices (5 listings) ─── */
+const noticesData = [
+    {
+        title: 'Free Health Camp on Sunday',
+        description: 'Free medical checkup, BP, and sugar tests for all residents at Panchayat Hall. Specialists from AIIMS BBSR will be present.',
+        location: 'Pipili, Puri'
+    },
+    {
+        title: 'Government Subsidy for Farmers',
+        description: 'Apply for 50% subsidy on solar water pumps and drip irrigation systems under the CM-Kushal Yojana. Last date: March 15th.',
+        location: 'District Agriculture Office, Bhubaneswar'
+    },
+    {
+        title: 'Vaccination Drive: Phase 4',
+        description: 'Join the pulse polio and routine childhood immunization drive this Saturday at the local Community Health Center.',
+        location: 'Health Center, Cuttack'
+    },
+    {
+        title: 'Electricity Maintenance Alert',
+        description: 'Planned power cut from 10 AM to 4 PM this Wednesday for essential line maintenance and transformer upgrades.',
+        location: 'Nayapalli & Jayadev Vihar Area, BBSR'
+    },
+    {
+        title: 'Job Opening: Local Retail Store',
+        description: 'Gramzo partner store is looking for 2 delivery partners and 1 store manager. Competitive salary + fuel allowance.',
+        location: 'Market Building, Bhubaneswar'
+    }
+];
+
 /* ─── Seed runner ─── */
 const seedDB = async () => {
     try {
@@ -540,7 +570,8 @@ const seedDB = async () => {
         await Service.deleteMany({});
         await Product.deleteMany({});
         await Booking.deleteMany({});
-        console.log('🗑  Cleared existing Categories, Services, Products, and Bookings');
+        await Notice.deleteMany({});
+        console.log('🗑  Cleared existing Categories, Services, Products, Bookings, and Notices');
 
         // Ensure a master agent exists
         let agent = await Agent.findOne({ isApproved: true });
@@ -603,7 +634,11 @@ const seedDB = async () => {
             };
         });
         await Booking.insertMany(finalBookings);
-        console.log(`📅 Inserted ${finalBookings.length} sample bookings with varied statuses`);
+        console.log(`📅 Inserted ${finalBookings.length} sample bookings`);
+
+        // Insert notices
+        await Notice.insertMany(noticesData);
+        console.log(`📢 Inserted ${noticesData.length} community notices`);
 
         console.log('\n✨ Seed complete! Refresh your browser to see the data.\n');
         process.exit(0);
