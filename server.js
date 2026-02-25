@@ -28,6 +28,7 @@ const noticeRoutes = require('./routes/noticeRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const agentDashboardRoutes = require('./routes/agentDashboardRoutes');
 const userRoutes = require('./routes/userRoutes');
+const marketRoutes = require('./routes/marketRoutes');
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/agents', agentRoutes);
@@ -39,6 +40,7 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/agent', agentDashboardRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/market', marketRoutes);
 
 // Start Server
 app.listen(PORT, () => {
