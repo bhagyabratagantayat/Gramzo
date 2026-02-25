@@ -24,7 +24,8 @@ const Login = () => {
 
         if (role === 'Agent') {
             try {
-                const res = await fetch('http://localhost:5000/api/agents/add', {
+                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const res = await fetch(`${baseUrl}/agents/add`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: name.trim(), phone: phone.trim(), location: 'Default' })
