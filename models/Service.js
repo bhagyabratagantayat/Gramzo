@@ -35,6 +35,10 @@ const serviceSchema = new mongoose.Schema({
     longitude: {
         type: Number
     },
+    requiresAppointment: {
+        type: Boolean,
+        default: false
+    },
     createdAt: {
         type: Date,
         default: Date.now

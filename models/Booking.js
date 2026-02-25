@@ -18,6 +18,9 @@ const bookingSchema = new mongoose.Schema({
     date: {
         type: Date
     },
+    time: {
+        type: String  // e.g. "10:30", only set for appointment-based bookings
+    },
     amount: {
         type: Number
     },

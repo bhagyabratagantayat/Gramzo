@@ -5,7 +5,7 @@ const Service = require('../models/Service');
 // @route   POST /api/bookings/create
 exports.createBooking = async (req, res) => {
     try {
-        const { userName, phone, serviceId, date } = req.body;
+        const { userName, phone, serviceId, date, time } = req.body;
 
         // Find service to get the agent
         const service = await Service.findById(serviceId);
@@ -23,6 +23,7 @@ exports.createBooking = async (req, res) => {
             service: serviceId,
             agent: service.agent,
             date,
+            ...(time !== undefined && { time }),
             amount,
             platformFee,
             agentEarning

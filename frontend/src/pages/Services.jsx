@@ -121,10 +121,13 @@ const Services = () => {
 
                         <button
                             onClick={() => openBooking(service)}
-                            className="btn-primary"
-                            style={{ width: '100%', padding: '14px' }}
+                            className={service.requiresAppointment ? 'btn-primary' : 'btn-primary'}
+                            style={{
+                                width: '100%', padding: '14px',
+                                backgroundColor: service.requiresAppointment ? undefined : 'var(--success-color)'
+                            }}
                         >
-                            Book Appointment
+                            {service.requiresAppointment ? '📅 Book Appointment' : '⚡ Book Now'}
                         </button>
                     </div>
                 ))}
@@ -146,6 +149,7 @@ const Services = () => {
                 <BookingForm
                     serviceId={selectedService._id}
                     serviceTitle={selectedService.title}
+                    requiresAppointment={selectedService.requiresAppointment ?? false}
                     onClose={closeBooking}
                 />
             )}
