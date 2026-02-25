@@ -25,6 +25,16 @@ const serviceSchema = new mongoose.Schema({
     location: {
         type: String
     },
+    // Extended location fields — optional, backward-compatible
+    locationName: {
+        type: String
+    },
+    latitude: {
+        type: Number
+    },
+    longitude: {
+        type: Number
+    },
     createdAt: {
         type: Date,
         default: Date.now

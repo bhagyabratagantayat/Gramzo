@@ -5,7 +5,7 @@ const Agent = require('../models/Agent');
 // @route   POST /api/services/add
 exports.addService = async (req, res) => {
     try {
-        const { title, description, price, category, agent, availableTime, location } = req.body;
+        const { title, description, price, category, agent, availableTime, location, locationName, latitude, longitude } = req.body;
 
         // Check if agent exists and is approved
         const agentData = await Agent.findById(agent);
@@ -28,7 +28,11 @@ exports.addService = async (req, res) => {
             category,
             agent,
             availableTime,
-            location
+            location,
+            // New optional location fields — only stored when provided
+            ...(locationName !== undefined && { locationName }),
+            ...(latitude !== undefined && { latitude }),
+            ...(longitude !== undefined && { longitude }),
         });
 
         res.status(201).json({ success: true, data: service });
