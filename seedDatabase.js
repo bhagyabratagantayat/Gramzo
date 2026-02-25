@@ -10,6 +10,7 @@ const Agent = require('./models/Agent');
 const Product = require('./models/Product');
 const Booking = require('./models/Booking');
 const Notice = require('./models/Notice');
+const MarketPrice = require('./models/MarketPrice');
 
 /* ─── Unsplash image URLs (stable, no auth needed) ─── */
 const IMG = {
@@ -53,6 +54,19 @@ const IMG = {
     watch: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80',
     shoes: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
     laptop: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80',
+
+    // Market Prices (New)
+    potato: 'https://images.unsplash.com/photo-1518977676601-b53f02bad67b?w=600&q=80',
+    tomato: 'https://images.unsplash.com/photo-1590779033100-9f60705a6781?w=600&q=80',
+    onion: 'https://images.unsplash.com/photo-1580145032338-3f53835e5828?w=600&q=80',
+    okra: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=600&q=80',
+    iphone: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80',
+    earphones: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
+    shirt: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80',
+    jeans: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80',
+    samosa: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&q=80',
+    burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80',
+    sweets: 'https://images.unsplash.com/photo-1589119634735-12cb4d236511?w=600&q=80'
 };
 
 /* ─── Categories ─── */
@@ -559,6 +573,21 @@ const noticesData = [
     }
 ];
 
+/* ─── Market Prices (11 real items) ─── */
+const marketPriceData = [
+    { itemName: 'Potato', category: 'Vegetables', price: 20, image: IMG.potato, location: 'Bhubaneswar Mandi', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Tomato', category: 'Vegetables', price: 30, image: IMG.tomato, location: 'Unit 4 Market', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Onion', category: 'Vegetables', price: 25, image: IMG.onion, location: 'Bhubaneswar Mandi', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Bhindi', category: 'Vegetables', price: 40, image: IMG.okra, location: 'Cuttack Market', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Mobile Phone', category: 'Electronics', price: 10000, image: IMG.iphone, location: 'Reliance Trends, BBSR', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Earphones', category: 'Electronics', price: 500, image: IMG.earphones, location: 'Mobile Hub', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Shirt', category: 'Clothes', price: 800, image: IMG.shirt, location: 'Pantaloon, BBSR', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Jeans', category: 'Clothes', price: 1200, image: IMG.jeans, location: 'Pantaloon, BBSR', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Samosa', category: 'Food', price: 10, image: IMG.samosa, location: 'Local Snack Stall', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Burger', category: 'Food', price: 50, image: IMG.burger, location: 'Food Court', updatedBy: 'Gramzo Admin', role: 'agent' },
+    { itemName: 'Sweet', category: 'Food', price: 200, image: IMG.sweets, location: 'Ganguram Sweets', updatedBy: 'Gramzo Admin', role: 'agent' }
+];
+
 /* ─── Seed runner ─── */
 const seedDB = async () => {
     try {
@@ -571,7 +600,8 @@ const seedDB = async () => {
         await Product.deleteMany({});
         await Booking.deleteMany({});
         await Notice.deleteMany({});
-        console.log('🗑  Cleared existing Categories, Services, Products, Bookings, and Notices');
+        await MarketPrice.deleteMany({});
+        console.log('🗑  Cleared existing Categories, Services, Products, Bookings, Notices, and MarketPrices');
 
         // Ensure a master agent exists
         let agent = await Agent.findOne({ isApproved: true });
@@ -639,6 +669,10 @@ const seedDB = async () => {
         // Insert notices
         await Notice.insertMany(noticesData);
         console.log(`📢 Inserted ${noticesData.length} community notices`);
+
+        // Insert market prices
+        await MarketPrice.insertMany(marketPriceData);
+        console.log(`💎 Inserted ${marketPriceData.length} real market price items`);
 
         console.log('\n✨ Seed complete! Refresh your browser to see the data.\n');
         process.exit(0);
