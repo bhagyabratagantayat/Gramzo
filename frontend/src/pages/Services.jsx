@@ -5,7 +5,19 @@ import AddServiceForm from '../components/AddServiceForm';
 import { isAgent } from '../services/auth';
 import { demoServices } from '../services/demoData';
 import { getSavedLocation } from '../services/location';
-import { HiOutlineMap, HiOutlineCurrencyRupee, HiOutlineInformationCircle, HiOutlineUserCircle, HiOutlineLocationMarker, HiX } from 'react-icons/hi';
+import {
+    HiOutlineLocationMarker, HiOutlineInformationCircle,
+    HiOutlineUserCircle, HiX, HiOutlinePlusCircle,
+    HiOutlineCurrencyRupee, HiOutlineCalendar, HiOutlineLightningBolt
+} from 'react-icons/hi';
+
+/* Category icon map (emoji fallback) */
+const CATEGORY_ICONS = {
+    plumbing: '🔧', electrical: '⚡', cleaning: '🧹', carpentry: '🪚',
+    tailoring: '🧵', beauty: '💆', painting: '🎨', gardening: '🌿',
+    default: '🛠️'
+};
+const icon = (cat = '') => CATEGORY_ICONS[cat.toLowerCase()] ?? CATEGORY_ICONS.default;
 
 const Services = () => {
     const [services, setServices] = useState([]);
@@ -13,7 +25,6 @@ const Services = () => {
     const [selectedService, setSelectedService] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
     const [locationFilter, setLocationFilter] = useState(() => {
-        // Read saved location once on mount
         const saved = getSavedLocation();
         return saved?.locationName && saved.source !== 'skipped' ? saved.locationName : null;
     });
@@ -23,11 +34,9 @@ const Services = () => {
             const user = JSON.parse(localStorage.getItem('gramzoUser'));
             const params = new URLSearchParams();
 
-            // Agent sees only their own services — location filter doesn't apply
             if (user?.role === 'Agent' && user?.agentId) {
                 params.set('agent', user.agentId);
             } else if (locFilter) {
-                // Non-agent users: filter by location name
                 params.set('locationName', locFilter);
             }
 
@@ -35,8 +44,7 @@ const Services = () => {
             const response = await api.get(url);
             const data = response.data.data;
             setServices(data.length > 0 ? data : (user?.role === 'Agent' ? [] : demoServices));
-        } catch (err) {
-            console.error('Failed to fetch services:', err);
+        } catch {
             setServices([]);
         } finally {
             setLoading(false);
@@ -57,91 +65,104 @@ const Services = () => {
     if (loading) return (
         <div className="page-loading">
             <div className="spinner" />
-            <span>Loading services...</span>
+            <span>Loading services…</span>
         </div>
     );
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px', gap: '24px', flexWrap: 'wrap' }}>
+        <div className="page-wrapper">
+            {/* Page Header */}
+            <header className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                    <div style={{ color: 'var(--primary-color)', fontWeight: '700', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                        Community Support
-                    </div>
-                    <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800' }}>Local Services</h1>
+                    <div className="section-eyebrow">Community Support</div>
+                    <h1 className="section-title">Local Services</h1>
+                    <p className="section-sub">Trusted professionals in your neighbourhood.</p>
 
-                    {/* Location filter indicator */}
+                    {/* Location filter chip */}
                     {locationFilter && (
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '12px', backgroundColor: 'var(--primary-light)', color: 'var(--primary-color)', border: '1px solid var(--border-focus)', borderRadius: '999px', padding: '5px 12px', fontSize: '0.85rem', fontWeight: '700' }}>
-                            <HiOutlineLocationMarker style={{ flexShrink: 0 }} />
-                            Showing near "{locationFilter}"
-                            <button onClick={clearLocationFilter} title="Show all services" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary-color)', display: 'flex', padding: '0 0 0 4px', lineHeight: 1 }}>
+                        <div className="filter-chip" style={{ marginTop: '12px' }}>
+                            <HiOutlineLocationMarker />
+                            Showing near &ldquo;{locationFilter}&rdquo;
+                            <button
+                                onClick={clearLocationFilter}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', display: 'flex', padding: '0 0 0 2px', lineHeight: 1 }}
+                                title="Show all services"
+                            >
                                 <HiX />
                             </button>
                         </div>
                     )}
                 </div>
+
                 {isAgent() && (
-                    <button onClick={() => setShowAddForm(true)} className="btn-primary">
-                        List a New Service
+                    <button onClick={() => setShowAddForm(true)} className="btn-primary" style={{ gap: '6px' }}>
+                        <HiOutlinePlusCircle /> List New Service
                     </button>
                 )}
             </header>
 
-            <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))' }}>
-                {services.map((service) => (
-                    <div key={service._id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <div>
-                            <h2 style={{ margin: '0 0 12px 0', fontSize: '1.5rem', fontWeight: '800' }}>{service.title}</h2>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>{service.description}</p>
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', backgroundColor: 'var(--border-color)', borderRadius: '12px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                            <div style={{ backgroundColor: 'var(--bg-color)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Fee</div>
-                                <div style={{ fontWeight: '800', fontSize: '1.25rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <HiOutlineCurrencyRupee /> {service.price}
-                                </div>
-                            </div>
-                            <div style={{ backgroundColor: 'var(--bg-color)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Location</div>
-                                <div style={{ fontWeight: '700', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <HiOutlineMap style={{ color: 'var(--text-muted)' }} /> {service.location}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', backgroundColor: 'rgba(37, 99, 235, 0.05)', borderRadius: '12px', border: '1px solid rgba(37, 99, 235, 0.1)' }}>
-                            <HiOutlineUserCircle style={{ fontSize: '1.5rem', color: 'var(--primary-color)' }} />
-                            <div style={{ fontSize: '0.9rem' }}>
-                                <div style={{ color: 'var(--text-muted)' }}>Service Provider</div>
-                                <div style={{ fontWeight: '700' }}>{service.agent?.name || 'Verified Professional'}</div>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={() => openBooking(service)}
-                            className={service.requiresAppointment ? 'btn-primary' : 'btn-primary'}
-                            style={{
-                                width: '100%', padding: '14px',
-                                backgroundColor: service.requiresAppointment ? undefined : 'var(--success-color)'
-                            }}
-                        >
-                            {service.requiresAppointment ? '📅 Book Appointment' : '⚡ Book Now'}
-                        </button>
-                    </div>
-                ))}
-            </div>
-
-            {services.length === 0 && (
+            {/* Service Grid */}
+            {services.length === 0 ? (
                 <div className="empty-state">
                     <HiOutlineInformationCircle className="empty-state-icon" />
-                    <h3>{locationFilter ? `No services found near "${locationFilter}"` : 'No services listed yet'}</h3>
-                    <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
-                        {locationFilter
-                            ? <span>Try <button onClick={clearLocationFilter} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontWeight: '700', cursor: 'pointer', padding: 0, fontSize: 'inherit' }}>showing all services</button> instead.</span>
-                            : 'Check back soon for new local services in your area.'}
+                    <h3>{locationFilter ? `No services near "${locationFilter}"` : 'No services listed yet'}</h3>
+                    <p>
+                        {locationFilter ? (
+                            <>Try <button onClick={clearLocationFilter} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 'inherit' }}>showing all services</button> instead.</>
+                        ) : 'Check back soon for new local services in your area.'}
                     </p>
+                </div>
+            ) : (
+                <div className="service-grid">
+                    {services.map((service) => {
+                        const catName = service.category?.name || '';
+                        return (
+                            <div key={service._id} className="service-card">
+                                {/* Card image / icon area */}
+                                <div className="service-card-img">
+                                    <span style={{ fontSize: '3.5rem' }}>{icon(catName)}</span>
+                                    {service.requiresAppointment && (
+                                        <span className="service-card-badge">Appointment</span>
+                                    )}
+                                </div>
+
+                                {/* Card body */}
+                                <div className="service-card-body">
+                                    {catName && <div className="service-card-category">{catName}</div>}
+                                    <h3 className="service-card-title">{service.title}</h3>
+                                    <p className="service-card-desc">{service.description}</p>
+
+                                    {/* Meta row */}
+                                    <div className="service-card-meta">
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                            <HiOutlineLocationMarker /> {service.locationName || service.location || 'Local area'}
+                                        </span>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                            <HiOutlineUserCircle /> {service.agent?.name || 'Verified Pro'}
+                                        </span>
+                                    </div>
+
+                                    {/* Price */}
+                                    <div className="service-card-price">
+                                        ₹{service.price} <span>/ visit</span>
+                                    </div>
+                                </div>
+
+                                {/* Card footer — CTA button */}
+                                <div className="service-card-footer">
+                                    <button
+                                        onClick={() => openBooking(service)}
+                                        className="btn-primary btn-full"
+                                        style={!service.requiresAppointment ? { backgroundColor: 'var(--success-color)' } : {}}
+                                    >
+                                        {service.requiresAppointment
+                                            ? <><HiOutlineCalendar /> Book Appointment</>
+                                            : <><HiOutlineLightningBolt /> Book Now</>}
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
 
