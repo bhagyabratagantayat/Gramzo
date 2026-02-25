@@ -4,43 +4,60 @@ import BookingForm from '../components/BookingForm';
 import AddServiceForm from '../components/AddServiceForm';
 import { isAgent } from '../services/auth';
 import { demoServices } from '../services/demoData';
-import { HiOutlineMap, HiOutlineCurrencyRupee, HiOutlineInformationCircle, HiOutlineUserCircle } from 'react-icons/hi';
+import { getSavedLocation } from '../services/location';
+import { HiOutlineMap, HiOutlineCurrencyRupee, HiOutlineInformationCircle, HiOutlineUserCircle, HiOutlineLocationMarker, HiX } from 'react-icons/hi';
 
 const Services = () => {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedService, setSelectedService] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [locationFilter, setLocationFilter] = useState(() => {
+        // Read saved location once on mount
+        const saved = getSavedLocation();
+        return saved?.locationName && saved.source !== 'skipped' ? saved.locationName : null;
+    });
 
-    const fetchServices = async () => {
+    const fetchServices = async (locFilter = locationFilter) => {
         try {
             const user = JSON.parse(localStorage.getItem('gramzoUser'));
-            let url = '/services';
+            const params = new URLSearchParams();
+
+            // Agent sees only their own services — location filter doesn't apply
             if (user?.role === 'Agent' && user?.agentId) {
-                url += `?agent=${user.agentId}`;
+                params.set('agent', user.agentId);
+            } else if (locFilter) {
+                // Non-agent users: filter by location name
+                params.set('locationName', locFilter);
             }
 
+            const url = `/services${params.toString() ? '?' + params.toString() : ''}`;
             const response = await api.get(url);
             const data = response.data.data;
             setServices(data.length > 0 ? data : (user?.role === 'Agent' ? [] : demoServices));
-            setLoading(false);
         } catch (err) {
-            console.error('Failed to fetch services');
+            console.error('Failed to fetch services:', err);
             setServices([]);
+        } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchServices();
-    }, []);
+    useEffect(() => { fetchServices(); }, []);
+
+    const clearLocationFilter = () => {
+        setLocationFilter(null);
+        setLoading(true);
+        fetchServices(null);
+    };
 
     const openBooking = (service) => setSelectedService(service);
     const closeBooking = () => setSelectedService(null);
 
     if (loading) return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: 'var(--text-muted)' }}>
-            Loading available services...
+        <div className="page-loading">
+            <div className="spinner" />
+            <span>Loading services...</span>
         </div>
     );
 
@@ -52,6 +69,17 @@ const Services = () => {
                         Community Support
                     </div>
                     <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800' }}>Local Services</h1>
+
+                    {/* Location filter indicator */}
+                    {locationFilter && (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '12px', backgroundColor: 'var(--primary-light)', color: 'var(--primary-color)', border: '1px solid var(--border-focus)', borderRadius: '999px', padding: '5px 12px', fontSize: '0.85rem', fontWeight: '700' }}>
+                            <HiOutlineLocationMarker style={{ flexShrink: 0 }} />
+                            Showing near "{locationFilter}"
+                            <button onClick={clearLocationFilter} title="Show all services" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary-color)', display: 'flex', padding: '0 0 0 4px', lineHeight: 1 }}>
+                                <HiX />
+                            </button>
+                        </div>
+                    )}
                 </div>
                 {isAgent() && (
                     <button onClick={() => setShowAddForm(true)} className="btn-primary">
@@ -103,10 +131,14 @@ const Services = () => {
             </div>
 
             {services.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '80px 20px', backgroundColor: '#fff', borderRadius: 'var(--radius)', border: '1px dashed var(--border-color)' }}>
-                    <HiOutlineInformationCircle style={{ fontSize: '3rem', color: 'var(--text-muted)', marginBottom: '16px' }} />
-                    <h3 style={{ margin: 0 }}>No services listed yet</h3>
-                    <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Check back soon for new local services being offered in your area.</p>
+                <div className="empty-state">
+                    <HiOutlineInformationCircle className="empty-state-icon" />
+                    <h3>{locationFilter ? `No services found near "${locationFilter}"` : 'No services listed yet'}</h3>
+                    <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
+                        {locationFilter
+                            ? <span>Try <button onClick={clearLocationFilter} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontWeight: '700', cursor: 'pointer', padding: 0, fontSize: 'inherit' }}>showing all services</button> instead.</span>
+                            : 'Check back soon for new local services in your area.'}
+                    </p>
                 </div>
             )}
 

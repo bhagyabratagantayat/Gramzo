@@ -46,8 +46,20 @@ exports.addService = async (req, res) => {
 exports.getServices = async (req, res) => {
     try {
         let query = {};
+
+        // Filter by agent (agent-only view)
         if (req.query.agent) {
             query.agent = req.query.agent;
+        }
+
+        // Filter by location name — matches old `location` OR new `locationName` field
+        // Case-insensitive, partial match so "Puri" matches "Puri Market" etc.
+        if (req.query.locationName) {
+            const regex = new RegExp(req.query.locationName.trim(), 'i');
+            query.$or = [
+                { location: regex },
+                { locationName: regex }
+            ];
         }
 
         const services = await Service.find(query).populate('category').populate('agent');
