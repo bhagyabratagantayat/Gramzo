@@ -24,6 +24,10 @@ const productSchema = new mongoose.Schema({
     location: {
         type: String
     },
+    agent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Agent"
+    },
     createdAt: {
         type: Date,
         default: Date.now

@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 
-const AddProductForm = ({ onClose, onProductAdded }) => {
+const AddServiceForm = ({ onClose, onServiceAdded }) => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         price: '',
         category: '',
-        sellerName: '',
-        phone: '',
         location: ''
     });
     const [categories, setCategories] = useState([]);
@@ -22,8 +20,8 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
             try {
                 setCatLoading(true);
                 const response = await api.get('/categories');
-                const productCats = response.data.data.filter(cat => cat.type === 'product' || cat.type === 'market');
-                setCategories(productCats);
+                const serviceCats = response.data.data.filter(cat => cat.type === 'service');
+                setCategories(serviceCats);
                 setCatLoading(false);
             } catch (err) {
                 console.error('Failed to fetch categories');
@@ -45,21 +43,19 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
 
         try {
             const user = JSON.parse(localStorage.getItem('gramzoUser'));
-            const productData = {
+            const serviceData = {
                 ...formData,
-                agentId: user?.agentId,
-                phone: user?.phone,
-                sellerName: user?.name
+                agent: user?.agentId
             };
-            await api.post('/products/add', productData);
-            setSuccess('Product Added Successfully!');
+            await api.post('/services/add', serviceData);
+            setSuccess('Service Added Successfully!');
             setLoading(false);
-            onProductAdded();
+            onServiceAdded();
             setTimeout(() => {
                 onClose();
             }, 2000);
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to add product');
+            setError(err.response?.data?.error || 'Failed to add service');
             setLoading(false);
         }
     };
@@ -91,25 +87,27 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
         width: '100%',
         padding: '8px',
         boxSizing: 'border-box',
-        marginBottom: '10px'
+        marginBottom: '10px',
+        borderRadius: '4px',
+        border: '1px solid #ddd'
     };
 
     return (
         <div style={overlayStyle}>
             <div style={modalStyle}>
-                <h2 style={{ marginTop: 0 }}>Add New Product</h2>
+                <h2 style={{ marginTop: 0 }}>Add New Service</h2>
 
                 {success && <p style={{ color: 'green', fontWeight: 'bold' }}>{success}</p>}
                 {error && <p style={{ color: 'red' }}>{error}</p>}
 
                 <form onSubmit={handleSubmit}>
-                    <label>Title:</label>
+                    <label>Service Title:</label>
                     <input type="text" name="title" value={formData.title} onChange={handleChange} required style={inputStyle} />
 
                     <label>Description:</label>
                     <textarea name="description" value={formData.description} onChange={handleChange} style={{ ...inputStyle, minHeight: '80px' }} />
 
-                    <label>Price:</label>
+                    <label>Consultation Fee:</label>
                     <input type="number" name="price" value={formData.price} onChange={handleChange} required style={inputStyle} />
 
                     <label>Category:</label>
@@ -128,18 +126,12 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
                         )}
                     </select>
 
-                    <label>Seller Name:</label>
-                    <input type="text" name="sellerName" value={formData.sellerName} onChange={handleChange} required style={inputStyle} />
-
-                    <label>Phone:</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required style={inputStyle} />
-
                     <label>Location:</label>
                     <input type="text" name="location" value={formData.location} onChange={handleChange} required style={inputStyle} />
 
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                        <button type="submit" disabled={loading} style={{ flex: 1, padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-                            {loading ? 'Adding...' : 'Add Product'}
+                        <button type="submit" disabled={loading} style={{ flex: 1, padding: '10px', backgroundColor: 'var(--primary-color)', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                            {loading ? 'Adding...' : 'Add Service'}
                         </button>
                         <button type="button" onClick={onClose} style={{ padding: '10px', backgroundColor: '#ccc', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                             Cancel
@@ -151,4 +143,4 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
     );
 };
 
-export default AddProductForm;
+export default AddServiceForm;

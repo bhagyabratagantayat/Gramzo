@@ -14,7 +14,11 @@ exports.addService = async (req, res) => {
         }
 
         if (!agentData.isApproved) {
-            return res.status(400).json({ success: false, error: 'Agent is not approved to add services' });
+            return res.status(403).json({ success: false, error: 'Access denied. Agent is not approved.' });
+        }
+
+        if (agentData.isBlocked) {
+            return res.status(403).json({ success: false, error: 'Access denied. Contact admin' });
         }
 
         const service = await Service.create({
@@ -37,8 +41,29 @@ exports.addService = async (req, res) => {
 // @route   GET /api/services
 exports.getServices = async (req, res) => {
     try {
-        const services = await Service.find().populate('category').populate('agent');
+        let query = {};
+        if (req.query.agent) {
+            query.agent = req.query.agent;
+        }
+
+        const services = await Service.find(query).populate('category').populate('agent');
         res.status(200).json({ success: true, data: services });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
+// @desc    Delete service
+// @route   DELETE /api/services/:id
+exports.deleteService = async (req, res) => {
+    try {
+        const service = await Service.findByIdAndDelete(req.params.id);
+
+        if (!service) {
+            return res.status(404).json({ success: false, error: 'Service not found' });
+        }
+
+        res.status(200).json({ success: true, data: {} });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }

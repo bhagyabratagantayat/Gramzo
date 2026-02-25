@@ -1,19 +1,17 @@
 const Footer = () => {
     return (
         <footer style={{
-            padding: '30px 20px',
-            backgroundColor: '#f8f9fa',
-            color: '#666',
+            padding: '40px 20px',
+            backgroundColor: '#1a1a1a',
+            color: '#fff',
             textAlign: 'center',
-            borderTop: '1px solid #eee',
-            marginTop: '40px'
+            marginTop: '60px',
+            borderTop: '4px solid var(--primary-color)'
         }}>
-            <div style={{ marginBottom: '10px' }}>
-                <h2 style={{ color: '#333', margin: 0 }}>GRAMZO</h2>
-                <p style={{ margin: '5px 0' }}>Connecting Communities, Empowing Individuals.</p>
-            </div>
-            <div style={{ fontSize: '14px' }}>
-                &copy; {new Date().getFullYear()} Gramzo Platform | All Rights Reserved
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                <h2 style={{ color: '#fff', marginBottom: '10px' }}>GRAMZO</h2>
+                <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>© 2026 Gramzo Platform. All rights reserved.</p>
+                <p style={{ opacity: 0.6, fontSize: '0.9rem', marginTop: '10px' }}>Empowering local economies through technology.</p>
             </div>
         </footer>
     );

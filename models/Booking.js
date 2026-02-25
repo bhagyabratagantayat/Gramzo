@@ -18,6 +18,19 @@ const bookingSchema = new mongoose.Schema({
     date: {
         type: Date
     },
+    amount: {
+        type: Number
+    },
+    platformFee: {
+        type: Number
+    },
+    agentEarning: {
+        type: Number
+    },
+    paymentStatus: {
+        type: String,
+        default: "pending"
+    },
     status: {
         type: String,
         enum: ["pending", "accepted", "completed"],

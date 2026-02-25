@@ -13,12 +13,19 @@ exports.createBooking = async (req, res) => {
             return res.status(404).json({ success: false, error: 'Service not found' });
         }
 
+        const amount = service.price;
+        const platformFee = amount * 0.1;
+        const agentEarning = amount - platformFee;
+
         const booking = await Booking.create({
             userName,
             phone,
             service: serviceId,
             agent: service.agent,
-            date
+            date,
+            amount,
+            platformFee,
+            agentEarning
         });
 
         res.status(201).json({ success: true, data: booking });
@@ -52,10 +59,37 @@ exports.updateBookingStatus = async (req, res) => {
             return res.status(400).json({ success: false, error: 'Invalid status' });
         }
 
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found' });
+        }
+
+        // Credit agent if marked as completed
+        if (status === "completed" && booking.status !== "completed") {
+            const Agent = require('../models/Agent');
+            await Agent.findByIdAndUpdate(booking.agent, {
+                $inc: { earnings: booking.agentEarning }
+            });
+        }
+
+        booking.status = status;
+        await booking.save();
+
+        res.status(200).json({ success: true, data: booking });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
+// @desc    Simulate payment
+// @route   PATCH /api/bookings/pay/:id
+exports.payBooking = async (req, res) => {
+    try {
         const booking = await Booking.findByIdAndUpdate(
             req.params.id,
-            { status },
-            { new: true, runValidators: true }
+            { paymentStatus: "paid" },
+            { new: true }
         );
 
         if (!booking) {

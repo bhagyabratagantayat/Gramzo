@@ -21,6 +21,18 @@ const agentSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isBlocked: {
+        type: Boolean,
+        default: false
+    },
+    role: {
+        type: String,
+        default: "agent"
+    },
+    earnings: {
+        type: Number,
+        default: 0
+    },
     createdAt: {
         type: Date,
         default: Date.now

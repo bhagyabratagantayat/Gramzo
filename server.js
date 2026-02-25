@@ -25,6 +25,9 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const productRoutes = require('./routes/productRoutes');
 const priceRoutes = require('./routes/priceRoutes');
 const noticeRoutes = require('./routes/noticeRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const agentDashboardRoutes = require('./routes/agentDashboardRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/agents', agentRoutes);
@@ -33,6 +36,9 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/prices', priceRoutes);
 app.use('/api/notices', noticeRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/agent', agentDashboardRoutes);
+app.use('/api/user', userRoutes);
 
 // Start Server
 app.listen(PORT, () => {

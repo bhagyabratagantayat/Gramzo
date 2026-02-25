@@ -14,7 +14,11 @@ exports.addPrice = async (req, res) => {
         }
 
         if (!agent.isApproved) {
-            return res.status(400).json({ success: false, error: 'Agent not approved' });
+            return res.status(403).json({ success: false, error: 'Access denied. Agent not approved.' });
+        }
+
+        if (agent.isBlocked) {
+            return res.status(403).json({ success: false, error: 'Access denied. Contact admin' });
         }
 
         const newPrice = await Price.create({
