@@ -8,6 +8,7 @@ const Category = require('./models/Category');
 const Service = require('./models/Service');
 const Agent = require('./models/Agent');
 const Product = require('./models/Product');
+const Booking = require('./models/Booking');
 
 /* ─── Unsplash image URLs (stable, no auth needed) ─── */
 const IMG = {
@@ -268,7 +269,7 @@ const servicesData = [
     },
 ];
 
-/* ─── Marketplace Products (20 listings) ─── */
+/* ─── Marketplace Products (18 listings) ─── */
 const productsData = [
     {
         categoryName: 'Groceries',
@@ -452,6 +453,82 @@ const productsData = [
     }
 ];
 
+/* ─── Sample Bookings (8 listings) ─── */
+const bookingsData = [
+    {
+        userName: 'Achyutananda Pradhan',
+        phone: '9437000123',
+        serviceTitle: 'Emergency Pipe Leakage Repair',
+        status: 'pending',
+        paymentStatus: 'pending',
+        dateOffset: 1, // Tomorrow
+        time: '10:30 AM'
+    },
+    {
+        userName: 'Sanjata Mohanty',
+        phone: '9861000456',
+        serviceTitle: 'Men Haircut & Beard Trim',
+        status: 'accepted',
+        paymentStatus: 'completed',
+        dateOffset: -1, // Yesterday
+        time: '04:00 PM'
+    },
+    {
+        userName: 'Bikas Das',
+        phone: '7008000789',
+        serviceTitle: 'AC Installation & Gas Refill',
+        status: 'completed',
+        paymentStatus: 'completed',
+        dateOffset: -5, // 5 days ago
+        time: '11:00 AM'
+    },
+    {
+        userName: 'Priyanka Sahoo',
+        phone: '8249000111',
+        serviceTitle: 'Facial & Skin Cleanup Package',
+        status: 'pending',
+        paymentStatus: 'pending',
+        dateOffset: 2, // 2 days from now
+        time: '12:30 PM'
+    },
+    {
+        userName: 'Rajesh Mishra',
+        phone: '9937000222',
+        serviceTitle: 'Full House Deep Cleaning',
+        status: 'accepted',
+        paymentStatus: 'pending',
+        dateOffset: 0, // Today
+        time: '09:00 AM'
+    },
+    {
+        userName: 'Mamata Swain',
+        phone: '9348000333',
+        serviceTitle: 'Washing Machine Repair at Home',
+        status: 'completed',
+        paymentStatus: 'completed',
+        dateOffset: -10,
+        time: '02:00 PM'
+    },
+    {
+        userName: 'Ganesh Jena',
+        phone: '7751000444',
+        serviceTitle: 'Electric Wiring Fix & Safety Check',
+        status: 'pending',
+        paymentStatus: 'pending',
+        dateOffset: 1,
+        time: '03:15 PM'
+    },
+    {
+        userName: 'Lipika Raut',
+        phone: '9124000555',
+        serviceTitle: 'Wedding Photography Package',
+        status: 'accepted',
+        paymentStatus: 'completed',
+        dateOffset: 30, // Future
+        time: '06:00 PM'
+    }
+];
+
 /* ─── Seed runner ─── */
 const seedDB = async () => {
     try {
@@ -462,7 +539,8 @@ const seedDB = async () => {
         await Category.deleteMany({});
         await Service.deleteMany({});
         await Product.deleteMany({});
-        console.log('🗑  Cleared existing Categories, Services, and Products');
+        await Booking.deleteMany({});
+        console.log('🗑  Cleared existing Categories, Services, Products, and Bookings');
 
         // Ensure a master agent exists
         let agent = await Agent.findOne({ isApproved: true });
@@ -488,8 +566,8 @@ const seedDB = async () => {
             category: catMap[categoryName],
             agent: agent._id,
         }));
-        await Service.insertMany(services);
-        console.log(`🛠  Inserted ${services.length} realistic service listings`);
+        const createdServices = await Service.insertMany(services);
+        console.log(`🛠  Inserted ${createdServices.length} realistic service listings`);
 
         // Build and insert products
         const products = productsData.map(({ categoryName, ...rest }) => ({
@@ -499,6 +577,33 @@ const seedDB = async () => {
         }));
         await Product.insertMany(products);
         console.log(`📦 Inserted ${products.length} realistic marketplace products`);
+
+        // Build and insert bookings
+        const finalBookings = bookingsData.map(b => {
+            const service = createdServices.find(s => s.title === b.serviceTitle);
+            const amount = service ? service.price : 500;
+            const platformFee = Math.round(amount * 0.1);
+            const agentEarning = amount - platformFee;
+
+            const date = new Date();
+            date.setDate(date.getDate() + b.dateOffset);
+
+            return {
+                userName: b.userName,
+                phone: b.phone,
+                service: service ? service._id : null,
+                agent: agent._id,
+                date,
+                time: b.time,
+                status: b.status,
+                paymentStatus: b.paymentStatus,
+                amount,
+                platformFee,
+                agentEarning
+            };
+        });
+        await Booking.insertMany(finalBookings);
+        console.log(`📅 Inserted ${finalBookings.length} sample bookings with varied statuses`);
 
         console.log('\n✨ Seed complete! Refresh your browser to see the data.\n');
         process.exit(0);
