@@ -119,15 +119,15 @@ const Dashboard = () => {
                             <div style={{ ...iconBoxStyle, backgroundColor: '#eff6ff', color: '#2563eb' }}>
                                 <HiOutlineCalendar />
                             </div>
-                            <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Book Service</h3>
+                            <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Browse Services</h3>
                             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0, lineHeight: '1.6' }}>Find and book local experts for your home needs.</p>
                         </Link>
-                        <Link to="/marketplace" className="card hover-lift" style={cardStyle}>
-                            <div style={{ ...iconBoxStyle, backgroundColor: '#fff7ed', color: '#ea580c' }}>
-                                <HiOutlineShoppingBag />
+                        <Link to="/bookings" className="card hover-lift" style={cardStyle}>
+                            <div style={{ ...iconBoxStyle, backgroundColor: '#ecfdf5', color: '#059669' }}>
+                                <HiOutlineCollection />
                             </div>
-                            <h3 style={{ margin: 0, fontSize: '1.25rem' }}>View Marketplace</h3>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0, lineHeight: '1.6' }}>Browse locally sourced products and treasures.</p>
+                            <h3 style={{ margin: 0, fontSize: '1.25rem' }}>My Bookings</h3>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', margin: 0, lineHeight: '1.6' }}>View and track all your service appointments.</p>
                         </Link>
                     </>
                 );

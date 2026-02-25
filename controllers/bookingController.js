@@ -34,13 +34,19 @@ exports.createBooking = async (req, res) => {
     }
 };
 
-// @desc    Get all bookings
+// @desc    Get all bookings (Admin) or own bookings by phone (User)
 // @route   GET /api/bookings
+// @route   GET /api/bookings?phone=xxx
 exports.getBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find()
+        const filter = {};
+        if (req.query.phone) {
+            filter.phone = req.query.phone;
+        }
+        const bookings = await Booking.find(filter)
             .populate('service')
-            .populate('agent');
+            .populate('agent')
+            .sort({ createdAt: -1 });
         res.status(200).json({ success: true, data: bookings });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });

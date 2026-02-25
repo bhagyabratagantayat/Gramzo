@@ -1,121 +1,128 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineUserGroup } from 'react-icons/hi';
+import {
+    HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineUserGroup,
+    HiOutlineExclamationCircle, HiLightningBolt
+} from 'react-icons/hi';
 
 const Signup = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        location: '',
-        role: 'User'
-    });
+    const [formData, setFormData] = useState({ name: '', phone: '', location: '', role: 'User' });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        localStorage.setItem('gramzoUser', JSON.stringify(formData));
-        navigate('/dashboard');
+        if (!formData.name.trim() || !formData.phone.trim()) {
+            setError('Please fill in all required fields.');
+            return;
+        }
+        setError(null);
+        setLoading(true);
+        // Simulate brief save
+        setTimeout(() => {
+            localStorage.setItem('gramzoUser', JSON.stringify({ ...formData, name: formData.name.trim(), phone: formData.phone.trim() }));
+            navigate('/dashboard');
+        }, 500);
     };
 
-    const inputContainerStyle = {
-        position: 'relative',
-        marginBottom: '20px'
-    };
+    const iconStyle = (top = '50%') => ({
+        position: 'absolute', left: '14px', top,
+        transform: top === '50%' ? 'translateY(-50%)' : undefined,
+        color: 'var(--text-muted)', fontSize: '1.1rem', pointerEvents: 'none'
+    });
 
-    const iconStyle = {
-        position: 'absolute',
-        left: '14px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        color: 'var(--text-muted)',
-        fontSize: '1.2rem'
-    };
-
-    const inputStyle = {
-        width: '100%',
-        padding: '12px 14px 12px 42px',
-        borderRadius: '8px',
-        border: '1px solid var(--border-color)',
-        boxSizing: 'border-box',
-        fontSize: '1rem',
-        backgroundColor: '#fff',
-        transition: 'var(--transition)',
-        outline: 'none'
-    };
+    const fields = [
+        { name: 'name', type: 'text', icon: HiOutlineUser, placeholder: 'Full name', label: 'Full Name' },
+        { name: 'phone', type: 'tel', icon: HiOutlinePhone, placeholder: '10-digit mobile', label: 'Phone Number' },
+        { name: 'location', type: 'text', icon: HiOutlineLocationMarker, placeholder: 'Village or city', label: 'Location' }
+    ];
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 80px)', backgroundColor: 'var(--bg-color)', padding: '40px 20px' }}>
-            <div className="card" style={{ width: '100%', maxWidth: '480px', padding: '48px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <h2 style={{ fontSize: '2rem', marginBottom: '8px', fontWeight: '800' }}>Create account</h2>
-                    <p style={{ color: 'var(--text-muted)' }}>Join thousands of community members on Gramzo</p>
+        <div style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center',
+            minHeight: 'calc(100vh - 72px)', backgroundColor: 'var(--bg-color)', padding: '24px'
+        }}>
+            <div style={{ width: '100%', maxWidth: '440px' }}>
+
+                {/* Brand */}
+                <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                        <HiLightningBolt style={{ color: 'var(--primary-color)', fontSize: '2rem' }} />
+                        <span style={{ fontSize: '1.6rem', fontWeight: '900', letterSpacing: '-0.04em' }}>Gramzo</span>
+                    </div>
+                    <h1 style={{ fontSize: '1.75rem', fontWeight: '900', margin: '0 0 8px', letterSpacing: '-0.025em' }}>Create your account</h1>
+                    <p style={{ color: 'var(--text-muted)', margin: 0 }}>Join thousands of community members on Gramzo</p>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div style={inputContainerStyle}>
-                        <HiOutlineUser style={iconStyle} />
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Full Name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
+                <div className="card" style={{ padding: '32px', borderRadius: '20px', boxShadow: '0 16px 40px rgba(0,0,0,0.1)' }}>
 
-                    <div style={inputContainerStyle}>
-                        <HiOutlinePhone style={iconStyle} />
-                        <input
-                            type="tel"
-                            name="phone"
-                            placeholder="Phone Number"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
+                    {error && (
+                        <div className="alert alert-error">
+                            <HiOutlineExclamationCircle style={{ flexShrink: 0 }} />
+                            {error}
+                        </div>
+                    )}
 
-                    <div style={inputContainerStyle}>
-                        <HiOutlineLocationMarker style={iconStyle} />
-                        <input
-                            type="text"
-                            name="location"
-                            placeholder="Location (Village/City)"
-                            value={formData.location}
-                            onChange={handleChange}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit}>
+                        {fields.map(({ name, type, icon: Icon, placeholder, label }) => (
+                            <div key={name} className="form-group">
+                                <label className="form-label">{label}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Icon style={iconStyle()} />
+                                    <input
+                                        type={type}
+                                        name={name}
+                                        className="form-input"
+                                        placeholder={placeholder}
+                                        value={formData[name]}
+                                        onChange={handleChange}
+                                        required
+                                        style={{ paddingLeft: '40px' }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
 
-                    <div style={inputContainerStyle}>
-                        <HiOutlineUserGroup style={iconStyle} />
-                        <select
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            style={{ ...inputStyle, appearance: 'none' }}
+                        {/* Role selector */}
+                        <div className="form-group" style={{ marginBottom: '28px' }}>
+                            <label className="form-label">Join As</label>
+                            <div style={{ position: 'relative' }}>
+                                <HiOutlineUserGroup style={iconStyle()} />
+                                <select
+                                    name="role"
+                                    className="form-select"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                    style={{ paddingLeft: '40px' }}
+                                >
+                                    <option value="User">User — Book services</option>
+                                    <option value="Agent">Agent Partner — Offer services</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="btn-primary"
+                            style={{ width: '100%', padding: '14px', fontSize: '1rem', justifyContent: 'center', borderRadius: '12px' }}
                         >
-                            <option value="User">Join as a User</option>
-                            <option value="Agent">Join as an Agent Partner</option>
-                        </select>
-                    </div>
+                            {loading ? (
+                                <><span className="spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }} /> Creating account...</>
+                            ) : 'Create Account'}
+                        </button>
+                    </form>
 
-                    <button type="submit" className="btn-primary" style={{ width: '100%', padding: '14px', marginTop: '8px' }}>
-                        Create Account
-                    </button>
-                </form>
-
-                <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                    Already have an account? <Link to="/login" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: '700' }}>Sign In</Link>
-                </p>
+                    <p style={{ textAlign: 'center', marginTop: '24px', marginBottom: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                        Already have an account?{' '}
+                        <Link to="/login" style={{ color: 'var(--primary-color)', fontWeight: '700' }}>
+                            Sign in
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     );
