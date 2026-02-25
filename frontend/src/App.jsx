@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import LocationBanner from './components/LocationBanner';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -22,6 +23,7 @@ function App() {
     <BrowserRouter>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
+        <LocationBanner />
         <main style={{ flex: 1, maxWidth: '1200px', margin: '0 auto', width: '100%', padding: '0 15px' }}>
           <Routes>
             {/* Public */}
