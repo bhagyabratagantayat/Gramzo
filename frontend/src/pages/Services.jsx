@@ -119,9 +119,17 @@ const Services = () => {
                         return (
                             <div key={service._id} className="service-card">
                                 {/* Card image / icon area */}
-                                <div className="service-card-img" style={service.imageUrl ? { padding: 0 } : {}}>
-                                    {service.imageUrl
-                                        ? <img src={service.imageUrl} alt={service.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <div className="service-card-img" style={service.image ? { padding: 0 } : {}}>
+                                    {service.image
+                                        ? <img
+                                            src={service.image}
+                                            alt={service.title}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = "https://via.placeholder.com/300";
+                                            }}
+                                        />
                                         : <span style={{ fontSize: '3.5rem' }}>{icon(catName)}</span>
                                     }
                                     {service.requiresAppointment && (

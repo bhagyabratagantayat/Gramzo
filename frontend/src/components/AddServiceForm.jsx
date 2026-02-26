@@ -17,6 +17,7 @@ const AddServiceForm = ({ onClose, onServiceAdded }) => {
         location: '',      // old text field — kept for backward compat
         locationName: '',  // human-readable place name
         requiresAppointment: false,
+        image: '',
     });
     const [coords, setCoords] = useState({ lat: null, lng: null }); // GPS coords stored separately
     const [gpsStatus, setGpsStatus] = useState(null); // null | 'loading' | 'ok' | 'denied'
@@ -227,6 +228,12 @@ const AddServiceForm = ({ onClose, onServiceAdded }) => {
                             <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                                 Enter village/city name. GPS coordinates are captured separately when available.
                             </p>
+                        </div>
+
+                        {/* Image URL */}
+                        <div className="form-group">
+                            <label className="form-label">Service Image URL</label>
+                            <input type="text" name="image" className="form-input" placeholder="Enter image URL (e.g. from Unsplash)" value={formData.image} onChange={handleChange} />
                         </div>
 
                         {/* Appointment toggle */}

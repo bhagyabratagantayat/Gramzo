@@ -9,7 +9,8 @@ const productSchema = new mongoose.Schema({
         type: String
     },
     price: {
-        type: Number
+        type: Number,
+        required: true
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
@@ -24,12 +25,13 @@ const productSchema = new mongoose.Schema({
     location: {
         type: String
     },
-    agent: {
+    agentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Agent"
     },
-    imageUrl: {
-        type: String
+    image: {
+        type: String,
+        default: "https://via.placeholder.com/300"
     },
     createdAt: {
         type: Date,

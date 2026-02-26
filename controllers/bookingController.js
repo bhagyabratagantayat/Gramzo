@@ -7,7 +7,6 @@ exports.createBooking = async (req, res) => {
     try {
         const { userName, phone, serviceId, date, time } = req.body;
 
-        // Find service to get the agent
         const service = await Service.findById(serviceId);
         if (!service) {
             return res.status(404).json({ success: false, error: 'Service not found' });
@@ -21,12 +20,13 @@ exports.createBooking = async (req, res) => {
             userName,
             phone,
             service: serviceId,
-            agent: service.agent,
+            agent: service.agentId,
             date,
             ...(time !== undefined && { time }),
             amount,
             platformFee,
-            agentEarning
+            agentEarning,
+            status: "pending"
         });
 
         res.status(201).json({ success: true, data: booking });
@@ -37,52 +37,75 @@ exports.createBooking = async (req, res) => {
 
 // @desc    Get all bookings (Admin) or own bookings by phone (User)
 // @route   GET /api/bookings
-// @route   GET /api/bookings?phone=xxx
 exports.getBookings = async (req, res) => {
     try {
         const filter = {};
-        if (req.query.phone) {
-            filter.phone = req.query.phone;
-        }
+        if (req.query.phone) filter.phone = req.query.phone;
+        if (req.query.agentId) filter.agent = req.query.agentId;
+
         const bookings = await Booking.find(filter)
             .populate('service')
             .populate('agent')
             .sort({ createdAt: -1 });
+
         res.status(200).json({ success: true, data: bookings });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }
 };
 
-// @desc    Update booking status
+// @desc    Update booking status (Admin/Internal)
 // @route   PATCH /api/bookings/status/:id
 exports.updateBookingStatus = async (req, res) => {
     try {
         const { status } = req.body;
-
-        // Validate status
-        const allowedStatuses = ["pending", "accepted", "completed"];
-        if (!allowedStatuses.includes(status)) {
-            return res.status(400).json({ success: false, error: 'Invalid status' });
-        }
-
         const booking = await Booking.findById(req.params.id);
 
         if (!booking) {
             return res.status(404).json({ success: false, error: 'Booking not found' });
         }
 
-        // Credit agent if marked as completed
         if (status === "completed" && booking.status !== "completed") {
             const Agent = require('../models/Agent');
-            await Agent.findByIdAndUpdate(booking.agent, {
-                $inc: { earnings: booking.agentEarning }
-            });
+            await Agent.findByIdAndUpdate(booking.agent, { $inc: { earnings: booking.agentEarning } });
         }
 
         booking.status = status;
         await booking.save();
+        res.status(200).json({ success: true, data: booking });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
 
+// @desc    Agent responds to a pending booking
+// @route   PATCH /api/bookings/respond/:id
+exports.respondToBooking = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const agentIdHeader = req.headers['x-agent-id'];
+        const userRole = req.headers['x-user-role'];
+
+        if (!['accepted', 'rejected'].includes(status)) {
+            return res.status(400).json({ success: false, error: 'Status must be "accepted" or "rejected"' });
+        }
+
+        const booking = await Booking.findById(req.params.id);
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found' });
+        }
+
+        // Ownership check: Only the agent for this booking or Admin can respond
+        if (userRole !== 'Admin' && booking.agent.toString() !== agentIdHeader) {
+            return res.status(403).json({ success: false, error: 'Not authorized to respond to this booking' });
+        }
+
+        if (booking.status !== 'pending') {
+            return res.status(400).json({ success: false, error: `Already ${booking.status}` });
+        }
+
+        booking.status = status;
+        await booking.save();
         res.status(200).json({ success: true, data: booking });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
@@ -93,56 +116,12 @@ exports.updateBookingStatus = async (req, res) => {
 // @route   PATCH /api/bookings/pay/:id
 exports.payBooking = async (req, res) => {
     try {
-        const booking = await Booking.findByIdAndUpdate(
-            req.params.id,
-            { paymentStatus: "paid" },
-            { new: true }
-        );
-
-        if (!booking) {
-            return res.status(404).json({ success: false, error: 'Booking not found' });
-        }
-
+        const booking = await Booking.findByIdAndUpdate(req.params.id, { paymentStatus: "paid" }, { new: true });
+        if (!booking) return res.status(404).json({ success: false, error: 'Booking not found' });
         res.status(200).json({ success: true, data: booking });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }
 };
 
-// @desc    Agent responds to a pending booking
-// @route   PATCH /api/bookings/respond/:id
-// Body:    { status: "accepted" | "rejected" }
-exports.respondToBooking = async (req, res) => {
-    try {
-        const { status } = req.body;
-
-        // Only these two actions are allowed via this endpoint
-        if (!['accepted', 'rejected'].includes(status)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Status must be "accepted" or "rejected".'
-            });
-        }
-
-        const booking = await Booking.findById(req.params.id);
-        if (!booking) {
-            return res.status(404).json({ success: false, error: 'Booking not found' });
-        }
-
-        // Guard: can only respond to pending bookings
-        if (booking.status !== 'pending') {
-            return res.status(400).json({
-                success: false,
-                error: `Cannot respond to a booking that is already "${booking.status}".`
-            });
-        }
-
-        booking.status = status;
-        await booking.save();
-
-        res.status(200).json({ success: true, data: booking });
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message });
-    }
-};
 

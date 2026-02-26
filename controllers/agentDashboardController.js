@@ -18,7 +18,7 @@ exports.getDashboardSummary = async (req, res) => {
         const { error, status, agent } = await validateAgent(req.params.agentId);
         if (error) return res.status(status).json({ success: false, error });
 
-        const servicesCount = await Service.countDocuments({ agent: agent._id });
+        const servicesCount = await Service.countDocuments({ agentId: agent._id });
         const bookingsCount = await Booking.countDocuments({ agent: agent._id });
 
         res.status(200).json({
@@ -42,7 +42,7 @@ exports.getAgentServices = async (req, res) => {
         const { error, status } = await validateAgent(req.params.agentId);
         if (error) return res.status(status).json({ success: false, error });
 
-        const services = await Service.find({ agent: req.params.agentId });
+        const services = await Service.find({ agentId: req.params.agentId });
         res.status(200).json({ success: true, data: services });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });

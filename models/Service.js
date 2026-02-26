@@ -15,7 +15,7 @@ const serviceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category"
     },
-    agent: {
+    agentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Agent"
     },
@@ -39,8 +39,9 @@ const serviceSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    imageUrl: {
-        type: String  // Optional cover image for the service listing
+    image: {
+        type: String,
+        default: "https://via.placeholder.com/300"
     },
     createdAt: {
         type: Date,

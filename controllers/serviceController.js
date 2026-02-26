@@ -5,20 +5,10 @@ const Agent = require('../models/Agent');
 // @route   POST /api/services/add
 exports.addService = async (req, res) => {
     try {
-        const { title, description, price, category, agent, availableTime, location, locationName, latitude, longitude, requiresAppointment, imageUrl } = req.body;
+        const { title, description, price, category, agentId, availableTime, location, locationName, latitude, longitude, requiresAppointment, image } = req.body;
 
-        // Check if agent exists and is approved
-        const agentData = await Agent.findById(agent);
-        if (!agentData) {
-            return res.status(404).json({ success: false, error: 'Agent not found' });
-        }
-
-        if (!agentData.isApproved) {
-            return res.status(403).json({ success: false, error: 'Access denied. Agent is not approved.' });
-        }
-
-        if (agentData.isBlocked) {
-            return res.status(403).json({ success: false, error: 'Access denied. Contact admin' });
+        if (!title || !price) {
+            return res.status(400).json({ success: false, error: 'Title and price are required' });
         }
 
         const service = await Service.create({
@@ -26,19 +16,15 @@ exports.addService = async (req, res) => {
             description,
             price,
             category,
-            agent,
+            agentId,
             availableTime,
             location,
-            // Optional location fields
-            ...(locationName !== undefined && { locationName }),
-            ...(latitude !== undefined && { latitude }),
-            ...(longitude !== undefined && { longitude }),
-            // Appointment flag
-            ...(requiresAppointment !== undefined && { requiresAppointment }),
-            // Cover image
-            ...(imageUrl !== undefined && { imageUrl }),
+            locationName,
+            latitude,
+            longitude,
+            requiresAppointment,
+            image: image || "https://via.placeholder.com/300"
         });
-
 
         res.status(201).json({ success: true, data: service });
     } catch (error) {
@@ -52,13 +38,7 @@ exports.getServices = async (req, res) => {
     try {
         let query = {};
 
-        // Filter by agent (agent-only view)
-        if (req.query.agent) {
-            query.agent = req.query.agent;
-        }
-
         // Filter by location name — matches old `location` OR new `locationName` field
-        // Case-insensitive, partial match so "Puri" matches "Puri Market" etc.
         if (req.query.locationName) {
             const regex = new RegExp(req.query.locationName.trim(), 'i');
             query.$or = [
@@ -67,7 +47,18 @@ exports.getServices = async (req, res) => {
             ];
         }
 
-        const services = await Service.find(query).populate('category').populate('agent');
+        const services = await Service.find(query).populate('category').populate('agentId');
+        res.status(200).json({ success: true, data: services });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
+// @desc    Get agent's services
+// @route   GET /api/services/agent/:agentId
+exports.getAgentServices = async (req, res) => {
+    try {
+        const services = await Service.find({ agentId: req.params.agentId }).populate('category');
         res.status(200).json({ success: true, data: services });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
@@ -78,14 +69,24 @@ exports.getServices = async (req, res) => {
 // @route   DELETE /api/services/:id
 exports.deleteService = async (req, res) => {
     try {
-        const service = await Service.findByIdAndDelete(req.params.id);
+        const service = await Service.findById(req.params.id);
 
         if (!service) {
             return res.status(404).json({ success: false, error: 'Service not found' });
         }
 
+        // Ownership check
+        const userRole = req.headers['x-user-role'];
+        const agentIdHeader = req.headers['x-agent-id'];
+
+        if (userRole !== 'Admin' && service.agentId?.toString() !== agentIdHeader) {
+            return res.status(403).json({ success: false, error: 'Not authorized to delete this service' });
+        }
+
+        await service.deleteOne();
         res.status(200).json({ success: true, data: {} });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }
 };
+

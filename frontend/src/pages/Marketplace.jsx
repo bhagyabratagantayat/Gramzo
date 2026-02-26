@@ -59,9 +59,17 @@ const Marketplace = () => {
                 {products.map((product) => (
                     <div key={product._id} className="service-card">
                         {/* Card image / icon area */}
-                        <div className="service-card-img" style={product.imageUrl ? { padding: 0 } : {}}>
-                            {product.imageUrl
-                                ? <img src={product.imageUrl} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div className="service-card-img" style={product.image ? { padding: 0 } : {}}>
+                            {product.image
+                                ? <img
+                                    src={product.image}
+                                    alt={product.title}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = "https://via.placeholder.com/300";
+                                    }}
+                                />
                                 : <div style={{ fontSize: '3rem', color: 'var(--text-muted)' }}><HiOutlineShoppingBag /></div>
                             }
                         </div>
