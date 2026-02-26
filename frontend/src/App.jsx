@@ -17,6 +17,7 @@ import MyListings from './pages/MyListings';
 import Earnings from './pages/Earnings';
 import Prices from './pages/Prices';
 import Marketplace from './pages/Marketplace';
+import AgentMarketplace from './pages/AgentMarketplace';
 
 function App() {
   return (
@@ -37,8 +38,9 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/marketplace" element={<Marketplace />} />
 
-            {/* Agent-only */}
-            <Route path="/prices" element={<ProtectedRoute agentOnly><Prices /></ProtectedRoute>} />
+            {/* Logged-in accessible */}
+            <Route path="/prices" element={<ProtectedRoute><Prices /></ProtectedRoute>} />
+            <Route path="/agent/marketplace" element={<ProtectedRoute agentOnly><AgentMarketplace /></ProtectedRoute>} />
             <Route path="/my-listings" element={<ProtectedRoute agentOnly><MyListings /></ProtectedRoute>} />
             <Route path="/earnings" element={<ProtectedRoute agentOnly><Earnings /></ProtectedRoute>} />
 

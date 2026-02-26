@@ -46,21 +46,21 @@ const Earnings = () => {
     const user = getUser();
 
     const fetchAll = useCallback(async () => {
-        if (!user?.agentId) { setLoading(false); return; }
+        if (!user?._id) { setLoading(false); return; }
         try {
             const [earningsRes, bookingsRes] = await Promise.all([
-                api.get(`/agents/earnings/${user.agentId}`),
+                api.get(`/agents/earnings/${user._id}`),
                 api.get('/bookings')
             ]);
             setData(earningsRes.data.data);
             const all = bookingsRes.data.data || [];
-            setBookings(all.filter(b => b.agent?._id === user.agentId || b.agent === user.agentId));
+            setBookings(all.filter(b => b.agent?._id === user._id || b.agent === user._id));
         } catch {
             setError('Could not load earnings data.');
         } finally {
             setLoading(false);
         }
-    }, [user?.agentId]);
+    }, [user?._id]);
 
     useEffect(() => { fetchAll(); }, [fetchAll]);
 
@@ -89,7 +89,7 @@ const Earnings = () => {
         </div>
     );
 
-    if (!user?.agentId) return (
+    if (!user?._id) return (
         <div className="page-wrapper">
             <div className="empty-state">
                 <HiOutlineInformationCircle className="empty-state-icon" />

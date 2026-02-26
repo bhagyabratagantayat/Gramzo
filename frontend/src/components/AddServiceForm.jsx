@@ -82,7 +82,7 @@ const AddServiceForm = ({ onClose, onServiceAdded }) => {
             const user = JSON.parse(localStorage.getItem('gramzoUser'));
             const payload = {
                 ...formData,
-                agent: user?.agentId,
+                agentId: user?._id,
                 // Include GPS coords only if captured
                 ...(coords.lat !== null && { latitude: coords.lat, longitude: coords.lng }),
                 // locationName falls back to the manual location text if not separately filled

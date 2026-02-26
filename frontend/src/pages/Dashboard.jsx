@@ -14,7 +14,7 @@ const actions = {
     ],
     Agent: [
         { to: '/services', icon: HiOutlinePlusCircle, label: 'Add Service', desc: 'List your professional services.', bg: '#ecfdf5', color: '#059669' },
-        { to: '/marketplace', icon: HiOutlineShoppingBag, label: 'Add Product', desc: 'Post items for sale in local marketplace.', bg: '#fef2f2', color: '#dc2626' },
+        { to: '/agent/marketplace', icon: HiOutlineShoppingBag, label: 'My Marketplace', desc: 'Manage items for sale in local marketplace.', bg: '#fef2f2', color: '#dc2626' },
         { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Update Prices', desc: 'Manage rates for your services & products.', bg: '#f0f9ff', color: '#0ea5e9' },
         { to: '/my-listings', icon: HiOutlineCollection, label: 'My Listings', desc: 'View and manage your active listings.', bg: '#fef9f0', color: '#d97706' },
         { to: '/earnings', icon: HiOutlineChartBar, label: 'Earnings', desc: 'Track revenue and completed jobs.', bg: '#f5f3ff', color: '#7c3aed' },
@@ -22,6 +22,7 @@ const actions = {
     User: [
         { to: '/services', icon: HiOutlineCalendar, label: 'Browse Services', desc: 'Find and book local experts near you.', bg: '#eff6ff', color: '#2563eb' },
         { to: '/bookings', icon: HiOutlineCollection, label: 'My Bookings', desc: 'View and track all your appointments.', bg: '#ecfdf5', color: '#059669' },
+        { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price', desc: 'Check and update live market rates.', bg: '#f0f9ff', color: '#0ea5e9' },
     ],
 };
 

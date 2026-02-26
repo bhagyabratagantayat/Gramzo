@@ -27,7 +27,7 @@ const agentSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default: "agent"
+        default: "Agent"
     },
     earnings: {
         type: Number,

@@ -13,7 +13,7 @@ const Signup = () => {
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.name.trim() || !formData.phone.trim()) {
             setError('Please fill in all required fields.');
@@ -21,11 +21,42 @@ const Signup = () => {
         }
         setError(null);
         setLoading(true);
-        // Simulate brief save
-        setTimeout(() => {
-            localStorage.setItem('gramzoUser', JSON.stringify({ ...formData, name: formData.name.trim(), phone: formData.phone.trim() }));
-            navigate('/dashboard');
-        }, 500);
+
+        let userData = { ...formData, name: formData.name.trim(), phone: formData.phone.trim() };
+
+        if (formData.role === 'Agent') {
+            try {
+                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const res = await fetch(`${baseUrl}/agents/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: userData.name,
+                        phone: userData.phone,
+                        location: userData.location || 'Default'
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    userData._id = result.data._id;
+                } else {
+                    setError('Agent registration failed: ' + (result.error || 'Unknown error'));
+                    setLoading(false);
+                    return;
+                }
+            } catch {
+                setError('Connection error. Could not register agent.');
+                setLoading(false);
+                return;
+            }
+        } else {
+            // For Users/Admins, simulate an ID for consistency
+            userData._id = 'user_' + Date.now();
+        }
+
+        localStorage.setItem('gramzoUser', JSON.stringify(userData));
+        setLoading(false);
+        navigate('/dashboard');
     };
 
     const iconStyle = (top = '50%') => ({

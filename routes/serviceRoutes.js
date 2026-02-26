@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addService, getServices, deleteService } = require('../controllers/serviceController');
+const { addService, getServices, getAgentServices, deleteService } = require('../controllers/serviceController');
 const { authorize } = require('../middleware/auth');
 
 router.post('/add', authorize(['Agent', 'Admin']), addService);

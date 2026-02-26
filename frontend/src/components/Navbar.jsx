@@ -13,17 +13,22 @@ import {
 const NAV_LINKS = {
     User: [
         { to: '/', icon: HiOutlineHome, label: 'Home' },
+        { to: '/marketplace', icon: HiOutlineShoppingBag, label: 'Marketplace' },
         { to: '/services', icon: HiOutlineCollection, label: 'Services' },
+        { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
         { to: '/bookings', icon: HiOutlineCalendar, label: 'My Bookings' },
     ],
     Agent: [
         { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
+        { to: '/agent/marketplace', icon: HiOutlineShoppingBag, label: 'My Marketplace' },
         { to: '/my-listings', icon: HiOutlineCollection, label: 'My Listings' },
-        { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Prices' },
+        { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
         { to: '/earnings', icon: HiOutlineChartBar, label: 'Earnings' },
     ],
     Admin: [
         { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
+        { to: '/marketplace', icon: HiOutlineShoppingBag, label: 'Marketplace' },
+        { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
         { to: '/admin', icon: HiOutlineShieldCheck, label: 'Manage' },
         { to: '/all-bookings', icon: HiOutlineCollection, label: 'Bookings' },
         { to: '/notices', icon: HiOutlineSpeakerphone, label: 'Notices' },

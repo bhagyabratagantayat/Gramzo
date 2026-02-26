@@ -5,7 +5,6 @@ import { HiOutlineTrash, HiOutlineShoppingBag, HiOutlineCalendar, HiOutlineInfor
 
 const MyListings = () => {
     const [services, setServices] = useState([]);
-    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const user = getUser();
 
@@ -13,12 +12,8 @@ const MyListings = () => {
         setLoading(true);
         try {
             // Fetch Services
-            const sRes = await api.get(`/services?agent=${user.agentId}`);
+            const sRes = await api.get(`/services?agent=${user._id}`);
             setServices(sRes.data.data);
-
-            // Fetch Products
-            const pRes = await api.get(`/products?phone=${user.phone}`);
-            setProducts(pRes.data.data);
         } catch (err) {
             console.error('Failed to fetch listings', err);
         } finally {
@@ -40,15 +35,6 @@ const MyListings = () => {
         }
     };
 
-    const handleDeleteProduct = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this product?')) return;
-        try {
-            await api.delete(`/products/${id}`);
-            setProducts(products.filter(p => p._id !== id));
-        } catch (err) {
-            alert('Failed to delete product');
-        }
-    };
 
     if (loading) return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: 'var(--text-muted)' }}>
@@ -93,7 +79,7 @@ const MyListings = () => {
             <header style={{ marginBottom: '48px' }}>
                 <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '900', letterSpacing: '-0.025em' }}>My Listings</h1>
                 <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginTop: '12px' }}>
-                    Manage the services and products you have shared with the community.
+                    Manage the professional services you offer to the community. Products can be managed in My Marketplace.
                 </p>
             </header>
 
@@ -103,7 +89,7 @@ const MyListings = () => {
                     <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
                         <HiOutlineCalendar />
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>My Services</h2>
+                    <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>Active Services</h2>
                 </div>
 
                 {services.length > 0 ? (
@@ -115,43 +101,19 @@ const MyListings = () => {
                                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>{service.description}</p>
                                     <div style={{ marginTop: '12px', fontWeight: '700', color: 'var(--primary-color)' }}>₹{service.price}</div>
                                 </div>
-                                <button onClick={() => handleDeleteService(service._id)} style={deleteBtnStyle} className="hover-lift">
-                                    <HiOutlineTrash /> Remove Service
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>You haven't listed any services yet.</p>
-                )}
-            </section>
-
-            {/* Products Section */}
-            <section style={sectionStyle}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#fff7ed', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
-                        <HiOutlineShoppingBag />
-                    </div>
-                    <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>My Products</h2>
-                </div>
-
-                {products.length > 0 ? (
-                    <div style={gridStyle}>
-                        {products.map(product => (
-                            <div key={product._id} className="card" style={itemCardStyle}>
-                                <div>
-                                    <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem' }}>{product.title}</h3>
-                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>{product.description}</p>
-                                    <div style={{ marginTop: '12px', fontWeight: '700', color: '#ea580c' }}>₹{product.price}</div>
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                                    <button onClick={() => handleDeleteService(service._id)} style={{ ...deleteBtnStyle, flex: 1, marginTop: 0 }} className="hover-lift">
+                                        <HiOutlineTrash /> Delete
+                                    </button>
                                 </div>
-                                <button onClick={() => handleDeleteProduct(product._id)} style={deleteBtnStyle} className="hover-lift">
-                                    <HiOutlineTrash /> Remove Item
-                                </button>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>You haven't listed any products yet.</p>
+                    <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: '#f9fafb', borderRadius: '20px', border: '1px dashed #e5e7eb' }}>
+                        <HiOutlineCalendar style={{ fontSize: '2rem', color: '#9ca3af', marginBottom: '12px' }} />
+                        <p style={{ color: '#6b7280', margin: 0 }}>You haven't listed any services yet.</p>
+                    </div>
                 )}
             </section>
         </div>

@@ -48,7 +48,7 @@ const AddProductForm = ({ onClose, onProductAdded }) => {
             const user = JSON.parse(localStorage.getItem('gramzoUser'));
             const productData = {
                 ...formData,
-                agentId: user?.agentId,
+                agentId: user?._id,
                 phone: user?.phone,
                 sellerName: user?.name
             };

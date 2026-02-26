@@ -7,7 +7,7 @@ exports.addNotice = async (req, res) => {
         const { title, description, location, role } = req.body;
 
         // Role guard — only admin may post notices
-        if (role !== 'admin') {
+        if (role !== 'Admin') {
             return res.status(403).json({ success: false, error: 'Forbidden: only admins can post notices.' });
         }
 

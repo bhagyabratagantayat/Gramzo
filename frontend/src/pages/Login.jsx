@@ -32,7 +32,7 @@ const Login = () => {
                 });
                 const result = await res.json();
                 if (result.success) {
-                    userData.agentId = result.data._id;
+                    userData._id = result.data._id;
                 } else {
                     setError('Agent sign-in failed: ' + (result.error || 'Unknown error'));
                     setLoading(null);

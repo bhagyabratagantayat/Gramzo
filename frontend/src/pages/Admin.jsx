@@ -172,7 +172,7 @@ const Admin = () => {
         setNoticePosting(true);
         setNoticeMsg(null);
         try {
-            await api.post('/notices/add', { title: noticeTitle, description: noticeDesc, location: noticeLoc, role: 'admin' });
+            await api.post('/notices/add', { title: noticeTitle, description: noticeDesc, location: noticeLoc, role: 'Admin' });
             setNoticeTitle(''); setNoticeDesc(''); setNoticeLoc('');
             setNoticeMsg({ type: 'success', text: 'Notice posted successfully.' });
             fetchAll();

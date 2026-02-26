@@ -34,8 +34,8 @@ const Services = () => {
             const user = JSON.parse(localStorage.getItem('gramzoUser'));
             const params = new URLSearchParams();
 
-            if (user?.role === 'Agent' && user?.agentId) {
-                params.set('agent', user.agentId);
+            if (user?.role === 'Agent' && user?._id) {
+                params.set('agent', user._id);
             } else if (locFilter) {
                 params.set('locationName', locFilter);
             }

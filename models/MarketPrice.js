@@ -24,12 +24,28 @@ const marketPriceSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'agent']
+        enum: ['User', 'Agent', 'Admin']
     },
-    createdAt: {
+    priceHistory: [{
+        price: Number,
+        updatedBy: String,
+        date: { type: Date, default: Date.now }
+    }],
+    updatedAt: {
         type: Date,
         default: Date.now
     }
+});
+
+// Indexes for scalable real-time queries
+marketPriceSchema.index({ itemName: 1 });
+marketPriceSchema.index({ category: 1 });
+marketPriceSchema.index({ location: 1 });
+marketPriceSchema.index({ updatedAt: -1 }); // For "recently updated" sorting
+
+marketPriceSchema.pre('save', function (next) {
+    this.updatedAt = Date.now();
+    next();
 });
 
 module.exports = mongoose.model('MarketPrice', marketPriceSchema);
