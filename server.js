@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const path = require('path');
 
 const app = express();
 
@@ -41,6 +42,14 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/agent', agentDashboardRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/market', marketRoutes);
+
+// Serve Static Frontend (after API routes)
+app.use(express.static(path.join(__dirname, "frontend/dist")));
+
+// Catch-all route to serve index.html for React Router
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
+});
 
 // Start Server
 app.listen(PORT, () => {
