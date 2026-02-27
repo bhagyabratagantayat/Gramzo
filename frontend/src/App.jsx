@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import LocationBanner from './components/LocationBanner';
+import BottomNav from './components/BottomNav';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -25,7 +26,7 @@ function App() {
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
         <LocationBanner />
-        <main style={{ flex: 1, maxWidth: '1200px', margin: '0 auto', width: '100%', padding: '0 15px' }}>
+        <main style={{ flex: 1, maxWidth: '1200px', margin: '0 auto', width: '100%', padding: '0 15px 80px' }}>
           <Routes>
             {/* Public */}
             <Route path="/" element={<Home />} />
@@ -51,6 +52,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <BottomNav />
       </div>
     </BrowserRouter>
   );

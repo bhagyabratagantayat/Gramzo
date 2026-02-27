@@ -90,7 +90,7 @@ const Marketplace = () => {
 
             {Object.keys(groupedProducts).length > 0 ? (
                 Object.keys(groupedProducts).map((category) => (
-                    <div key={category} style={{ marginBottom: '48px' }}>
+                    <div key={category} className="section-spacer">
                         <h2 style={{
                             fontSize: '1.5rem',
                             fontWeight: '800',
@@ -107,47 +107,39 @@ const Marketplace = () => {
                                 background: 'linear-gradient(90deg, #ffedd5 0%, transparent 100%)'
                             }}></span>
                         </h2>
-                        <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+                        <div className="responsive-grid">
                             {groupedProducts[category].map((product) => (
-                                <div key={product._id} className="service-card">
-                                    <div className="service-card-img" style={product.image ? { padding: 0 } : {}}>
-                                        {product.image
-                                            ? <img
-                                                src={product.image}
-                                                alt={product.title}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                onError={(e) => { e.target.src = "https://via.placeholder.com/300"; }}
-                                            />
-                                            : <div style={{ fontSize: '3rem', color: 'var(--text-muted)' }}><HiOutlineShoppingBag /></div>
-                                        }
+                                <div key={product._id} className="standard-card">
+                                    <div className="card-image-wrapper">
+                                        <img
+                                            src={product.image || "https://via.placeholder.com/300?text=Product"}
+                                            alt={product.title}
+                                            onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=Product"; }}
+                                        />
                                     </div>
 
-                                    <div className="service-card-body">
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-                                            <h3 className="service-card-title">{product.title}</h3>
-                                            <div className="filter-chip" style={{ backgroundColor: '#fff7ed', color: '#ea580c', borderColor: '#ffedd5', flexShrink: 0 }}>
+                                    <div className="card-content">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                                            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{product.title}</h3>
+                                            <div className="filter-chip" style={{ flexShrink: 0 }}>
                                                 <HiOutlineLocationMarker /> {product.location}
                                             </div>
                                         </div>
-                                        <p className="service-card-desc">{product.description}</p>
-                                        <div style={{ marginTop: 'auto' }}>
-                                            <div className="service-card-price" style={{ color: '#ea580c' }}>₹{product.price}</div>
+                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>{product.description}</p>
+                                        <div style={{ marginTop: 'auto', marginBottom: '16px' }}>
+                                            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#ea580c' }}>₹{product.price}</div>
                                         </div>
-                                    </div>
 
-                                    <div style={{ padding: '0 16px 12px' }}>
-                                        <div style={{ padding: '12px', backgroundColor: '#fff7ed', borderRadius: '12px', border: '1px solid #ffedd5' }}>
+                                        <div style={{ padding: '12px', backgroundColor: '#fff7ed', borderRadius: '12px', border: '1px solid #ffedd5', marginBottom: '16px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', color: '#9a3412', fontWeight: '800', fontSize: '0.85rem' }}>
-                                                <HiOutlineTag /> Seller: {product.sellerName}
+                                                <HiOutlineTag /> {product.sellerName}
                                             </div>
                                             <div style={{ color: '#ea580c', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
                                                 <HiOutlinePhone /> {product.phone}
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div className="service-card-footer">
-                                        <button className="btn-primary btn-full" style={{ backgroundColor: '#ea580c' }}>
+                                        <button className="btn-primary" style={{ backgroundColor: '#ea580c', width: '100%', justifyContent: 'center' }}>
                                             Contact Seller
                                         </button>
                                     </div>

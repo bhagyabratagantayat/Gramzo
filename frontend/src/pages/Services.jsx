@@ -113,38 +113,31 @@ const Services = () => {
                     </p>
                 </div>
             ) : (
-                <div className="service-grid">
+                <div className="responsive-grid">
                     {services.map((service) => {
                         const catName = service.category?.name || '';
                         return (
-                            <div key={service._id} className="service-card">
-                                {/* Card image / icon area */}
-                                <div className="service-card-img" style={service.image ? { padding: 0 } : {}}>
-                                    {service.image
-                                        ? <img
-                                            src={service.image}
-                                            alt={service.title}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = "https://via.placeholder.com/300";
-                                            }}
-                                        />
-                                        : <span style={{ fontSize: '3.5rem' }}>{icon(catName)}</span>
-                                    }
+                            <div key={service._id} className="standard-card">
+                                <div className="card-image-wrapper">
+                                    <img
+                                        src={service.image || "https://via.placeholder.com/300?text=Service"}
+                                        alt={service.title}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = "https://via.placeholder.com/300?text=Service";
+                                        }}
+                                    />
                                     {service.requiresAppointment && (
-                                        <span className="service-card-badge">Appointment</span>
+                                        <span style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'rgba(255,255,255,0.9)', padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800 }}>Appointment</span>
                                     )}
                                 </div>
 
-                                {/* Card body */}
-                                <div className="service-card-body">
-                                    {catName && <div className="service-card-category">{catName}</div>}
-                                    <h3 className="service-card-title">{service.title}</h3>
-                                    <p className="service-card-desc">{service.description}</p>
+                                <div className="card-content">
+                                    {catName && <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--primary-color)', letterSpacing: '0.05em' }}>{catName}</div>}
+                                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '4px 0 8px' }}>{service.title}</h3>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>{service.description}</p>
 
-                                    {/* Meta row */}
-                                    <div className="service-card-meta">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '16px' }}>
                                         <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                                             <HiOutlineLocationMarker /> {service.locationName || service.location || 'Local area'}
                                         </span>
@@ -153,23 +146,20 @@ const Services = () => {
                                         </span>
                                     </div>
 
-                                    {/* Price */}
-                                    <div className="service-card-price">
-                                        ₹{service.price} <span>/ visit</span>
+                                    <div style={{ marginTop: 'auto' }}>
+                                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '16px' }}>
+                                            ₹{service.price} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ visit</span>
+                                        </div>
+                                        <button
+                                            onClick={() => openBooking(service)}
+                                            className="btn-primary"
+                                            style={{ width: '100%', justifyContent: 'center' }}
+                                        >
+                                            {service.requiresAppointment
+                                                ? <><HiOutlineCalendar /> Book Appointment</>
+                                                : <><HiOutlineLightningBolt /> Book Now</>}
+                                        </button>
                                     </div>
-                                </div>
-
-                                {/* Card footer — CTA button */}
-                                <div className="service-card-footer">
-                                    <button
-                                        onClick={() => openBooking(service)}
-                                        className="btn-primary btn-full"
-                                        style={!service.requiresAppointment ? { backgroundColor: 'var(--success-color)' } : {}}
-                                    >
-                                        {service.requiresAppointment
-                                            ? <><HiOutlineCalendar /> Book Appointment</>
-                                            : <><HiOutlineLightningBolt /> Book Now</>}
-                                    </button>
                                 </div>
                             </div>
                         );

@@ -78,6 +78,8 @@ const Navbar = () => {
         return location.pathname.startsWith(to);
     };
 
+    if (location.pathname === '/') return null;
+
     return (
         <>
             <nav className="navbar">
