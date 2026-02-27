@@ -41,14 +41,16 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/agent', agentDashboardRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/market', marketRoutes);
+// Removed redundant /api/market route
 
 // Serve Static Frontend (after API routes)
-app.use(express.static(path.join(__dirname, "frontend/dist")));
+const frontendPath = path.join(__dirname, "frontend", "dist");
+app.use(express.static(frontendPath));
 
 // Catch-all route to serve index.html for React Router
-app.get("/:path*", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
+// Using a regex literal (/.*/) to avoid PathError in Express 5.2.x+
+app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
 });
 
 // Start Server
