@@ -10,6 +10,7 @@ import {
     HiOutlineUserCircle, HiX, HiOutlinePlusCircle,
     HiOutlineCurrencyRupee, HiOutlineCalendar, HiOutlineLightningBolt
 } from 'react-icons/hi';
+import { getFallbackImage } from '../utils/imageHelper';
 
 /* Category icon map (emoji fallback) */
 const CATEGORY_ICONS = {
@@ -120,11 +121,11 @@ const Services = () => {
                             <div key={service._id} className="standard-card">
                                 <div className="card-image-wrapper">
                                     <img
-                                        src={service.image || "https://via.placeholder.com/300?text=Service"}
+                                        src={service.image || getFallbackImage(service.title, service.category?.name)}
                                         alt={service.title}
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = "https://via.placeholder.com/300?text=Service";
+                                            e.target.src = getFallbackImage(service.title, service.category?.name);
                                         }}
                                     />
                                     {service.requiresAppointment && (
@@ -167,6 +168,7 @@ const Services = () => {
                 </div>
             )}
 
+            {/* Modals */}
             {selectedService && (
                 <BookingForm
                     serviceId={selectedService._id}

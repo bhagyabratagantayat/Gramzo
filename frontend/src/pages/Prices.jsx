@@ -14,6 +14,7 @@ import {
     HiSortDescending,
     HiOutlineArrowRight
 } from 'react-icons/hi';
+import { getFallbackImage } from '../utils/imageHelper';
 
 const Prices = () => {
     const [prices, setPrices] = useState([]);
@@ -247,12 +248,12 @@ const Prices = () => {
 
                             {groupedPrices[category].map((item) => (
                                 <div key={item._id} className="price-card" style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', borderRadius: '24px', border: '1px solid #eef2f6', overflow: 'hidden', transition: 'all 0.3s' }}>
-                                    <div style={{ position: 'relative', height: '200px' }}>
+                                    <div style={{ position: 'relative', height: '200px', backgroundColor: '#f3f4f6' }}>
                                         <img
-                                            src={item.image}
+                                            src={item.image || getFallbackImage(item.itemName, item.category)}
                                             alt={item.itemName}
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=' + item.itemName }}
+                                            onError={(e) => { e.target.src = getFallbackImage(item.itemName, item.category); }}
                                         />
                                         <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: 'rgba(255, 255, 255, 0.95)', padding: '6px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800', color: '#059669', backdropFilter: 'blur(4px)' }}>
                                             {item.location || 'Local Mandi'}

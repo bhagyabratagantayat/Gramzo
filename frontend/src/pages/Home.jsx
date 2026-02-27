@@ -25,6 +25,8 @@ const categories = [
     { title: 'Pharmacy', icon: '💊', color: '#ef4444', bg: '#fef2f2' },
 ];
 
+import { getFallbackImage } from '../utils/imageHelper';
+
 const Home = () => {
     const user = getUser();
     const navigate = useNavigate();
@@ -137,7 +139,11 @@ const Home = () => {
                     {prices.slice(0, 4).map(item => (
                         <div key={item._id} className="standard-card">
                             <div className="card-image-wrapper">
-                                <img src={item.image} alt={item.itemName} onError={(e) => e.target.src = 'https://via.placeholder.com/300?text=Price'} />
+                                <img
+                                    src={item.image || getFallbackImage(item.itemName, item.category)}
+                                    alt={item.itemName}
+                                    onError={(e) => { e.target.src = getFallbackImage(item.itemName, item.category); }}
+                                />
                             </div>
                             <div className="card-content">
                                 <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-main)' }}>{item.itemName}</div>
@@ -159,7 +165,11 @@ const Home = () => {
                     {services.slice(0, 3).map(service => (
                         <div key={service._id} className="standard-card">
                             <div className="card-image-wrapper">
-                                <img src={service.image} alt={service.title} onError={(e) => e.target.src = 'https://via.placeholder.com/300?text=Service'} />
+                                <img
+                                    src={service.image || getFallbackImage(service.title, service.category?.name)}
+                                    alt={service.title}
+                                    onError={(e) => { e.target.src = getFallbackImage(service.title, service.category?.name); }}
+                                />
                             </div>
                             <div className="card-content">
                                 <h4 style={{ fontSize: '1.1rem', margin: '0 0 8px', fontWeight: 800 }}>{service.title}</h4>
@@ -183,7 +193,11 @@ const Home = () => {
                     {products.slice(0, 4).map(product => (
                         <div key={product._id} className="standard-card">
                             <div className="card-image-wrapper">
-                                <img src={product.image} alt={product.title} onError={(e) => e.target.src = 'https://via.placeholder.com/300?text=Product'} />
+                                <img
+                                    src={product.image || getFallbackImage(product.title, product.category)}
+                                    alt={product.title}
+                                    onError={(e) => { e.target.src = getFallbackImage(product.title, product.category); }}
+                                />
                             </div>
                             <div className="card-content">
                                 <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px' }}>{product.title}</div>

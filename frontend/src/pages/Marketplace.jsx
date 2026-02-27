@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import api from '../services/api';
 import { demoProducts } from '../services/demoData';
 import { HiOutlineTag, HiOutlineLocationMarker, HiOutlinePhone, HiOutlineShoppingBag, HiOutlineSearch } from 'react-icons/hi';
+import { getFallbackImage } from '../utils/imageHelper';
 
 const Marketplace = () => {
     const location = useLocation();
@@ -112,9 +113,9 @@ const Marketplace = () => {
                                 <div key={product._id} className="standard-card">
                                     <div className="card-image-wrapper">
                                         <img
-                                            src={product.image || "https://via.placeholder.com/300?text=Product"}
+                                            src={product.image || getFallbackImage(product.title, product.category)}
                                             alt={product.title}
-                                            onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=Product"; }}
+                                            onError={(e) => { e.target.src = getFallbackImage(product.title, product.category); }}
                                         />
                                     </div>
 
