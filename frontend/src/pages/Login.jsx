@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
     HiOutlineUser, HiOutlinePhone,
     HiOutlineExclamationCircle, HiLightningBolt
@@ -7,6 +8,7 @@ import {
 
 const Login = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [loading, setLoading] = useState(null); // 'User' | 'Agent' | 'Admin' | null
@@ -45,9 +47,9 @@ const Login = () => {
             }
         }
 
-        localStorage.setItem('gramzoUser', JSON.stringify(userData));
+        login(userData);
         setLoading(null);
-        navigate('/dashboard');
+        navigate(role === 'User' ? '/' : '/dashboard');
     };
 
     const iconStyle = {

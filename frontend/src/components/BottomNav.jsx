@@ -6,11 +6,10 @@ import {
     HiOutlineChartBar,
     HiOutlineUser
 } from 'react-icons/hi';
-import { getUser } from '../services/auth';
+import { useAuth } from '../context/AuthContext';
 
 const BottomNav = () => {
-    const user = getUser();
-    const isAgent = user?.role === 'Agent';
+    const { user, isAgent } = useAuth();
 
     return (
         <nav className="bottom-nav">
@@ -18,19 +17,19 @@ const BottomNav = () => {
                 <HiOutlineHome className="bottom-nav-icon" />
                 <span>Home</span>
             </NavLink>
-            <NavLink to={isAgent ? "/agent/marketplace" : "/marketplace"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <NavLink to={user ? (isAgent ? "/agent/marketplace" : "/marketplace") : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <HiOutlineShoppingBag className="bottom-nav-icon" />
                 <span>Market</span>
             </NavLink>
-            <NavLink to="/bookings" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <NavLink to={user ? "/bookings" : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <HiOutlineCalendar className="bottom-nav-icon" />
                 <span>Bookings</span>
             </NavLink>
-            <NavLink to="/dashboard" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <NavLink to={user ? "/dashboard" : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <HiOutlineChartBar className="bottom-nav-icon" />
                 <span>Dash</span>
             </NavLink>
-            <NavLink to="/login" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <NavLink to={user ? "/dashboard" : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <HiOutlineUser className="bottom-nav-icon" />
                 <span>Profile</span>
             </NavLink>

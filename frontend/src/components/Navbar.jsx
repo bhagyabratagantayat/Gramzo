@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { getUser, logout } from '../services/auth';
+import { useNavigate, useLocation, Link, NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
     HiLightningBolt, HiOutlineLogout, HiUserCircle,
     HiSearch, HiOutlineHome, HiOutlineCollection,
@@ -44,7 +44,7 @@ const ROLE_COLORS = {
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const user = getUser();
+    const { user, logout } = useAuth();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -68,7 +68,10 @@ const Navbar = () => {
         return () => { document.body.style.overflow = ''; };
     }, [drawerOpen]);
 
-    const handleLogout = () => { logout(); navigate('/login'); };
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     const links = user ? (NAV_LINKS[user.role] || []) : [];
     const roleCfg = user ? (ROLE_COLORS[user.role] || ROLE_COLORS.User) : null;

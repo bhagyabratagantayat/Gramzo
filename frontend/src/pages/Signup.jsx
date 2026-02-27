@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
     HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineUserGroup,
     HiOutlineExclamationCircle, HiLightningBolt
@@ -7,6 +8,7 @@ import {
 
 const Signup = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [formData, setFormData] = useState({ name: '', phone: '', location: '', role: 'User' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -54,9 +56,9 @@ const Signup = () => {
             userData._id = 'user_' + Date.now();
         }
 
-        localStorage.setItem('gramzoUser', JSON.stringify(userData));
+        login(userData);
         setLoading(false);
-        navigate('/dashboard');
+        navigate(formData.role === 'User' ? '/' : '/dashboard');
     };
 
     const iconStyle = (top = '50%') => ({

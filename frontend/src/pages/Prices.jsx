@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
-import { isAgent } from '../services/auth';
+import { useAuth } from '../context/AuthContext';
 import {
     HiOutlineSearch,
     HiOutlineTrendingUp,
@@ -17,6 +17,7 @@ import {
 import { getFallbackImage } from '../utils/imageHelper';
 
 const Prices = () => {
+    const { user } = useAuth();
     const [prices, setPrices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -99,7 +100,6 @@ const Prices = () => {
         if (!newPrice || isNaN(newPrice)) return;
         setUpdating(true);
         try {
-            const user = JSON.parse(localStorage.getItem('gramzoUser'));
             await api.post('/market/update', {
                 itemId: selectedItem._id,
                 newPrice: Number(newPrice),
@@ -276,7 +276,7 @@ const Prices = () => {
                                             </div>
                                         </div>
 
-                                        {JSON.parse(localStorage.getItem('gramzoUser')) && (
+                                        {user && (
                                             <button
                                                 onClick={() => setSelectedItem(item)}
                                                 style={{ marginTop: '20px', width: '100%', padding: '14px', borderRadius: '14px', border: 'none', backgroundColor: '#0f172a', color: '#fff', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: '0.2s' }}

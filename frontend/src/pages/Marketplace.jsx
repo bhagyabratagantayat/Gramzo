@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { demoProducts } from '../services/demoData';
+import { useAuth } from '../context/AuthContext';
 import { HiOutlineTag, HiOutlineLocationMarker, HiOutlinePhone, HiOutlineShoppingBag, HiOutlineSearch } from 'react-icons/hi';
 import { getFallbackImage } from '../utils/imageHelper';
 
 const Marketplace = () => {
+    const { user } = useAuth();
     const location = useLocation();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -131,18 +133,30 @@ const Marketplace = () => {
                                             <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#ea580c' }}>₹{product.price}</div>
                                         </div>
 
-                                        <div style={{ padding: '12px', backgroundColor: '#fff7ed', borderRadius: '12px', border: '1px solid #ffedd5', marginBottom: '16px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', color: '#9a3412', fontWeight: '800', fontSize: '0.85rem' }}>
-                                                <HiOutlineTag /> {product.sellerName}
-                                            </div>
-                                            <div style={{ color: '#ea580c', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
-                                                <HiOutlinePhone /> {product.phone}
-                                            </div>
-                                        </div>
+                                        {user ? (
+                                            <>
+                                                <div style={{ padding: '12px', backgroundColor: '#fff7ed', borderRadius: '12px', border: '1px solid #ffedd5', marginBottom: '16px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', color: '#9a3412', fontWeight: '800', fontSize: '0.85rem' }}>
+                                                        <HiOutlineTag /> {product.sellerName}
+                                                    </div>
+                                                    <div style={{ color: '#ea580c', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
+                                                        <HiOutlinePhone /> {product.phone}
+                                                    </div>
+                                                </div>
 
-                                        <button className="btn-primary" style={{ backgroundColor: '#ea580c', width: '100%', justifyContent: 'center' }}>
-                                            Contact Seller
-                                        </button>
+                                                <button className="btn-primary" style={{ backgroundColor: '#ea580c', width: '100%', justifyContent: 'center' }}>
+                                                    Contact Seller
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                onClick={() => navigate('/login')}
+                                                className="btn-primary"
+                                                style={{ backgroundColor: '#ea580c', width: '100%', justifyContent: 'center' }}
+                                            >
+                                                Login to Contact Seller
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { getUser } from '../services/auth';
+import { useAuth } from '../context/AuthContext';
 import {
     HiOutlineSearch,
     HiArrowRight,
@@ -28,7 +28,7 @@ const categories = [
 import { getFallbackImage } from '../utils/imageHelper';
 
 const Home = () => {
-    const user = getUser();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [prices, setPrices] = useState([]);
@@ -74,13 +74,25 @@ const Home = () => {
 
             {/* ── 1. Compact Header ────────────────────── */}
             <header className="header-container">
-                <Link to="/dashboard" className="hide-desktop">
-                    <HiUserCircle style={{ fontSize: '2.4rem', color: '#6b7280' }} />
-                </Link>
+                {user ? (
+                    <Link to="/dashboard">
+                        <HiUserCircle style={{ fontSize: '2.4rem', color: 'var(--primary-color)' }} />
+                    </Link>
+                ) : (
+                    <Link to="/login">
+                        <HiUserCircle style={{ fontSize: '2.4rem', color: '#6b7280' }} />
+                    </Link>
+                )}
                 <h1 style={{ fontSize: '1.8rem', fontWeight: 900, margin: 0, color: 'var(--primary-color)' }}>Gramzo</h1>
-                <Link to="/notices">
-                    <HiOutlineBell style={{ fontSize: '2rem', color: '#6b7280' }} />
-                </Link>
+                {user ? (
+                    <Link to="/notices">
+                        <HiOutlineBell style={{ fontSize: '2rem', color: '#6b7280' }} />
+                    </Link>
+                ) : (
+                    <Link to="/login" className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+                        Login
+                    </Link>
+                )}
             </header>
 
             {/* ── 2. Rounded Search Bar ─────────────────── */}
@@ -120,11 +132,19 @@ const Home = () => {
             <section className="section-spacer">
                 <div style={{ backgroundColor: '#eff6ff', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #dbeafe', flexWrap: 'wrap', gap: '16px' }}>
                     <div style={{ flex: 1, minWidth: '240px' }}>
-                        <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#1e40af' }}>List your business FREE</h4>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: '#3b82f6' }}>Reach thousands of local customers in your neighborhood.</p>
+                        <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#1e40af' }}>
+                            {user ? `Welcome back, ${user.name}!` : "List your business FREE"}
+                        </h4>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: '#3b82f6' }}>
+                            {user ? "Manage your listings and bookings from your dashboard." : "Reach thousands of local customers in your neighborhood."}
+                        </p>
                     </div>
-                    <button onClick={() => navigate('/login')} className="btn-primary" style={{ padding: '12px 24px', fontSize: '1rem' }}>
-                        Start Now
+                    <button
+                        onClick={() => navigate(user ? '/dashboard' : '/signup')}
+                        className="btn-primary"
+                        style={{ padding: '12px 24px', fontSize: '1rem' }}
+                    >
+                        {user ? 'Go to Dashboard' : 'Start Now'}
                     </button>
                 </div>
             </section>

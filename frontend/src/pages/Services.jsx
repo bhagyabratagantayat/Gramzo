@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 import BookingForm from '../components/BookingForm';
 import AddServiceForm from '../components/AddServiceForm';
-import { isAgent } from '../services/auth';
+import { useAuth } from '../context/AuthContext';
 import { demoServices } from '../services/demoData';
 import { getSavedLocation } from '../services/location';
 import {
@@ -21,6 +21,7 @@ const CATEGORY_ICONS = {
 const icon = (cat = '') => CATEGORY_ICONS[cat.toLowerCase()] ?? CATEGORY_ICONS.default;
 
 const Services = () => {
+    const { user, isAgent, isAuthenticated } = useAuth();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedService, setSelectedService] = useState(null);
@@ -32,7 +33,6 @@ const Services = () => {
 
     const fetchServices = async (locFilter = locationFilter) => {
         try {
-            const user = JSON.parse(localStorage.getItem('gramzoUser'));
             const params = new URLSearchParams();
 
             if (user?.role === 'Agent' && user?._id) {
@@ -95,7 +95,7 @@ const Services = () => {
                     )}
                 </div>
 
-                {isAgent() && (
+                {isAgent && (
                     <button onClick={() => setShowAddForm(true)} className="btn-primary" style={{ gap: '6px' }}>
                         <HiOutlinePlusCircle /> List New Service
                     </button>
@@ -152,13 +152,15 @@ const Services = () => {
                                             ₹{service.price} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ visit</span>
                                         </div>
                                         <button
-                                            onClick={() => openBooking(service)}
+                                            onClick={() => isAuthenticated ? openBooking(service) : window.location.href = '/login'}
                                             className="btn-primary"
                                             style={{ width: '100%', justifyContent: 'center' }}
                                         >
-                                            {service.requiresAppointment
-                                                ? <><HiOutlineCalendar /> Book Appointment</>
-                                                : <><HiOutlineLightningBolt /> Book Now</>}
+                                            {!isAuthenticated
+                                                ? 'Login to Book'
+                                                : (service.requiresAppointment
+                                                    ? <><HiOutlineCalendar /> Book Appointment</>
+                                                    : <><HiOutlineLightningBolt /> Book Now</>)}
                                         </button>
                                     </div>
                                 </div>
