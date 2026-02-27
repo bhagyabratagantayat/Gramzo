@@ -72,31 +72,8 @@ const Home = () => {
     return (
         <div className="app-container" style={{ paddingBottom: '40px' }}>
 
-            {/* ── 1. Compact Header ────────────────────── */}
-            <header className="header-container">
-                {user ? (
-                    <Link to="/dashboard">
-                        <HiUserCircle style={{ fontSize: '2.4rem', color: 'var(--primary-color)' }} />
-                    </Link>
-                ) : (
-                    <Link to="/login">
-                        <HiUserCircle style={{ fontSize: '2.4rem', color: '#6b7280' }} />
-                    </Link>
-                )}
-                <h1 style={{ fontSize: '1.8rem', fontWeight: 900, margin: 0, color: 'var(--primary-color)' }}>Gramzo</h1>
-                {user ? (
-                    <Link to="/notices">
-                        <HiOutlineBell style={{ fontSize: '2rem', color: '#6b7280' }} />
-                    </Link>
-                ) : (
-                    <Link to="/login" className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
-                        Login
-                    </Link>
-                )}
-            </header>
-
-            {/* ── 2. Rounded Search Bar ─────────────────── */}
-            <div className="section-spacer" style={{ position: 'relative', maxWidth: '600px', margin: '0 auto 32px' }}>
+            {/* ── 1. Rounded Search Bar ─────────────────── */}
+            <div className="section-spacer" style={{ position: 'relative', maxWidth: '600px', margin: '80px auto 32px' }}>
                 <HiOutlineSearch style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '1.2rem' }} />
                 <input
                     type="text"
@@ -156,22 +133,28 @@ const Home = () => {
                     <Link to="/prices" style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary-color)' }}>View All</Link>
                 </div>
                 <div className="responsive-grid-4">
-                    {prices.slice(0, 4).map(item => (
-                        <div key={item._id} className="standard-card">
-                            <div className="card-image-wrapper">
-                                <img
-                                    src={item.image || getFallbackImage(item.itemName, item.category)}
-                                    alt={item.itemName}
-                                    onError={(e) => { e.target.src = getFallbackImage(item.itemName, item.category); }}
-                                />
+                    {Array.isArray(prices) && prices.length > 0 ? (
+                        prices.slice(0, 4).map(item => (
+                            <div key={item._id} className="standard-card">
+                                <div className="card-image-wrapper">
+                                    <img
+                                        src={item.image || getFallbackImage(item.itemName, item.category)}
+                                        alt={item.itemName || 'Market Item'}
+                                        onError={(e) => { e.target.src = getFallbackImage(item.itemName, item.category); }}
+                                    />
+                                </div>
+                                <div className="card-content">
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-main)' }}>{item.itemName}</div>
+                                    <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--primary-color)' }}>₹{item.price}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: 'auto' }}>{item.location || 'Local Mandi'}</div>
+                                </div>
                             </div>
-                            <div className="card-content">
-                                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-main)' }}>{item.itemName}</div>
-                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--primary-color)' }}>₹{item.price}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: 'auto' }}>{item.location || 'Local Mandi'}</div>
-                            </div>
+                        ))
+                    ) : (
+                        <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', color: 'var(--text-muted)', background: '#fff', borderRadius: '12px', border: '1px dashed var(--border-color)' }}>
+                            No market prices available at the moment.
                         </div>
-                    ))}
+                    )}
                 </div>
             </section>
 
@@ -182,24 +165,30 @@ const Home = () => {
                     <Link to="/services" style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary-color)' }}>View All</Link>
                 </div>
                 <div className="responsive-grid">
-                    {services.slice(0, 3).map(service => (
-                        <div key={service._id} className="standard-card">
-                            <div className="card-image-wrapper">
-                                <img
-                                    src={service.image || getFallbackImage(service.title, service.category?.name)}
-                                    alt={service.title}
-                                    onError={(e) => { e.target.src = getFallbackImage(service.title, service.category?.name); }}
-                                />
+                    {Array.isArray(services) && services.length > 0 ? (
+                        services.slice(0, 3).map(service => (
+                            <div key={service._id} className="standard-card">
+                                <div className="card-image-wrapper">
+                                    <img
+                                        src={service.image || getFallbackImage(service.title, service.category?.name)}
+                                        alt={service.title || 'Service'}
+                                        onError={(e) => { e.target.src = getFallbackImage(service.title, service.category?.name); }}
+                                    />
+                                </div>
+                                <div className="card-content">
+                                    <h4 style={{ fontSize: '1.1rem', margin: '0 0 8px', fontWeight: 800 }}>{service.title}</h4>
+                                    <div style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--primary-color)', marginBottom: '8px' }}>₹{service.price}</div>
+                                    <button onClick={() => navigate('/services')} className="btn-secondary" style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}>
+                                        Book Now
+                                    </button>
+                                </div>
                             </div>
-                            <div className="card-content">
-                                <h4 style={{ fontSize: '1.1rem', margin: '0 0 8px', fontWeight: 800 }}>{service.title}</h4>
-                                <div style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--primary-color)', marginBottom: '8px' }}>₹{service.price}</div>
-                                <button onClick={() => navigate('/services')} className="btn-secondary" style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}>
-                                    Book Now
-                                </button>
-                            </div>
+                        ))
+                    ) : (
+                        <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', color: 'var(--text-muted)', background: '#fff', borderRadius: '12px', border: '1px dashed var(--border-color)' }}>
+                            No services found in your area.
                         </div>
-                    ))}
+                    )}
                 </div>
             </section>
 
@@ -210,24 +199,30 @@ const Home = () => {
                     <Link to="/marketplace" style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary-color)' }}>View All</Link>
                 </div>
                 <div className="responsive-grid-4">
-                    {products.slice(0, 4).map(product => (
-                        <div key={product._id} className="standard-card">
-                            <div className="card-image-wrapper">
-                                <img
-                                    src={product.image || getFallbackImage(product.title, product.category)}
-                                    alt={product.title}
-                                    onError={(e) => { e.target.src = getFallbackImage(product.title, product.category); }}
-                                />
-                            </div>
-                            <div className="card-content">
-                                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px' }}>{product.title}</div>
-                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#111827' }}>₹{product.price}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <HiOutlineLocationMarker /> {product.location}
+                    {Array.isArray(products) && products.length > 0 ? (
+                        products.slice(0, 4).map(product => (
+                            <div key={product._id} className="standard-card">
+                                <div className="card-image-wrapper">
+                                    <img
+                                        src={product.image || getFallbackImage(product.title, product.category)}
+                                        alt={product.title || 'Product'}
+                                        onError={(e) => { e.target.src = getFallbackImage(product.title, product.category); }}
+                                    />
+                                </div>
+                                <div className="card-content">
+                                    <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '4px' }}>{product.title}</div>
+                                    <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#111827' }}>₹{product.price}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <HiOutlineLocationMarker /> {product.location || 'Local'}
+                                    </div>
                                 </div>
                             </div>
+                        ))
+                    ) : (
+                        <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', color: 'var(--text-muted)', background: '#fff', borderRadius: '12px', border: '1px dashed var(--border-color)' }}>
+                            The marketplace is quiet today. Check back later!
                         </div>
-                    ))}
+                    )}
                 </div>
             </section>
 

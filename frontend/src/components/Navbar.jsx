@@ -7,7 +7,8 @@ import {
     HiOutlineCurrencyRupee, HiOutlineChartBar,
     HiOutlineShieldCheck, HiOutlineSpeakerphone,
     HiOutlinePlusCircle, HiOutlineShoppingBag,
-    HiOutlineCalendar, HiOutlineX
+    HiOutlineCalendar, HiOutlineX, HiOutlineBell,
+    HiOutlineSearch
 } from 'react-icons/hi';
 
 const NAV_LINKS = {
@@ -45,6 +46,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuth();
+    const isHomePage = location.pathname === '/';
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -73,152 +75,140 @@ const Navbar = () => {
         navigate('/');
     };
 
-    const links = user ? (NAV_LINKS[user.role] || []) : [];
+    const links = user ? (NAV_LINKS[user.role] || []) : NAV_LINKS.User;
     const roleCfg = user ? (ROLE_COLORS[user.role] || ROLE_COLORS.User) : null;
 
-    const isActive = (to) => {
-        if (to === '/') return location.pathname === '/';
-        return location.pathname.startsWith(to);
-    };
+    // Homepage Special Header
+    if (isHomePage) {
+        return (
+            <header className="home-special-header">
+                <div className="header-inner">
+                    <div className="header-left">
+                        {user ? (
+                            <Link to="/dashboard" className="profile-trigger">
+                                <HiUserCircle />
+                            </Link>
+                        ) : (
+                            <Link to="/login" className="profile-trigger">
+                                <HiUserCircle />
+                            </Link>
+                        )}
+                    </div>
+                    <div className="header-center">
+                        <Link to="/" className="home-logo">Gramzo</Link>
+                    </div>
+                    <div className="header-right">
+                        {user ? (
+                            <Link to="/notices" className="notification-icon">
+                                <HiOutlineBell />
+                            </Link>
+                        ) : (
+                            <Link to="/login" className="btn-signin-small">Login</Link>
+                        )}
+                    </div>
+                </div>
+            </header>
+        );
+    }
 
-    if (location.pathname === '/') return null;
-
+    // Other Pages Navbar
     return (
         <>
-            <nav className="navbar">
+            <nav className="main-navbar">
                 <div className="navbar-inner">
-                    {/* Hamburger — mobile only */}
-                    <button
-                        className={`hamburger-btn${drawerOpen ? ' open' : ''}`}
-                        onClick={() => setDrawerOpen(o => !o)}
-                        aria-label="Toggle menu"
-                    >
-                        <span /><span /><span />
-                    </button>
-
-                    {/* Logo */}
-                    <Link to="/" className="navbar-logo">
-                        <HiLightningBolt style={{ color: 'var(--primary-color)', fontSize: '1.6rem' }} />
-                        <span>Gramzo</span>
-                    </Link>
-
-                    {/* Search bar (hidden on mobile via CSS) */}
-                    <div className="navbar-search">
-                        <input
-                            type="text"
-                            placeholder="Search services, agents…"
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter' && searchQuery.trim()) navigate(`/services?q=${encodeURIComponent(searchQuery.trim())}`); }}
-                        />
-                        <HiSearch className="navbar-search-icon" />
+                    <div className="navbar-brand">
+                        <button
+                            className={`hamburger-btn${drawerOpen ? ' open' : ''}`}
+                            onClick={() => setDrawerOpen(o => !o)}
+                        >
+                            <span /><span /><span />
+                        </button>
+                        <Link to="/" className="navbar-logo">
+                            <HiLightningBolt className="logo-icon" />
+                            <span>Gramzo</span>
+                        </Link>
                     </div>
 
-                    {/* Desktop nav links */}
-                    <ul className="navbar-links">
-                        {links.map(({ to, icon: Icon, label }) => (
+                    <ul className="navbar-nav-links">
+                        {links.map(({ to, label }) => (
                             <li key={to}>
                                 <NavLink
                                     to={to}
-                                    className={({ isActive: a }) => `navbar-link${a ? ' active' : ''}`}
+                                    className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
                                     end={to === '/'}
                                 >
-                                    <Icon style={{ fontSize: '1rem', flexShrink: 0 }} />
                                     {label}
                                 </NavLink>
                             </li>
                         ))}
                     </ul>
 
-                    {/* Right section */}
-                    <div className="navbar-right">
+                    <div className="navbar-actions">
                         {user ? (
-                            <>
-                                {/* Role badge */}
-                                <span className="navbar-role-badge" style={{ backgroundColor: roleCfg.bg, color: roleCfg.color }}>
-                                    {user.role}
-                                </span>
-                                {/* User name */}
-                                <span className="navbar-user-name">
-                                    <HiUserCircle style={{ fontSize: '1.2rem', color: 'var(--text-muted)', verticalAlign: 'middle', marginRight: '4px' }} />
-                                    {user.name}
-                                </span>
-                                <button onClick={handleLogout} className="navbar-logout-btn" title="Logout">
+                            <div className="user-profile-section">
+                                <div className="user-info hide-mobile">
+                                    <span className="user-name">{user.name}</span>
+                                    <span className="role-tag" style={{ backgroundColor: roleCfg.bg, color: roleCfg.color }}>
+                                        {user.role}
+                                    </span>
+                                </div>
+                                <button onClick={handleLogout} className="logout-btn" title="Logout">
                                     <HiOutlineLogout />
-                                    <span className="hide-mobile">Logout</span>
                                 </button>
-                            </>
+                            </div>
                         ) : (
-                            <Link to="/login" className="btn-primary" style={{ padding: '8px 18px', fontSize: '.9rem' }}>
-                                Sign In
-                            </Link>
+                            <Link to="/login" className="login-btn-premium">Sign In</Link>
                         )}
                     </div>
                 </div>
             </nav>
 
-            {/* Slide-out Drawer (mobile) */}
-            <div className={`nav-drawer${drawerOpen ? ' open' : ''}`} ref={drawerRef} onClick={e => { if (e.target === e.currentTarget) setDrawerOpen(false); }}>
-                <div className="nav-drawer-panel">
-                    {/* Drawer header */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', padding: '0 4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 900, fontSize: '1.2rem' }}>
-                            <HiLightningBolt style={{ color: 'var(--primary-color)' }} /> Gramzo
+            {/* Mobile Drawer */}
+            <div className={`nav-drawer${drawerOpen ? ' open' : ''}`} ref={drawerRef}>
+                <div className="drawer-panel">
+                    <div className="drawer-header">
+                        <div className="drawer-logo">
+                            <HiLightningBolt className="logo-icon" /> Gramzo
                         </div>
-                        <button onClick={() => setDrawerOpen(false)} style={{ background: 'var(--bg-color)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '6px', display: 'flex', cursor: 'pointer' }}>
+                        <button className="close-btn" onClick={() => setDrawerOpen(false)}>
                             <HiOutlineX />
                         </button>
                     </div>
 
-                    {/* Search bar inside drawer */}
-                    <div style={{ position: 'relative', marginBottom: '12px' }}>
-                        <input
-                            type="text"
-                            placeholder="Search services…"
-                            style={{ width: '100%', height: '38px', padding: '0 36px 0 14px', border: '1.5px solid var(--border-color)', borderRadius: '999px', fontSize: '.9rem', fontFamily: 'inherit', outline: 'none', background: 'var(--bg-subtle)' }}
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter' && searchQuery.trim()) { setDrawerOpen(false); navigate(`/services?q=${encodeURIComponent(searchQuery.trim())}`); } }}
-                        />
-                        <HiSearch style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                    </div>
+                    <div className="drawer-body">
+                        {links.map(({ to, icon: Icon, label }) => (
+                            <NavLink
+                                key={to}
+                                to={to}
+                                className={({ isActive }) => `drawer-item${isActive ? ' active' : ''}`}
+                                onClick={() => setDrawerOpen(false)}
+                            >
+                                <Icon className="drawer-icon" />
+                                <span>{label}</span>
+                            </NavLink>
+                        ))}
 
-                    <div className="drawer-divider" />
+                        <div className="drawer-divider" />
 
-                    {user && (
-                        <>
-                            <div className="drawer-section-label">Navigate</div>
-                            {links.map(({ to, icon: Icon, label }) => (
-                                <NavLink
-                                    key={to}
-                                    to={to}
-                                    end={to === '/'}
-                                    className={({ isActive: a }) => `drawer-link${a ? ' active' : ''}`}
-                                >
-                                    <Icon style={{ fontSize: '1.1rem', flexShrink: 0 }} />
-                                    {label}
-                                </NavLink>
-                            ))}
-                            <div className="drawer-divider" />
-                            <div className="drawer-section-label">Account</div>
-                            <div style={{ padding: '8px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <HiUserCircle style={{ fontSize: '1.4rem', color: 'var(--text-muted)' }} />
-                                <div>
-                                    <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{user.name}</div>
-                                    <span style={{ display: 'inline-block', padding: '1px 8px', borderRadius: '999px', fontSize: '.68rem', fontWeight: 800, backgroundColor: roleCfg.bg, color: roleCfg.color, marginTop: '2px' }}>{user.role}</span>
+                        {user ? (
+                            <div className="drawer-footer">
+                                <div className="drawer-user-info">
+                                    <HiUserCircle className="user-avatar" />
+                                    <div>
+                                        <div className="name">{user.name}</div>
+                                        <div className="role">{user.role}</div>
+                                    </div>
                                 </div>
+                                <button onClick={handleLogout} className="drawer-logout-btn">
+                                    <HiOutlineLogout /> Logout
+                                </button>
                             </div>
-                            <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '11px 14px', background: 'var(--danger-light)', border: '1px solid #fca5a5', borderRadius: 'var(--radius)', color: 'var(--danger-color)', fontWeight: 700, fontSize: '.9rem', cursor: 'pointer', marginTop: '4px' }}>
-                                <HiOutlineLogout /> Logout
-                            </button>
-                        </>
-                    )}
-
-                    {!user && (
-                        <Link to="/login" className="btn-primary btn-full" onClick={() => setDrawerOpen(false)}>
-                            Sign In
-                        </Link>
-                    )}
+                        ) : (
+                            <Link to="/login" className="drawer-login-btn" onClick={() => setDrawerOpen(false)}>
+                                Sign In
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </>
