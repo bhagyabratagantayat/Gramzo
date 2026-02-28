@@ -43,9 +43,9 @@ marketPriceSchema.index({ category: 1 });
 marketPriceSchema.index({ location: 1 });
 marketPriceSchema.index({ updatedAt: -1 }); // For "recently updated" sorting
 
-marketPriceSchema.pre('save', function (next) {
+marketPriceSchema.pre('save', async function () {
+    console.log(`Pre-save hook triggered for: ${this.itemName}`);
     this.updatedAt = Date.now();
-    next();
 });
 
 module.exports = mongoose.model('MarketPrice', marketPriceSchema);

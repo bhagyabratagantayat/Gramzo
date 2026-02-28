@@ -101,19 +101,29 @@ const Prices = () => {
         if (!newPrice || isNaN(newPrice)) return;
         setUpdating(true);
         try {
-            await api.post('/market/update', {
+            const response = await api.post('/market/update', {
                 itemId: selectedItem._id,
                 newPrice: Number(newPrice),
                 updatedBy: user?.name || 'Anonymous',
-                role: user?.role?.toLowerCase() || 'user'
+                role: user?.role || 'User'
             });
-            await fetchPrices();
+
+            // Requirement 9 & 10: Update UI immediately (Local state optimization)
+            const updatedItem = response.data.data;
+            setPrices(prevPrices => prevPrices.map(item =>
+                item._id === updatedItem._id ? updatedItem : item
+            ));
+
             setUpdatingItemId(selectedItem._id);
             setTimeout(() => setUpdatingItemId(null), 2000);
             setSelectedItem(null);
             setNewPrice('');
+
+            // Background sync
+            fetchPrices(true);
         } catch (err) {
-            alert('Failed to update price');
+            const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to update price. Please try again.';
+            alert(errorMsg);
         } finally {
             setUpdating(false);
         }

@@ -1,56 +1,71 @@
+const mongoose = require('mongoose');
 const MarketPrice = require('../models/MarketPrice');
 
 // @desc    Add or Update Market Price
 // @route   POST /api/market/add
-// @access  Public (Demo)
 exports.addOrUpdatePrice = async (req, res) => {
     try {
-        const { itemName, category, price, image, location, updatedBy, role } = req.body;
+        let { itemName, category, price, image, location, updatedBy, role } = req.body;
 
-        if (!itemName || !category || !price) {
-            return res.status(400).json({ success: false, error: 'Please provide itemName, category, and price' });
+        console.log('Add/Update Price Attempt:', { itemName, category, price });
+
+        if (!itemName || !category || price === undefined) {
+            return res.status(400).json({ success: false, error: 'itemName, category, and price are required' });
+        }
+
+        // Normalize role to Match Schema Enum (User, Agent, Admin)
+        if (role) {
+            role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
         }
 
         // Find existing item by name and category (simple upsert logic)
         let marketItem = await MarketPrice.findOne({ itemName, category });
 
         if (marketItem) {
-            // Push old price to history (Keep last 50 for scalability)
-            marketItem.priceHistory.unshift({
-                price: marketItem.price,
-                updatedBy: marketItem.updatedBy,
-                date: marketItem.updatedAt || Date.now()
-            });
+            // Initialize priceHistory if missing (safety check)
+            if (!Array.isArray(marketItem.priceHistory)) {
+                marketItem.priceHistory = [];
+            }
 
-            // Limit history size
+            // Capture previous state for history
+            const historicalEntry = {
+                price: marketItem.price,
+                updatedBy: marketItem.updatedBy || 'Previous Record',
+                date: marketItem.updatedAt || Date.now()
+            };
+
+            // Push to history (Keep last 50)
+            marketItem.priceHistory.unshift(historicalEntry);
             if (marketItem.priceHistory.length > 50) {
                 marketItem.priceHistory = marketItem.priceHistory.slice(0, 50);
             }
 
             // Update existing
-            marketItem.price = price;
+            marketItem.price = Number(price);
             marketItem.image = image || marketItem.image;
             marketItem.location = location || marketItem.location;
             marketItem.updatedBy = updatedBy || marketItem.updatedBy;
             marketItem.role = role || marketItem.role;
+
             await marketItem.save();
-            return res.status(200).json({ success: true, message: 'Price updated', data: marketItem });
+            return res.status(200).json({ success: true, message: `Updated ${itemName} price`, data: marketItem });
         }
 
         // Create new
         marketItem = await MarketPrice.create({
             itemName,
             category,
-            price,
+            price: Number(price),
             image,
             location,
             updatedBy,
             role
         });
 
-        res.status(201).json({ success: true, message: 'New item added', data: marketItem });
+        res.status(201).json({ success: true, message: `Added new item: ${itemName}`, data: marketItem });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        console.error('Add/Update Price Error:', error);
+        res.status(500).json({ success: false, error: error.message || 'Server error during item processing' });
     }
 };
 
@@ -76,6 +91,7 @@ exports.getPricesByCategory = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
 // @desc    Seed market items (200+ items)
 // @route   POST /api/market/seed
 exports.seedMarketItems = async (req, res) => {
@@ -155,42 +171,71 @@ exports.updatePrice = async (req, res) => {
     try {
         const { itemId, newPrice, updatedBy, role } = req.body;
 
-        if (!itemId || newPrice === undefined) {
-            return res.status(400).json({ success: false, error: 'Please provide itemId and newPrice' });
+        // 1. Validate request body
+        if (!itemId || newPrice === undefined || isNaN(Number(newPrice))) {
+            return res.status(400).json({
+                success: false,
+                message: "itemId and valid newPrice are required"
+            });
         }
 
+        // Validate ObjectId format to prevent CastError
+        if (!mongoose.Types.ObjectId.isValid(itemId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Item ID format"
+            });
+        }
+
+        // 2. Find item safely
         const marketItem = await MarketPrice.findById(itemId);
-
         if (!marketItem) {
-            return res.status(404).json({ success: false, error: 'Market item not found' });
+            return res.status(404).json({
+                success: false,
+                message: "Item not found"
+            });
         }
 
-        // Push current state to history (Keep last 50 for scalability)
-        marketItem.priceHistory.unshift({
+        // 3. Store old price before update (for history)
+        const historicalEntry = {
             price: marketItem.price,
-            updatedBy: marketItem.updatedBy,
+            updatedBy: marketItem.updatedBy || 'Previous Record',
             date: marketItem.updatedAt || Date.now()
-        });
+        };
 
-        // Limit history size
-        if (marketItem.priceHistory.length > 50) {
-            marketItem.priceHistory = marketItem.priceHistory.slice(0, 50);
+        // 4. Update price
+        marketItem.price = Number(newPrice);
+
+        // 5. Update history if exists
+        if (Array.isArray(marketItem.priceHistory)) {
+            marketItem.priceHistory.unshift(historicalEntry);
+            // Limit history size to 50
+            if (marketItem.priceHistory.length > 50) {
+                marketItem.priceHistory = marketItem.priceHistory.slice(0, 50);
+            }
         }
 
-        // Update current state
-        marketItem.price = newPrice;
-        marketItem.updatedBy = updatedBy || marketItem.updatedBy;
-        marketItem.role = role || marketItem.role;
+        // Normalize additional metadata if provided
+        if (updatedBy) marketItem.updatedBy = updatedBy;
+        if (role) {
+            marketItem.role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+        }
 
+        // 6. Save data properly
         await marketItem.save();
 
-        res.status(200).json({
+        // 7. Success response
+        return res.status(200).json({
             success: true,
-            message: 'Market price updated successfully',
+            message: "Price updated successfully",
             data: marketItem
         });
+
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        console.error("Error updating price:", error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
     }
 };
-
