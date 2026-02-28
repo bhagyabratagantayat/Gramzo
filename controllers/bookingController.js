@@ -21,6 +21,7 @@ exports.createBooking = async (req, res) => {
         const booking = await Booking.create({
             userName,
             phone,
+            userId: phone, // Mapping phone as userId for this app's logic
             service: serviceId,
             agent: service.agentId,
             date,

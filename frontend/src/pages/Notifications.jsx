@@ -82,12 +82,7 @@ const Notifications = () => {
     const handleBookingResponse = async (bookingId, notificationId, status) => {
         try {
             // Update booking status
-            await api.patch(`/bookings/respond/${bookingId}`, { status }, {
-                headers: {
-                    'x-agent-id': user._id || user.id,
-                    'x-user-role': user.role
-                }
-            });
+            await api.patch(`/bookings/${bookingId}/status`, { status });
 
             // Mark notification as "read" or update locally for UX
             alert(`Booking ${status}`);
