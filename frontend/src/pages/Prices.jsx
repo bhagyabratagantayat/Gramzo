@@ -24,6 +24,7 @@ const Prices = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [newPrice, setNewPrice] = useState('');
     const [updating, setUpdating] = useState(false);
+    const [updatingItemId, setUpdatingItemId] = useState(null);
     const [lastSync, setLastSync] = useState(new Date());
 
     // E-commerce state
@@ -107,6 +108,8 @@ const Prices = () => {
                 role: user?.role?.toLowerCase() || 'user'
             });
             await fetchPrices();
+            setUpdatingItemId(selectedItem._id);
+            setTimeout(() => setUpdatingItemId(null), 2000);
             setSelectedItem(null);
             setNewPrice('');
         } catch (err) {
@@ -247,7 +250,11 @@ const Prices = () => {
                             `}</style>
 
                             {groupedPrices[category].map((item) => (
-                                <div key={item._id} className="price-card" style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', borderRadius: '24px', border: '1px solid #eef2f6', overflow: 'hidden', transition: 'all 0.3s' }}>
+                                <div
+                                    key={item._id}
+                                    className={`price-card ${updatingItemId === item._id ? 'price-update-animate' : ''}`}
+                                    style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', borderRadius: '24px', border: '1px solid #eef2f6', overflow: 'hidden', transition: 'all 0.3s' }}
+                                >
                                     <div style={{ position: 'relative', height: '200px', backgroundColor: '#f3f4f6' }}>
                                         <img
                                             src={item.image || getFallbackImage(item.itemName, item.category)}

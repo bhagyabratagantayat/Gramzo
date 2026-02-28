@@ -10,7 +10,7 @@ const actions = {
     Admin: [
         { to: '/admin', icon: HiOutlineShieldCheck, label: 'Approve Agents', desc: 'Verify and manage agent accounts.', bg: '#eff6ff', color: '#2563eb' },
         { to: '/all-bookings', icon: HiOutlineCollection, label: 'All Bookings', desc: 'Monitor every service request across community.', bg: '#fdf2f8', color: '#db2777' },
-        { to: '/notices', icon: HiOutlineSpeakerphone, label: 'Post Notice', desc: 'Broadcast important updates to all users.', bg: '#fff7ed', color: '#ea580c' },
+        { to: '/notifications', icon: HiOutlineSpeakerphone, label: 'Post Update', desc: 'Broadcast important updates to all users.', bg: '#fff7ed', color: '#ea580c' },
     ],
     Agent: [
         { to: '/services', icon: HiOutlinePlusCircle, label: 'Add Service', desc: 'List your professional services.', bg: '#ecfdf5', color: '#059669' },

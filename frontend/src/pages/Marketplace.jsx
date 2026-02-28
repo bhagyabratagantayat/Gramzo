@@ -112,49 +112,39 @@ const Marketplace = () => {
                         </h2>
                         <div className="responsive-grid">
                             {groupedProducts[category].map((product) => (
-                                <div key={product._id} className="standard-card">
-                                    <div className="card-image-wrapper">
+                                <div key={product._id} className="service-card">
+                                    <div className="service-card-img" style={{ height: '180px' }}>
                                         <img
                                             src={product.image || getFallbackImage(product.title, product.category)}
                                             alt={product.title}
                                             onError={(e) => { e.target.src = getFallbackImage(product.title, product.category); }}
                                         />
+                                        <div className="service-card-badge">
+                                            {product.location}
+                                        </div>
                                     </div>
-
-                                    <div className="card-content">
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
-                                            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{product.title}</h3>
-                                            <div className="filter-chip" style={{ flexShrink: 0 }}>
-                                                <HiOutlineLocationMarker /> {product.location}
-                                            </div>
+                                    <div className="service-card-body">
+                                        <h3 className="service-card-title">{product.title}</h3>
+                                        <p className="service-card-desc">{product.description}</p>
+                                        <div style={{ marginTop: 'auto' }}>
+                                            <div className="service-card-price">₹{product.price}</div>
                                         </div>
-                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>{product.description}</p>
-                                        <div style={{ marginTop: 'auto', marginBottom: '16px' }}>
-                                            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#ea580c' }}>₹{product.price}</div>
-                                        </div>
-
                                         {user ? (
-                                            <>
-                                                <div style={{ padding: '12px', backgroundColor: '#fff7ed', borderRadius: '12px', border: '1px solid #ffedd5', marginBottom: '16px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', color: '#9a3412', fontWeight: '800', fontSize: '0.85rem' }}>
-                                                        <HiOutlineTag /> {product.sellerName}
-                                                    </div>
-                                                    <div style={{ color: '#ea580c', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
-                                                        <HiOutlinePhone /> {product.phone}
-                                                    </div>
+                                            <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#ea580c', fontWeight: '700' }}>
+                                                    <HiOutlineTag /> {product.sellerName}
                                                 </div>
-
-                                                <button className="btn-primary" style={{ backgroundColor: '#ea580c', width: '100%', justifyContent: 'center' }}>
+                                                <button className="btn-primary" style={{ backgroundColor: '#ea580c', width: '100%', padding: '10px' }}>
                                                     Contact Seller
                                                 </button>
-                                            </>
+                                            </div>
                                         ) : (
                                             <button
                                                 onClick={() => navigate('/login')}
                                                 className="btn-primary"
-                                                style={{ backgroundColor: '#ea580c', width: '100%', justifyContent: 'center' }}
+                                                style={{ backgroundColor: '#ea580c', width: '100%', marginTop: '12px' }}
                                             >
-                                                Login to Contact Seller
+                                                Login to Buy
                                             </button>
                                         )}
                                     </div>

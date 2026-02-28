@@ -58,7 +58,7 @@ const AgentMarketplace = () => {
             </header>
 
             {products.length > 0 ? (
-                <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+                <div className="responsive-grid">
                     {products.map((product) => (
                         <div key={product._id} className="service-card" style={{ position: 'relative' }}>
                             <div className="service-card-img" style={product.image ? { padding: 0 } : {}}>
@@ -71,6 +71,7 @@ const AgentMarketplace = () => {
                                     />
                                     : <div style={{ fontSize: '3rem', color: 'var(--text-muted)' }}><HiOutlineShoppingBag /></div>
                                 }
+                                <div className="service-card-badge" style={{ backgroundColor: '#10b981' }}>Live</div>
                             </div>
 
                             <button

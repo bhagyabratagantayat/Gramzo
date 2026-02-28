@@ -44,7 +44,7 @@ const Home = () => {
                 api.get('/market'),
                 api.get('/products'),
                 api.get('/services'),
-                api.get('/notices')
+                api.get('/notifications')
             ]);
             setPrices(marketRes.data.data);
             setProducts(prodRes.data.data);

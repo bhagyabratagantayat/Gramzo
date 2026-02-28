@@ -12,12 +12,21 @@ import {
 } from 'react-icons/hi';
 
 const NAV_LINKS = {
+    Admin: [
+        { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
+        { to: '/marketplace', icon: HiOutlineShoppingBag, label: 'Marketplace' },
+        { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
+        { to: '/admin', icon: HiOutlineShieldCheck, label: 'Manage' },
+        { to: '/all-bookings', icon: HiOutlineCollection, label: 'Bookings' },
+        { to: '/notifications', icon: HiOutlineSpeakerphone, label: 'Notifications' },
+    ],
     User: [
         { to: '/', icon: HiOutlineHome, label: 'Home' },
         { to: '/marketplace', icon: HiOutlineShoppingBag, label: 'Marketplace' },
         { to: '/services', icon: HiOutlineCollection, label: 'Services' },
         { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
         { to: '/bookings', icon: HiOutlineCalendar, label: 'My Bookings' },
+        { to: '/notifications', icon: HiOutlineSpeakerphone, label: 'Notifications' },
     ],
     Agent: [
         { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
@@ -25,14 +34,7 @@ const NAV_LINKS = {
         { to: '/my-listings', icon: HiOutlineCollection, label: 'My Listings' },
         { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
         { to: '/earnings', icon: HiOutlineChartBar, label: 'Earnings' },
-    ],
-    Admin: [
-        { to: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
-        { to: '/marketplace', icon: HiOutlineShoppingBag, label: 'Marketplace' },
-        { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
-        { to: '/admin', icon: HiOutlineShieldCheck, label: 'Manage' },
-        { to: '/all-bookings', icon: HiOutlineCollection, label: 'Bookings' },
-        { to: '/notices', icon: HiOutlineSpeakerphone, label: 'Notices' },
+        { to: '/notifications', icon: HiOutlineSpeakerphone, label: 'Notifications' },
     ],
 };
 
@@ -99,7 +101,7 @@ const Navbar = () => {
                     </div>
                     <div className="header-right">
                         {user ? (
-                            <Link to="/notices" className="notification-icon">
+                            <Link to="/notifications" className="notification-icon">
                                 <HiOutlineBell />
                             </Link>
                         ) : (

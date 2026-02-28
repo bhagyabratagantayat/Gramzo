@@ -5,7 +5,7 @@ const Footer = () => {
     const links = [
         { label: 'Services', to: '/services' },
         { label: 'Marketplace', to: '/marketplace' },
-        { label: 'Notices', to: '/notices' },
+        { label: 'Notifications', to: '/notifications' },
         { label: 'Sign In', to: '/login' }
     ];
 

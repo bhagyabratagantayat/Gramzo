@@ -4,7 +4,7 @@ import {
     HiOutlineShoppingBag,
     HiOutlineCalendar,
     HiOutlineChartBar,
-    HiOutlineUser
+    HiOutlineBell
 } from 'react-icons/hi';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,21 +17,21 @@ const BottomNav = () => {
                 <HiOutlineHome className="bottom-nav-icon" />
                 <span>Home</span>
             </NavLink>
-            <NavLink to={user ? (isAgent ? "/agent/marketplace" : "/marketplace") : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <NavLink to={user ? (user.role === 'Agent' ? "/agent/marketplace" : "/marketplace") : "/marketplace"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <HiOutlineShoppingBag className="bottom-nav-icon" />
-                <span>Market</span>
+                <span>Shop</span>
             </NavLink>
             <NavLink to={user ? "/bookings" : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <HiOutlineCalendar className="bottom-nav-icon" />
                 <span>Bookings</span>
             </NavLink>
-            <NavLink to={user ? "/dashboard" : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
-                <HiOutlineChartBar className="bottom-nav-icon" />
-                <span>Dash</span>
+            <NavLink to={user ? "/notifications" : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+                <HiOutlineBell className="bottom-nav-icon" />
+                <span>Updates</span>
             </NavLink>
             <NavLink to={user ? "/dashboard" : "/login"} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
-                <HiOutlineUser className="bottom-nav-icon" />
-                <span>Profile</span>
+                <HiOutlineChartBar className="bottom-nav-icon" />
+                <span>Account</span>
             </NavLink>
         </nav>
     );

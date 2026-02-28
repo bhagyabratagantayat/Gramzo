@@ -30,6 +30,8 @@ const adminRoutes = require('./routes/adminRoutes');
 const agentDashboardRoutes = require('./routes/agentDashboardRoutes');
 const userRoutes = require('./routes/userRoutes');
 const marketRoutes = require('./routes/marketRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/agents', agentRoutes);
@@ -41,6 +43,9 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/agent', agentDashboardRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/notices', notificationRoutes); // Unified route alias
+
 // Removed redundant /api/market route
 
 // Serve Static Frontend (after API routes)

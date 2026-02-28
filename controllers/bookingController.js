@@ -1,5 +1,7 @@
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
+const Notification = require('../models/Notification');
+
 
 // @desc    Create a booking
 // @route   POST /api/bookings/create
@@ -30,6 +32,17 @@ exports.createBooking = async (req, res) => {
         });
 
         res.status(201).json({ success: true, data: booking });
+
+        // Trigger notification for Agent
+        await Notification.create({
+            title: 'New Booking Request',
+            message: `New booking for ${service.title} from ${userName}`,
+            type: 'booking_request',
+            recipientRole: 'Agent',
+            recipientId: service.agentId,
+            bookingId: booking._id
+        });
+
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }
@@ -107,6 +120,17 @@ exports.respondToBooking = async (req, res) => {
         booking.status = status;
         await booking.save();
         res.status(200).json({ success: true, data: booking });
+
+        // Trigger notification for User/Admin
+        await Notification.create({
+            title: `Booking ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+            message: `Your booking for item ID ${booking.service} has been ${status}.`,
+            type: 'booking_update',
+            recipientRole: 'User',
+            recipientPhone: booking.phone,
+            bookingId: booking._id
+        });
+
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }

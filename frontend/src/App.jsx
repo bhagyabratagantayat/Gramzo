@@ -13,7 +13,7 @@ import Bookings from './pages/Bookings';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import AllBookings from './pages/AllBookings';
-import Notices from './pages/Notices';
+import Notifications from './pages/Notifications';
 import MyListings from './pages/MyListings';
 import Earnings from './pages/Earnings';
 import Prices from './pages/Prices';
@@ -59,7 +59,7 @@ function AppContent() {
           {/* Admin-only */}
           <Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
           <Route path="/all-bookings" element={<ProtectedRoute adminOnly><AllBookings /></ProtectedRoute>} />
-          <Route path="/notices" element={<ProtectedRoute adminOnly><Notices /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
 
           {/* Catch-all fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

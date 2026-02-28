@@ -139,7 +139,7 @@ const Admin = () => {
             const [agentsRes, bookingsRes, noticesRes] = await Promise.all([
                 api.get('/agents'),
                 api.get('/bookings'),
-                api.get('/notices')
+                api.get('/notifications')
             ]);
             setAgents(agentsRes.data.data || []);
             setBookings(bookingsRes.data.data || []);
@@ -172,7 +172,7 @@ const Admin = () => {
         setNoticePosting(true);
         setNoticeMsg(null);
         try {
-            await api.post('/notices/add', { title: noticeTitle, description: noticeDesc, location: noticeLoc, role: 'Admin' });
+            await api.post('/notifications/add', { title: noticeTitle, description: noticeDesc, location: noticeLoc, role: 'Admin' });
             setNoticeTitle(''); setNoticeDesc(''); setNoticeLoc('');
             setNoticeMsg({ type: 'success', text: 'Notice posted successfully.' });
             fetchAll();
