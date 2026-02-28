@@ -31,6 +31,8 @@ const Services = () => {
         return saved?.locationName && saved.source !== 'skipped' ? saved.locationName : null;
     });
 
+    const [error, setError] = useState(null);
+
     const fetchServices = async (locFilter = locationFilter) => {
         try {
             const params = new URLSearchParams();
@@ -45,8 +47,11 @@ const Services = () => {
             const response = await api.get(url);
             const data = response.data.data;
             setServices(data.length > 0 ? data : (user?.role === 'Agent' ? [] : demoServices));
-        } catch {
+            setError(null);
+        } catch (err) {
+            console.error('Failed to fetch services', err);
             setServices(demoServices);
+            setError('Showing offline services due to connection issue.');
         } finally {
             setLoading(false);
         }
@@ -72,6 +77,11 @@ const Services = () => {
 
     return (
         <div className="page-wrapper">
+            {error && (
+                <div style={{ backgroundColor: '#fff7ed', border: '1px solid #ffedd5', color: '#9a3412', padding: '12px 20px', borderRadius: '12px', marginBottom: '24px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>⚠️</span> {error}
+                </div>
+            )}
             {/* Page Header */}
             <header className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                 <div>

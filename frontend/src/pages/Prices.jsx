@@ -32,14 +32,18 @@ const Prices = () => {
     const [sortBy, setSortBy] = useState('newest'); // newest, price-low, price-high, name
     const [showSortMenu, setShowSortMenu] = useState(false);
 
+    const [error, setError] = useState(null);
+
     const fetchPrices = async (isAuto = false) => {
         try {
             const response = await api.get('/market');
             setPrices(response.data.data);
             setLastSync(new Date());
+            setError(null);
             if (!isAuto) setLoading(false);
         } catch (err) {
             console.error('Failed to fetch prices', err);
+            setError('Connection issue. Please check your internet or try refreshing.');
             if (!isAuto) setLoading(false);
         }
     };
@@ -144,6 +148,21 @@ const Prices = () => {
             <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #d1fae5', borderTopColor: '#059669', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Loading Market Intelligence...</span>
+        </div>
+    );
+
+    if (error) return (
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '60vh', padding: '20px', textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📡</div>
+            <h2 style={{ fontWeight: '800', marginBottom: '8px' }}>Server Unreachable</h2>
+            <p style={{ color: 'var(--text-muted)', maxWidth: '400px', marginBottom: '24px' }}>{error}</p>
+            <button
+                onClick={() => { setLoading(true); fetchPrices(); }}
+                className="btn-primary"
+                style={{ backgroundColor: '#059669', padding: '12px 32px' }}
+            >
+                Try Again
+            </button>
         </div>
     );
 

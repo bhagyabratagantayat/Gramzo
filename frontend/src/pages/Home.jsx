@@ -38,6 +38,8 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [showMoreCats, setShowMoreCats] = useState(false);
 
+    const [error, setError] = useState(false);
+
     const fetchData = async () => {
         try {
             const [marketRes, prodRes, servRes, noticeRes] = await Promise.all([
@@ -50,8 +52,10 @@ const Home = () => {
             setProducts(prodRes.data.data);
             setServices(servRes.data.data);
             setNotices(noticeRes.data.data);
+            setError(false);
         } catch (err) {
             console.error('Failed to fetch home data', err);
+            setError(true);
         } finally {
             setLoading(false);
         }
@@ -71,6 +75,11 @@ const Home = () => {
 
     return (
         <div className="app-container" style={{ paddingBottom: '40px' }}>
+            {error && (
+                <div style={{ backgroundColor: '#fff1f2', border: '1px solid #ffe4e6', color: '#be123c', padding: '12px 20px', borderRadius: '12px', marginTop: '80px', marginBottom: '-50px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '1.2rem' }}>📡</span> Some live data couldn't be loaded. Please check your connection.
+                </div>
+            )}
 
             {/* ── 1. Rounded Search Bar ─────────────────── */}
             <div className="section-spacer" style={{ position: 'relative', maxWidth: '600px', margin: '80px auto 32px' }}>

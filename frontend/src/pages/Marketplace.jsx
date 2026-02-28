@@ -12,6 +12,7 @@ const Marketplace = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -24,10 +25,12 @@ const Marketplace = () => {
             const response = await api.get('/products');
             const data = response.data.data;
             setProducts(data.length > 0 ? data : demoProducts);
+            setError(null);
             setLoading(false);
         } catch (err) {
             console.error('Failed to fetch products');
-            setProducts(demoProducts);
+            setProducts(demoProducts); // Fallback to demo data
+            setError('Could not connect to marketplace. Showing offline products.');
             setLoading(false);
         }
     };
@@ -60,6 +63,11 @@ const Marketplace = () => {
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
+            {error && (
+                <div style={{ backgroundColor: '#fff7ed', border: '1px solid #ffedd5', color: '#9a3412', padding: '12px 20px', borderRadius: '12px', marginBottom: '24px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>⚠️</span> {error}
+                </div>
+            )}
             <header style={{ marginBottom: '48px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px', flexWrap: 'wrap', marginBottom: '32px' }}>
                     <div>
