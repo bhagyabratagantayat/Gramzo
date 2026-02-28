@@ -90,3 +90,16 @@ exports.deleteService = async (req, res) => {
     }
 };
 
+// @desc    Get single service
+// @route   GET /api/services/:id
+exports.getServiceById = async (req, res) => {
+    try {
+        const service = await Service.findById(req.params.id).populate('category').populate('agentId');
+        if (!service) {
+            return res.status(404).json({ success: false, error: 'Service not found' });
+        }
+        res.status(200).json({ success: true, data: service });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};

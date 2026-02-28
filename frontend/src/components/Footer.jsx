@@ -2,78 +2,46 @@ import { Link } from 'react-router-dom';
 import { HiLightningBolt } from 'react-icons/hi';
 
 const Footer = () => {
-    const links = [
-        { label: 'Services', to: '/services' },
-        { label: 'Marketplace', to: '/marketplace' },
-        { label: 'Notifications', to: '/notifications' },
-        { label: 'Sign In', to: '/login' }
-    ];
-
     return (
-        <footer style={{
-            backgroundColor: '#0f172a',
-            borderTop: '3px solid var(--primary-color)',
-            padding: '48px 24px 32px',
-            marginTop: '60px'
-        }}>
-            <div style={{
-                maxWidth: '1200px', margin: '0 auto',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '40px',
-                marginBottom: '40px'
-            }}>
-                {/* Brand */}
-                <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+        <footer className="main-footer">
+            <div className="footer-grid">
+                <div className="footer-info">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                         <HiLightningBolt style={{ color: 'var(--primary-color)', fontSize: '1.6rem' }} />
-                        <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#fff', letterSpacing: '-0.04em' }}>Gramzo</span>
+                        <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--text-main)', letterSpacing: '-0.04em' }}>Gramzo</span>
                     </div>
-                    <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.65, margin: 0, maxWidth: '240px' }}>
-                        Empowering local economies through technology. Connecting villages to the digital age.
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', maxWidth: '300px' }}>
+                        Empowering local communities by bridging the gap between neighborhood services and community members through technology.
                     </p>
                 </div>
-
-                {/* Quick Links */}
-                <div>
-                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-                        Quick Links
-                    </div>
-                    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {links.map(l => (
-                            <li key={l.to}>
-                                <Link to={l.to} style={{
-                                    color: '#94a3b8', fontSize: '0.92rem', fontWeight: '500',
-                                    textDecoration: 'none', transition: 'var(--transition)'
-                                }}
-                                    onMouseEnter={e => e.target.style.color = '#fff'}
-                                    onMouseLeave={e => e.target.style.color = '#94a3b8'}
-                                >
-                                    {l.label}
-                                </Link>
-                            </li>
-                        ))}
+                <div className="footer-links">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><Link to="/services">Local Services</Link></li>
+                        <li><Link to="/marketplace">Marketplace</Link></li>
+                        <li><Link to="/prices">Market Intelligence</Link></li>
+                        <li><Link to="/notifications">Notifications</Link></li>
                     </ul>
                 </div>
-
-                {/* Tagline */}
-                <div>
-                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '16px' }}>
-                        Mission
-                    </div>
-                    <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.65, margin: 0 }}>
-                        Built for Bharat. Connecting 500+ villages to trusted local services, community markets, and real-time information.
-                    </p>
+                <div className="footer-links">
+                    <h5>Platform</h5>
+                    <ul>
+                        <li><Link to="/about">About Us</Link></li>
+                        <li><Link to="/contact">Contact Support</Link></li>
+                        <li><Link to="/terms">Terms of Service</Link></li>
+                    </ul>
+                </div>
+                <div className="footer-links">
+                    <h5>Account</h5>
+                    <ul>
+                        <li><Link to="/dashboard">My Dashboard</Link></li>
+                        <li><Link to="/login">Sign In</Link></li>
+                        <li><Link to="/signup">Register</Link></li>
+                    </ul>
                 </div>
             </div>
-
-            {/* Bottom bar */}
-            <div style={{
-                borderTop: '1px solid #1e293b',
-                paddingTop: '24px', textAlign: 'center',
-                color: '#475569', fontSize: '0.83rem'
-            }}>
-                © 2026 Gramzo Platform. All rights reserved. · Made with ❤️ for rural India
+            <div className="footer-bottom">
+                <p>&copy; {new Date().getFullYear()} Gramzo Technologies. All rights reserved. Built for Bharat.</p>
             </div>
         </footer>
     );

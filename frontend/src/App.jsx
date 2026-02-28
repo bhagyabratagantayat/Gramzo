@@ -19,6 +19,8 @@ import Earnings from './pages/Earnings';
 import Prices from './pages/Prices';
 import Marketplace from './pages/Marketplace';
 import AgentMarketplace from './pages/AgentMarketplace';
+import ProductDetail from './pages/ProductDetail';
+import ServiceDetail from './pages/ServiceDetail';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -49,6 +51,8 @@ function AppContent() {
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/service/:id" element={<ServiceDetail />} />
 
           {/* Logged-in accessible */}
           <Route path="/prices" element={<ProtectedRoute><Prices /></ProtectedRoute>} />
