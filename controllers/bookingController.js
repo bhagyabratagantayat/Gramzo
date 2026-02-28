@@ -103,7 +103,7 @@ exports.respondToBooking = async (req, res) => {
             return res.status(400).json({ success: false, error: 'Status must be "accepted" or "rejected"' });
         }
 
-        const booking = await Booking.findById(req.params.id);
+        const booking = await Booking.findById(req.params.id).populate('service');
         if (!booking) {
             return res.status(404).json({ success: false, error: 'Booking not found' });
         }
@@ -124,7 +124,7 @@ exports.respondToBooking = async (req, res) => {
         // Trigger notification for User/Admin
         await Notification.create({
             title: `Booking ${status.charAt(0).toUpperCase() + status.slice(1)}`,
-            message: `Your booking for item ID ${booking.service} has been ${status}.`,
+            message: `Your booking for ${booking.service?.title || 'item'} (ID: ${booking.service?._id || booking.service || 'N/A'}) has been ${status}.`,
             type: 'booking_update',
             recipientRole: 'User',
             recipientPhone: booking.phone,

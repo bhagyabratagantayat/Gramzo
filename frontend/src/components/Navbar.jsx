@@ -17,7 +17,6 @@ const NAV_LINKS = {
         { to: '/marketplace', icon: HiOutlineShoppingBag, label: 'Marketplace' },
         { to: '/prices', icon: HiOutlineCurrencyRupee, label: 'Market Price' },
         { to: '/admin', icon: HiOutlineShieldCheck, label: 'Manage' },
-        { to: '/all-bookings', icon: HiOutlineCollection, label: 'Bookings' },
         { to: '/notifications', icon: HiOutlineSpeakerphone, label: 'Notifications' },
     ],
     User: [

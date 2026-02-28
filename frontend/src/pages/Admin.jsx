@@ -323,7 +323,7 @@ const Admin = () => {
                                                 )}
                                                 {agent.isBlocked && (
                                                     <button
-                                                        onClick={() => handleApprove(agent._id)}
+                                                        onClick={() => handleBlock(agent._id)}
                                                         style={{
                                                             padding: '7px 14px', fontSize: '0.82rem', border: '1px solid #bfdbfe',
                                                             backgroundColor: '#eff6ff', color: '#1d4ed8', borderRadius: '8px',
