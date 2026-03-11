@@ -3,12 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const path = require('path');
-const session = require('express-session');
-const passport = require('passport');
 const cookieParser = require('cookie-parser');
-
-// Passport config
-require('./config/passport')(passport);
 
 const app = express();
 
@@ -23,24 +18,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-
-// Express session
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET || 'secret',
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: process.env.NODE_ENV === 'production',
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        }
-    })
-);
-
-// Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Routes
 app.get('/', (req, res) => {

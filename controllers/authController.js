@@ -1,26 +1,22 @@
 const User = require('../models/User');
-const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 // @desc    Register user
 // @route   POST /api/auth/register
 exports.register = async (req, res) => {
-    console.log('Register Request Body:', req.body);
     try {
         const { name, email, password, phone, role, location } = req.body;
 
-        // Validation
-        if (!email || !password) {
-            return res.status(400).json({ success: false, error: 'Please add an email and password' });
+        if (!email || !password || !name) {
+            return res.status(400).json({ success: false, error: 'Please provide name, email and password' });
         }
 
-        // Check for existing user
-        const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ success: false, error: 'User with this email or phone already exists' });
+            return res.status(400).json({ success: false, error: 'User already exists' });
         }
 
-        // Create user
         const user = await User.create({
             name,
             email,
@@ -30,73 +26,123 @@ exports.register = async (req, res) => {
             location: location || 'Default'
         });
 
-        // Log in the user after registration
-        req.login(user, (err) => {
-            if (err) {
-                return res.status(500).json({ success: false, error: 'Login after registration failed' });
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
+        res.status(201).json({
+            success: true,
+            accessToken,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
             }
-            res.status(201).json({
-                success: true,
-                user: {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                    phone: user.phone
-                }
-            });
         });
     } catch (error) {
-        console.error('Registration Error:', error);
         res.status(400).json({ success: false, error: error.message });
     }
 };
 
 // @desc    Login user
 // @route   POST /api/auth/login
-exports.login = (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if (err) {
-            return res.status(500).json({ success: false, error: 'Server Error' });
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ success: false, error: 'Please provide an email and password' });
         }
+
+        const user = await User.findOne({ email }).select('+password');
         if (!user) {
-            return res.status(401).json({ success: false, error: info.message || 'Invalid credentials' });
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
-        req.logIn(user, (err) => {
-            if (err) {
-                return res.status(500).json({ success: false, error: 'Login session failed' });
-            }
-            return res.status(200).json({
-                success: true,
-                user: {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                    phone: user.phone
-                }
-            });
+
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
+        }
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
-    })(req, res, next);
+
+        res.status(200).json({
+            success: true,
+            accessToken,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
+// @desc    Refresh Token
+// @route   POST /api/auth/refresh
+exports.refresh = async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ success: false, error: 'Not authenticated' });
+    }
+
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            return res.status(401).json({ success: false, error: 'User not found' });
+        }
+
+        const accessToken = generateAccessToken(user);
+        res.status(200).json({ success: true, accessToken });
+    } catch (err) {
+        return res.status(401).json({ success: false, error: 'Token expired or invalid' });
+    }
 };
 
 // @desc    Logout user
-// @route   GET /api/auth/logout
+// @route   POST /api/auth/logout
 exports.logout = (req, res) => {
-    req.logout((err) => {
-        if (err) {
-            return res.status(500).json({ success: false, error: 'Logout failed' });
-        }
-        res.status(200).json({ success: true, message: 'Logged out successfully' });
+    res.clearCookie('refreshToken');
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
+};
+
+// @desc    Get current user
+// @route   GET /api/auth/me
+exports.getMe = async (req, res) => {
+    res.status(200).json({ success: true, data: req.user });
+};
+
+// Helper to generate access token
+const generateAccessToken = (user) => {
+    return jwt.sign({ id: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRE
     });
 };
 
-// @desc    Get current logged in user
-// @route   GET /api/auth/me
-exports.getMe = async (req, res) => {
-    if (req.isAuthenticated()) {
-        res.status(200).json({ success: true, data: req.user });
-    } else {
-        res.status(401).json({ success: false, error: 'Not authenticated' });
-    }
+// Helper to generate refresh token
+const generateRefreshToken = (user) => {
+    return jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRE
+    });
 };

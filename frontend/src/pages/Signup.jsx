@@ -45,8 +45,8 @@ const Signup = () => {
             });
 
             if (res.data.success) {
-                const { user } = res.data;
-                signup(user); // No more token
+                const { user, accessToken } = res.data;
+                signup(user, accessToken); // Pass token to context
 
                 // Redirect based on role
                 if (user.role === 'Admin') {

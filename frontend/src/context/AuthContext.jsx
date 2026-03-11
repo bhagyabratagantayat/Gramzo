@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';
+import api, { setAccessToken } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -9,14 +9,17 @@ export const AuthProvider = ({ children }) => {
 
     const loadUser = async () => {
         try {
-            const res = await api.get('/auth/me');
+            // Check if we can get a new access token via refresh token cookie
+            const res = await api.post('/auth/refresh');
             if (res.data.success) {
-                setUser(res.data.data);
-            } else {
-                setUser(null);
+                setAccessToken(res.data.accessToken);
+                const userRes = await api.get('/auth/me');
+                if (userRes.data.success) {
+                    setUser(userRes.data.data);
+                }
             }
         } catch (error) {
-            console.error('Auto-login failed:', error);
+            console.error('Silent refresh failed:', error);
             setUser(null);
         } finally {
             setLoading(false);
@@ -27,20 +30,23 @@ export const AuthProvider = ({ children }) => {
         loadUser();
     }, []);
 
-    const login = (userData) => {
+    const login = (userData, token) => {
+        setAccessToken(token);
         setUser(userData);
     };
 
-    const signup = (userData) => {
+    const signup = (userData, token) => {
+        setAccessToken(token);
         setUser(userData);
     };
 
     const logout = async () => {
         try {
-            await api.get('/auth/logout');
+            await api.post('/auth/logout');
         } catch (error) {
             console.error('Logout failed:', error);
         } finally {
+            setAccessToken(null);
             setUser(null);
         }
     };

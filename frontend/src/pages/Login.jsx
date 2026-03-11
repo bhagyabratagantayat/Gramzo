@@ -28,8 +28,8 @@ const Login = () => {
             const res = await api.post('/auth/login', { email: email.trim(), password });
 
             if (res.data.success) {
-                const { user } = res.data;
-                login(user); // No more token
+                const { user, accessToken } = res.data;
+                login(user, accessToken); // Pass token to context
 
                 // Redirect based on role
                 if (user.role === 'Admin') {
