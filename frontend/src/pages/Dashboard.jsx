@@ -43,7 +43,7 @@ const Dashboard = () => {
     const fetchBookings = async () => {
         try {
             setLoadingBookings(true);
-            const res = await api.get(`/bookings?agentId=${user._id || user.id}`);
+            const res = await api.get('/agent/bookings');
             setBookings(res.data.data || []);
         } catch (error) {
             console.error('Error fetching bookings:', error);

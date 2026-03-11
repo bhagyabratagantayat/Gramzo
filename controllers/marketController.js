@@ -5,47 +5,49 @@ const MarketPrice = require('../models/MarketPrice');
 // @route   POST /api/market/add
 exports.addOrUpdatePrice = async (req, res) => {
     try {
-        let { itemName, category, price, image, location, updatedBy, role } = req.body;
-
-        console.log('Add/Update Price Attempt:', { itemName, category, price });
+        let { itemName, category, price, image, location } = req.body;
 
         if (!itemName || !category || price === undefined) {
             return res.status(400).json({ success: false, error: 'itemName, category, and price are required' });
         }
 
-        // Normalize role to Match Schema Enum (User, Agent, Admin)
-        if (role) {
-            role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+        // Approval check for Agents
+        if (req.user.role === 'Agent') {
+            if (!req.user.isApproved) {
+                return res.status(403).json({ success: false, error: 'Access denied. Agent not approved.' });
+            }
+            if (req.user.isBlocked) {
+                return res.status(403).json({ success: false, error: 'Access denied. Account blocked.' });
+            }
         }
 
-        // Find existing item by name and category (simple upsert logic)
+        const updatedBy = req.user.name;
+        const role = req.user.role;
+
+        // Find existing item by name and category
         let marketItem = await MarketPrice.findOne({ itemName, category });
 
         if (marketItem) {
-            // Initialize priceHistory if missing (safety check)
             if (!Array.isArray(marketItem.priceHistory)) {
                 marketItem.priceHistory = [];
             }
 
-            // Capture previous state for history
             const historicalEntry = {
                 price: marketItem.price,
                 updatedBy: marketItem.updatedBy || 'Previous Record',
                 date: marketItem.updatedAt || Date.now()
             };
 
-            // Push to history (Keep last 50)
             marketItem.priceHistory.unshift(historicalEntry);
             if (marketItem.priceHistory.length > 50) {
                 marketItem.priceHistory = marketItem.priceHistory.slice(0, 50);
             }
 
-            // Update existing
             marketItem.price = Number(price);
             marketItem.image = image || marketItem.image;
             marketItem.location = location || marketItem.location;
-            marketItem.updatedBy = updatedBy || marketItem.updatedBy;
-            marketItem.role = role || marketItem.role;
+            marketItem.updatedBy = updatedBy;
+            marketItem.role = role;
 
             await marketItem.save();
             return res.status(200).json({ success: true, message: `Updated ${itemName} price`, data: marketItem });
@@ -92,7 +94,7 @@ exports.getPricesByCategory = async (req, res) => {
     }
 };
 
-// @desc    Seed market items (200+ items)
+// @desc    Seed market items (Admin only)
 // @route   POST /api/market/seed
 exports.seedMarketItems = async (req, res) => {
     try {
@@ -142,7 +144,7 @@ exports.seedMarketItems = async (req, res) => {
                         image: `https://source.unsplash.com/300x200/?${itemName.replace(/\s+/g, ',')},${category.replace(/\s+/g, ',')}`,
                         location: "Puri Market",
                         updatedBy: "System Seed",
-                        role: "Agent"
+                        role: "Admin"
                     });
                     addedCount++;
                 } else {
@@ -169,9 +171,8 @@ exports.seedMarketItems = async (req, res) => {
 // @route   POST /api/market/update
 exports.updatePrice = async (req, res) => {
     try {
-        const { itemId, newPrice, updatedBy, role } = req.body;
+        const { itemId, newPrice } = req.body;
 
-        // 1. Validate request body
         if (!itemId || newPrice === undefined || isNaN(Number(newPrice))) {
             return res.status(400).json({
                 success: false,
@@ -179,7 +180,6 @@ exports.updatePrice = async (req, res) => {
             });
         }
 
-        // Validate ObjectId format to prevent CastError
         if (!mongoose.Types.ObjectId.isValid(itemId)) {
             return res.status(400).json({
                 success: false,
@@ -187,7 +187,6 @@ exports.updatePrice = async (req, res) => {
             });
         }
 
-        // 2. Find item safely
         const marketItem = await MarketPrice.findById(itemId);
         if (!marketItem) {
             return res.status(404).json({
@@ -196,35 +195,36 @@ exports.updatePrice = async (req, res) => {
             });
         }
 
-        // 3. Store old price before update (for history)
+        // Approval check for Agents
+        if (req.user.role === 'Agent') {
+            if (!req.user.isApproved) {
+                return res.status(403).json({ success: false, error: 'Access denied. Agent not approved.' });
+            }
+            if (req.user.isBlocked) {
+                return res.status(403).json({ success: false, error: 'Access denied. Account blocked.' });
+            }
+        }
+
         const historicalEntry = {
             price: marketItem.price,
             updatedBy: marketItem.updatedBy || 'Previous Record',
             date: marketItem.updatedAt || Date.now()
         };
 
-        // 4. Update price
         marketItem.price = Number(newPrice);
 
-        // 5. Update history if exists
         if (Array.isArray(marketItem.priceHistory)) {
             marketItem.priceHistory.unshift(historicalEntry);
-            // Limit history size to 50
             if (marketItem.priceHistory.length > 50) {
                 marketItem.priceHistory = marketItem.priceHistory.slice(0, 50);
             }
         }
 
-        // Normalize additional metadata if provided
-        if (updatedBy) marketItem.updatedBy = updatedBy;
-        if (role) {
-            marketItem.role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
-        }
+        marketItem.updatedBy = req.user.name;
+        marketItem.role = req.user.role;
 
-        // 6. Save data properly
         await marketItem.save();
 
-        // 7. Success response
         return res.status(200).json({
             success: true,
             message: "Price updated successfully",

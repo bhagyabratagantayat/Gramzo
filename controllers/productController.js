@@ -1,10 +1,10 @@
 const Product = require('../models/Product');
 
 // @desc    Add product
-// @route   POST /api/products/add
+// @route   POST /api/products
 exports.addProduct = async (req, res) => {
     try {
-        const { title, description, price, category, sellerName, phone, location, agentId, image } = req.body;
+        const { title, description, price, category, image } = req.body;
 
         if (!title || !price) {
             return res.status(400).json({ success: false, error: 'Title and price are required' });
@@ -15,10 +15,10 @@ exports.addProduct = async (req, res) => {
             description,
             price,
             category,
-            sellerName,
-            phone,
-            location,
-            agentId,
+            sellerName: req.user.name,
+            phone: req.user.phone,
+            location: req.user.location,
+            agentId: req.user._id,
             image: image || "https://via.placeholder.com/300"
         });
         res.status(201).json({ success: true, data: product });
@@ -60,10 +60,7 @@ exports.deleteProduct = async (req, res) => {
         }
 
         // Ownership check
-        const userRole = req.headers['x-user-role'];
-        const agentIdHeader = req.headers['x-agent-id'];
-
-        if (userRole !== 'Admin' && product.agentId?.toString() !== agentIdHeader) {
+        if (req.user.role !== 'Admin' && product.agentId?.toString() !== req.user._id.toString()) {
             return res.status(403).json({ success: false, error: 'Not authorized to delete this product' });
         }
 
@@ -82,6 +79,38 @@ exports.getProductById = async (req, res) => {
         if (!product) {
             return res.status(404).json({ success: false, error: 'Product not found' });
         }
+        res.status(200).json({ success: true, data: product });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+// @desc    Update product
+// @route   PUT /api/products/:id
+exports.updateProduct = async (req, res) => {
+    try {
+        let product = await Product.findById(req.params.id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, error: 'Product not found' });
+        }
+
+        // Ownership check
+        if (req.user.role !== 'Admin' && product.agentId?.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, error: 'Not authorized to update this product' });
+        }
+
+        const { title, description, price, category, image } = req.body;
+
+        // Validation
+        if (price && isNaN(price)) {
+            return res.status(400).json({ success: false, error: 'Price must be a number' });
+        }
+
+        product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        }).populate('category');
+
         res.status(200).json({ success: true, data: product });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });

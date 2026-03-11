@@ -1,4 +1,4 @@
-const Agent = require('../models/Agent');
+const User = require('../models/User');
 const Service = require('../models/Service');
 const Booking = require('../models/Booking');
 const Product = require('../models/Product');
@@ -7,7 +7,7 @@ const Product = require('../models/Product');
 // @route   GET /api/admin/agents
 exports.getAgents = async (req, res) => {
     try {
-        const agents = await Agent.find().populate('category');
+        const agents = await User.find({ role: 'Agent' });
         res.status(200).json({ success: true, data: agents });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
@@ -18,8 +18,8 @@ exports.getAgents = async (req, res) => {
 // @route   PATCH /api/admin/approve/:id
 exports.approveAgent = async (req, res) => {
     try {
-        const agent = await Agent.findByIdAndUpdate(
-            req.params.id,
+        const agent = await User.findOneAndUpdate(
+            { _id: req.params.id, role: 'Agent' },
             { isApproved: true },
             { new: true, runValidators: true }
         );
@@ -38,7 +38,7 @@ exports.approveAgent = async (req, res) => {
 // @route   PATCH /api/admin/block/:id
 exports.blockAgent = async (req, res) => {
     try {
-        const agent = await Agent.findById(req.params.id);
+        const agent = await User.findOne({ _id: req.params.id, role: 'Agent' });
 
         if (!agent) {
             return res.status(404).json({ success: false, error: 'Agent not found' });
@@ -70,7 +70,8 @@ exports.getBookings = async (req, res) => {
 // @route   GET /api/admin/overview
 exports.getOverview = async (req, res) => {
     try {
-        const totalAgents = await Agent.countDocuments();
+        const totalAgents = await User.countDocuments({ role: 'Agent' });
+        const totalUsers = await User.countDocuments({ role: 'User' });
         const totalServices = await Service.countDocuments();
         const totalBookings = await Booking.countDocuments();
         const totalProducts = await Product.countDocuments();
@@ -79,6 +80,7 @@ exports.getOverview = async (req, res) => {
             success: true,
             data: {
                 totalAgents,
+                totalUsers,
                 totalServices,
                 totalBookings,
                 totalProducts

@@ -41,29 +41,36 @@ function AppContent() {
       <LocationBanner />
       <main style={{ flex: 1, maxWidth: '1200px', margin: '0 auto', width: '100%', padding: '0 15px 80px' }}>
         <Routes>
-          {/* Public */}
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
-          {/* User-accessible */}
-          <Route path="/services" element={<Services />} />
-          <Route path="/bookings" element={<Bookings />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/service/:id" element={<ServiceDetail />} />
+          <Route path="/services" element={<Services />} />
 
-          {/* Logged-in accessible */}
-          <Route path="/prices" element={<ProtectedRoute><Prices /></ProtectedRoute>} />
-          <Route path="/agent/marketplace" element={<ProtectedRoute agentOnly><AgentMarketplace /></ProtectedRoute>} />
-          <Route path="/my-listings" element={<ProtectedRoute agentOnly><MyListings /></ProtectedRoute>} />
-          <Route path="/earnings" element={<ProtectedRoute agentOnly><Earnings /></ProtectedRoute>} />
+          {/* Authenticated Routes (User, Agent, Admin) */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/bookings" element={<Bookings />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/prices" element={<Prices />} />
+            <Route path="/user/bookings" element={<AllBookings />} />
+          </Route>
 
-          {/* Admin-only */}
-          <Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
-          <Route path="/all-bookings" element={<ProtectedRoute adminOnly><AllBookings /></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+          {/* Agent & Admin Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['Agent', 'Admin']} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/earnings" element={<Earnings />} />
+            <Route path="/my-listings" element={<MyListings />} />
+            <Route path="/agent/marketplace" element={<AgentMarketplace />} />
+          </Route>
+
+          {/* Admin Only Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/all-bookings" element={<AllBookings />} />
+          </Route>
 
           {/* Catch-all fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

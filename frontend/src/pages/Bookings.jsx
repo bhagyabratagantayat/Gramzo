@@ -47,7 +47,7 @@ const Bookings = () => {
                 return;
             }
             try {
-                const res = await api.get(`/bookings?phone=${encodeURIComponent(user.phone)}`);
+                const res = await api.get('/user/bookings');
                 setBookings(res.data.data || []);
             } catch (err) {
                 console.error('Failed to fetch bookings:', err);

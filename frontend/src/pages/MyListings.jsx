@@ -16,7 +16,7 @@ const MyListings = () => {
         setLoading(true);
         try {
             const [sRes, pRes] = await Promise.all([
-                api.get(`/services/agent/${user._id}`),
+                api.get('/agent/services'),
                 api.get(`/products/agent/${user._id}`)
             ]);
             setServices(sRes.data.data || []);

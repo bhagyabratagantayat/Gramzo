@@ -8,7 +8,8 @@ const bookingSchema = new mongoose.Schema({
         type: String
     },
     userId: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     service: {
         type: mongoose.Schema.Types.ObjectId,
@@ -16,7 +17,7 @@ const bookingSchema = new mongoose.Schema({
     },
     agent: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Agent"
+        ref: "User"
     },
     date: {
         type: Date

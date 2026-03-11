@@ -1,14 +1,13 @@
 const Booking = require('../models/Booking');
 
-// @desc    Get all bookings for a user by phone
-// @route   GET /api/user/bookings/:phone
+// @desc    Get all bookings for the logged-in user
+// @route   GET /api/user/bookings
 exports.getUserBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find({ phone: req.params.phone })
+        const bookings = await Booking.find({ userId: req.user._id })
             .populate('service')
             .populate('agent');
 
-        // Map to a cleaner response format as requested
         const formattedBookings = bookings.map(b => ({
             _id: b._id,
             serviceName: b.service?.title || 'Unknown Service',
@@ -26,10 +25,10 @@ exports.getUserBookings = async (req, res) => {
 };
 
 // @desc    Get user dashboard summary
-// @route   GET /api/user/dashboard/:phone
+// @route   GET /api/user/dashboard
 exports.getUserDashboardSummary = async (req, res) => {
     try {
-        const bookings = await Booking.find({ phone: req.params.phone });
+        const bookings = await Booking.find({ userId: req.user._id });
 
         const totalBookings = bookings.length;
         const completedBookings = bookings.filter(b => b.status === 'completed').length;

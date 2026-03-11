@@ -7,10 +7,11 @@ const {
     getBookings,
     getOverview
 } = require('../controllers/adminController');
-const adminAuth = require('../middleware/adminAuth');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Apply admin check to all routes
-router.use(adminAuth);
+router.use(protect);
+router.use(authorize('Admin'));
 
 router.get('/agents', getAgents);
 router.patch('/approve/:id', approveAgent);

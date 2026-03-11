@@ -1,13 +1,13 @@
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
 const Notification = require('../models/Notification');
-
+const User = require('../models/User');
 
 // @desc    Create a booking
 // @route   POST /api/bookings/create
 exports.createBooking = async (req, res) => {
     try {
-        const { userName, phone, serviceId, date, time } = req.body;
+        const { serviceId, date, time } = req.body;
 
         const service = await Service.findById(serviceId);
         if (!service) {
@@ -19,9 +19,9 @@ exports.createBooking = async (req, res) => {
         const agentEarning = amount - platformFee;
 
         const booking = await Booking.create({
-            userName,
-            phone,
-            userId: phone, // Mapping phone as userId for this app's logic
+            userName: req.user.name,
+            phone: req.user.phone,
+            userId: req.user._id,
             service: serviceId,
             agent: service.agentId,
             date,
@@ -37,7 +37,7 @@ exports.createBooking = async (req, res) => {
         // Trigger notification for Agent
         await Notification.create({
             title: 'New Booking Request',
-            message: `New booking for ${service.title} from ${userName}`,
+            message: `New booking for ${service.title} from ${req.user.name}`,
             type: 'booking_request',
             recipientRole: 'Agent',
             recipientId: service.agentId,
@@ -49,13 +49,19 @@ exports.createBooking = async (req, res) => {
     }
 };
 
-// @desc    Get all bookings (Admin) or own bookings by phone (User)
+// @desc    Get all bookings (Admin) or own bookings (User/Agent)
 // @route   GET /api/bookings
 exports.getBookings = async (req, res) => {
     try {
         const filter = {};
-        if (req.query.phone) filter.phone = req.query.phone;
-        if (req.query.agentId) filter.agent = req.query.agentId;
+
+        // RBAC Filter
+        if (req.user.role === 'User') {
+            filter.userId = req.user._id;
+        } else if (req.user.role === 'Agent') {
+            filter.agent = req.user._id;
+        }
+        // Admin sees all
 
         const bookings = await Booking.find(filter)
             .populate('service')
@@ -80,8 +86,8 @@ exports.updateBookingStatus = async (req, res) => {
         }
 
         if (status === "completed" && booking.status !== "completed") {
-            const Agent = require('../models/Agent');
-            await Agent.findByIdAndUpdate(booking.agent, { $inc: { earnings: booking.agentEarning } });
+            // Update earnings in User model for Agent
+            await User.findByIdAndUpdate(booking.agent, { $inc: { earnings: booking.agentEarning } });
         }
 
         booking.status = status;
@@ -97,8 +103,6 @@ exports.updateBookingStatus = async (req, res) => {
 exports.respondToBooking = async (req, res) => {
     try {
         const { status } = req.body;
-        const agentIdHeader = req.headers['x-agent-id'];
-        const userRole = req.headers['x-user-role'];
 
         if (!['accepted', 'rejected'].includes(status)) {
             return res.status(400).json({ success: false, error: 'Status must be "accepted" or "rejected"' });
@@ -110,7 +114,7 @@ exports.respondToBooking = async (req, res) => {
         }
 
         // Ownership check: Only the agent for this booking or Admin can respond
-        if (userRole !== 'Admin' && booking.agent.toString() !== agentIdHeader) {
+        if (req.user.role !== 'Admin' && booking.agent.toString() !== req.user._id.toString()) {
             return res.status(403).json({ success: false, error: 'Not authorized to respond to this booking' });
         }
 
@@ -125,10 +129,10 @@ exports.respondToBooking = async (req, res) => {
         // Trigger notification for User/Admin
         await Notification.create({
             title: `Booking ${status.charAt(0).toUpperCase() + status.slice(1)}`,
-            message: `Your booking for ${booking.service?.title || 'item'} (ID: ${booking.service?._id || booking.service || 'N/A'}) has been ${status}.`,
+            message: `Your booking for ${booking.service?.title || 'item'} has been ${status}.`,
             type: 'booking_update',
             recipientRole: 'User',
-            recipientPhone: booking.phone,
+            recipientId: booking.userId,
             bookingId: booking._id
         });
 

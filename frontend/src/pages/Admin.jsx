@@ -137,9 +137,9 @@ const Admin = () => {
     const fetchAll = async () => {
         try {
             const [agentsRes, bookingsRes, noticesRes] = await Promise.all([
-                api.get('/agents'),
-                api.get('/bookings'),
-                api.get('/notifications')
+                api.get('/admin/agents'),
+                api.get('/admin/bookings'),
+                api.get('/notices')
             ]);
             setAgents(agentsRes.data.data || []);
             setBookings(bookingsRes.data.data || []);
@@ -155,14 +155,14 @@ const Admin = () => {
 
     const handleApprove = async (id) => {
         try {
-            await api.patch(`/agents/approve/${id}`);
+            await api.patch(`/admin/approve/${id}`);
             fetchAll();
         } catch { alert('Failed to approve agent.'); }
     };
 
     const handleBlock = async (id) => {
         try {
-            await api.patch(`/agents/block/${id}`);
+            await api.patch(`/admin/block/${id}`);
             fetchAll();
         } catch { alert('Failed to block agent.'); }
     };
@@ -172,7 +172,7 @@ const Admin = () => {
         setNoticePosting(true);
         setNoticeMsg(null);
         try {
-            await api.post('/notifications/add', { title: noticeTitle, description: noticeDesc, location: noticeLoc, role: 'Admin' });
+            await api.post('/notices', { title: noticeTitle, description: noticeDesc, location: noticeLoc, role: 'Admin' });
             setNoticeTitle(''); setNoticeDesc(''); setNoticeLoc('');
             setNoticeMsg({ type: 'success', text: 'Notice posted successfully.' });
             fetchAll();

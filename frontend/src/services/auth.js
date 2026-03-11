@@ -10,6 +10,7 @@ export const getUser = () => {
 
 export const logout = () => {
     localStorage.removeItem('gramzoUser');
+    localStorage.removeItem('gramzoToken');
 };
 
 export const isAgent = () => {

@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { addPrice, getPrices, getPriceByItem } = require('../controllers/priceController');
 
-router.post('/add', addPrice);
+const { protect, authorize } = require('../middleware/authMiddleware');
+
+router.post('/add', protect, authorize('Agent', 'Admin'), addPrice);
 router.get('/', getPrices);
 router.get('/item/:name', getPriceByItem);
 

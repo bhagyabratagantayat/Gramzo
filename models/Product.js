@@ -27,7 +27,7 @@ const productSchema = new mongoose.Schema({
     },
     agentId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Agent"
+        ref: "User"
     },
     image: {
         type: String,

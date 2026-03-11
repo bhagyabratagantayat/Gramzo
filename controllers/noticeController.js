@@ -1,13 +1,17 @@
 const Notice = require('../models/Notice');
 
 // @desc    Add notice  (admin only)
-// @route   POST /api/notices/add
+// @route   POST /api/notices
 exports.addNotice = async (req, res) => {
     try {
-        const { title, description, location, role } = req.body;
+        const { title, description, location } = req.body;
 
-        // Role guard — only admin may post notices
-        if (role !== 'Admin') {
+        if (!title || !description || !location) {
+            return res.status(400).json({ success: false, error: 'Title, description, and location are required.' });
+        }
+
+        // Role guard — only admin may post notices (handled by protect/authorize middleware, but double check here)
+        if (req.user.role !== 'Admin') {
             return res.status(403).json({ success: false, error: 'Forbidden: only admins can post notices.' });
         }
 
@@ -33,8 +37,8 @@ exports.getNotices = async (req, res) => {
 // @route   DELETE /api/notices/:id
 exports.deleteNotice = async (req, res) => {
     try {
-        const { role } = req.body;
-        if (role !== 'admin') {
+        // Role guard
+        if (req.user.role !== 'Admin') {
             return res.status(403).json({ success: false, error: 'Forbidden: only admins can delete notices.' });
         }
 

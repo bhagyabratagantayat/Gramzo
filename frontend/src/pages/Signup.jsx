@@ -3,13 +3,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
     HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineUserGroup,
-    HiOutlineExclamationCircle, HiLightningBolt
+    HiOutlineExclamationCircle, HiLightningBolt, HiOutlineMail, HiOutlineLockClosed
 } from 'react-icons/hi';
+import api from '../services/api';
 
 const Signup = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
-    const [formData, setFormData] = useState({ name: '', phone: '', location: '', role: 'User' });
+    const { signup } = useAuth();
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        location: '',
+        role: 'User'
+    });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -17,48 +25,46 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.name.trim() || !formData.phone.trim()) {
+        if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim() || !formData.phone.trim()) {
             setError('Please fill in all required fields.');
+            return;
+        }
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters long.');
             return;
         }
         setError(null);
         setLoading(true);
 
-        let userData = { ...formData, name: formData.name.trim(), phone: formData.phone.trim() };
+        try {
+            const res = await api.post('/auth/register', {
+                ...formData,
+                name: formData.name.trim(),
+                email: formData.email.trim(),
+                phone: formData.phone.trim()
+            });
 
-        if (formData.role === 'Agent') {
-            try {
-                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-                const res = await fetch(`${baseUrl}/agents/add`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: userData.name,
-                        phone: userData.phone,
-                        location: userData.location || 'Default'
-                    })
-                });
-                const result = await res.json();
-                if (result.success) {
-                    userData._id = result.data._id;
+            if (res.data.success) {
+                const { user } = res.data;
+                signup(user); // No more token
+
+                // Redirect based on role
+                if (user.role === 'Admin') {
+                    navigate('/admin');
+                } else if (user.role === 'Agent') {
+                    navigate('/agent');
                 } else {
-                    setError('Agent registration failed: ' + (result.error || 'Unknown error'));
-                    setLoading(false);
-                    return;
+                    navigate('/');
                 }
-            } catch {
-                setError('Connection error. Could not register agent.');
-                setLoading(false);
-                return;
+            } else {
+                setError(res.data.error || 'Registration failed');
             }
-        } else {
-            // For Users/Admins, simulate an ID for consistency
-            userData._id = 'user_' + Date.now();
+        } catch (err) {
+            console.error('Registration error:', err);
+            setError(err.response?.data?.error || 'Failed to create account. Please try again.');
+        } finally {
+            setLoading(false);
         }
-
-        login(userData);
-        setLoading(false);
-        navigate(formData.role === 'User' ? '/' : '/dashboard');
     };
 
     const iconStyle = (top = '50%') => ({
@@ -100,26 +106,90 @@ const Signup = () => {
                     )}
 
                     <form onSubmit={handleSubmit}>
-                        {fields.map(({ name, type, icon: Icon, placeholder, label }) => (
-                            <div key={name} className="form-group">
-                                <label className="form-label">{label}</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Icon style={iconStyle()} />
-                                    <input
-                                        type={type}
-                                        name={name}
-                                        className="form-input"
-                                        placeholder={placeholder}
-                                        value={formData[name]}
-                                        onChange={handleChange}
-                                        required
-                                        style={{ paddingLeft: '40px' }}
-                                    />
-                                </div>
+                        <div className="form-group">
+                            <label className="form-label">Full Name</label>
+                            <div style={{ position: 'relative' }}>
+                                <HiOutlineUser style={iconStyle()} />
+                                <input
+                                    type="text"
+                                    name="name"
+                                    className="form-input"
+                                    placeholder="Your Full Name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    style={{ paddingLeft: '40px' }}
+                                />
                             </div>
-                        ))}
+                        </div>
 
-                        {/* Role selector */}
+                        <div className="form-group">
+                            <label className="form-label">Email Address</label>
+                            <div style={{ position: 'relative' }}>
+                                <HiOutlineMail style={iconStyle()} />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className="form-input"
+                                    placeholder="Enter your email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    style={{ paddingLeft: '40px' }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Phone Number</label>
+                            <div style={{ position: 'relative' }}>
+                                <HiOutlinePhone style={iconStyle()} />
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    className="form-input"
+                                    placeholder="10-digit mobile"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    required
+                                    style={{ paddingLeft: '40px' }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Password</label>
+                            <div style={{ position: 'relative' }}>
+                                <HiOutlineLockClosed style={iconStyle()} />
+                                <input
+                                    type="password"
+                                    name="password"
+                                    className="form-input"
+                                    placeholder="At least 6 characters"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    style={{ paddingLeft: '40px' }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Location (Optional)</label>
+                            <div style={{ position: 'relative' }}>
+                                <HiOutlineLocationMarker style={iconStyle()} />
+                                <input
+                                    type="text"
+                                    name="location"
+                                    className="form-input"
+                                    placeholder="Village or city"
+                                    value={formData.location}
+                                    onChange={handleChange}
+                                    style={{ paddingLeft: '40px' }}
+                                />
+                            </div>
+                        </div>
+
                         <div className="form-group" style={{ marginBottom: '28px' }}>
                             <label className="form-label">Join As</label>
                             <div style={{ position: 'relative' }}>

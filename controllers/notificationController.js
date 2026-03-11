@@ -5,28 +5,26 @@ const Booking = require('../models/Booking');
 // @route   GET /api/notifications
 exports.getNotifications = async (req, res) => {
     try {
-        const { role, userId, agentId } = req.query;
+        const { role, _id } = req.user;
         let query = {};
 
         if (role === 'Admin') {
-            // Admin sees everything
             query = {};
         } else if (role === 'Agent') {
-            // Agent sees Admin notices + bookings/orders related to them
             query = {
                 $or: [
                     { recipientRole: 'All' },
-                    { recipientRole: 'Agent', recipientId: agentId },
+                    { recipientRole: 'Agent', recipientId: _id },
                     { type: 'admin_notice' }
                 ]
             };
         } else {
-            // User sees Admin notices + their own updates (by ID or Phone)
+            // User
             query = {
                 $or: [
                     { recipientRole: 'All' },
-                    { recipientRole: 'User', recipientId: userId },
-                    { recipientRole: 'User', recipientPhone: req.query.phone },
+                    { recipientRole: 'User', recipientId: _id },
+                    { recipientRole: 'User', recipientPhone: req.user.phone },
                     { type: 'admin_notice' }
                 ]
             };
@@ -43,9 +41,9 @@ exports.getNotifications = async (req, res) => {
 // @route   POST /api/notifications/create
 exports.createNotification = async (req, res) => {
     try {
-        const { title, message, type, recipientRole, recipientId, bookingId, role } = req.body;
+        const { title, message, type, recipientRole, recipientId, bookingId } = req.body;
 
-        if (type === 'admin_notice' && role !== 'Admin') {
+        if (type === 'admin_notice' && req.user.role !== 'Admin') {
             return res.status(403).json({ success: false, error: 'Only admins can create notices' });
         }
 
@@ -56,7 +54,7 @@ exports.createNotification = async (req, res) => {
             recipientRole,
             recipientId,
             bookingId,
-            senderId: req.body.senderId // or from auth middleware if available
+            senderId: req.user._id
         });
 
         res.status(201).json({ success: true, data: notification });
@@ -69,8 +67,7 @@ exports.createNotification = async (req, res) => {
 // @route   DELETE /api/notifications/:id
 exports.deleteNotification = async (req, res) => {
     try {
-        const { role } = req.body;
-        if (role !== 'Admin') {
+        if (req.user.role !== 'Admin') {
             return res.status(403).json({ success: false, error: 'Only admins can delete notifications' });
         }
 

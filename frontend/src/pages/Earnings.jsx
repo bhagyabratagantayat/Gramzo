@@ -49,12 +49,11 @@ const Earnings = () => {
         if (!user?._id) { setLoading(false); return; }
         try {
             const [earningsRes, bookingsRes] = await Promise.all([
-                api.get(`/agents/earnings/${user._id}`),
-                api.get('/bookings')
+                api.get('/agent/earnings'),
+                api.get('/agent/bookings')
             ]);
             setData(earningsRes.data.data);
-            const all = bookingsRes.data.data || [];
-            setBookings(all.filter(b => b.agent?._id === user._id || b.agent === user._id));
+            setBookings(bookingsRes.data.data || []);
         } catch {
             setError('Could not load earnings data.');
         } finally {

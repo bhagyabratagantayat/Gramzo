@@ -17,7 +17,7 @@ const serviceSchema = new mongoose.Schema({
     },
     agentId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Agent"
+        ref: "User"
     },
     availableTime: {
         type: String

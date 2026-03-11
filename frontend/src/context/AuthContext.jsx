@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -6,17 +7,16 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const checkAuth = () => {
+    const loadUser = async () => {
         try {
-            const storedUser = localStorage.getItem('gramzoUser');
-            if (storedUser) {
-                const parsedUser = JSON.parse(storedUser);
-                setUser(parsedUser);
+            const res = await api.get('/auth/me');
+            if (res.data.success) {
+                setUser(res.data.data);
             } else {
                 setUser(null);
             }
         } catch (error) {
-            console.error('Error parsing stored user:', error);
+            console.error('Auto-login failed:', error);
             setUser(null);
         } finally {
             setLoading(false);
@@ -24,28 +24,37 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        checkAuth();
+        loadUser();
     }, []);
 
     const login = (userData) => {
-        localStorage.setItem('gramzoUser', JSON.stringify(userData));
         setUser(userData);
     };
 
-    const logout = () => {
-        localStorage.removeItem('gramzoUser');
-        setUser(null);
+    const signup = (userData) => {
+        setUser(userData);
+    };
+
+    const logout = async () => {
+        try {
+            await api.get('/auth/logout');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        } finally {
+            setUser(null);
+        }
     };
 
     const value = {
         user,
         loading,
         login,
+        signup,
         logout,
         isAuthenticated: !!user,
         isAgent: user?.role === 'Agent',
         isAdmin: user?.role === 'Admin',
-        checkAuth
+        loadUser
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

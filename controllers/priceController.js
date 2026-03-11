@@ -1,31 +1,27 @@
 const Price = require('../models/Price');
-const Agent = require('../models/Agent');
+const User = require('../models/User');
 
 // @desc    Add market price
 // @route   POST /api/prices/add
 exports.addPrice = async (req, res) => {
     try {
-        const { item, price, location, agentId } = req.body;
+        const { item, price, location } = req.body;
 
-        // Find agent to check approval status
-        const agent = await Agent.findById(agentId);
-        if (!agent) {
-            return res.status(404).json({ success: false, error: 'Agent not found' });
-        }
-
-        if (!agent.isApproved) {
-            return res.status(403).json({ success: false, error: 'Access denied. Agent not approved.' });
-        }
-
-        if (agent.isBlocked) {
-            return res.status(403).json({ success: false, error: 'Access denied. Contact admin' });
+        // Check requester status (from protect middleware)
+        if (req.user.role === 'Agent') {
+            if (!req.user.isApproved) {
+                return res.status(403).json({ success: false, error: 'Access denied. Agent not approved.' });
+            }
+            if (req.user.isBlocked) {
+                return res.status(403).json({ success: false, error: 'Access denied. Account blocked.' });
+            }
         }
 
         const newPrice = await Price.create({
             item,
             price,
             location,
-            agent: agentId
+            agent: req.user._id
         });
 
         res.status(201).json({ success: true, data: newPrice });

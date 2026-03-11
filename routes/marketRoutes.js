@@ -8,10 +8,12 @@ const {
     updatePrice
 } = require('../controllers/marketController');
 
-router.post('/add', addOrUpdatePrice);
-router.post('/update', updatePrice);
+const { protect, authorize } = require('../middleware/authMiddleware');
+
+router.post('/add', protect, authorize('Agent', 'Admin'), addOrUpdatePrice);
+router.post('/update', protect, authorize('Agent', 'Admin'), updatePrice);
 router.get('/', getAllPrices);
 router.get('/category/:category', getPricesByCategory);
-router.post('/seed', seedMarketItems);
+router.post('/seed', protect, authorize('Admin'), seedMarketItems);
 
 module.exports = router;

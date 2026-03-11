@@ -1,11 +1,11 @@
 const Service = require('../models/Service');
-const Agent = require('../models/Agent');
+const User = require('../models/User');
 
 // @desc    Add service
 // @route   POST /api/services/add
 exports.addService = async (req, res) => {
     try {
-        const { title, description, price, category, agentId, availableTime, location, locationName, latitude, longitude, requiresAppointment, image } = req.body;
+        const { title, description, price, category, availableTime, location, locationName, latitude, longitude, requiresAppointment, image } = req.body;
 
         if (!title || !price) {
             return res.status(400).json({ success: false, error: 'Title and price are required' });
@@ -16,7 +16,7 @@ exports.addService = async (req, res) => {
             description,
             price,
             category,
-            agentId,
+            agentId: req.user._id,
             availableTime,
             location,
             locationName,
@@ -38,7 +38,7 @@ exports.getServices = async (req, res) => {
     try {
         let query = {};
 
-        // Filter by location name — matches old `location` OR new `locationName` field
+        // Filter by location name
         if (req.query.locationName) {
             const regex = new RegExp(req.query.locationName.trim(), 'i');
             query.$or = [
@@ -76,10 +76,7 @@ exports.deleteService = async (req, res) => {
         }
 
         // Ownership check
-        const userRole = req.headers['x-user-role'];
-        const agentIdHeader = req.headers['x-agent-id'];
-
-        if (userRole !== 'Admin' && service.agentId?.toString() !== agentIdHeader) {
+        if (req.user.role !== 'Admin' && service.agentId?.toString() !== req.user._id.toString()) {
             return res.status(403).json({ success: false, error: 'Not authorized to delete this service' });
         }
 

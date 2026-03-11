@@ -7,9 +7,14 @@ const {
     getAgentEarnings
 } = require('../controllers/agentDashboardController');
 
-router.get('/dashboard/:agentId', getDashboardSummary);
-router.get('/services/:agentId', getAgentServices);
-router.get('/bookings/:agentId', getAgentBookings);
-router.get('/earnings/:agentId', getAgentEarnings);
+const { protect, authorize } = require('../middleware/authMiddleware');
+
+router.use(protect);
+router.use(authorize('Agent', 'Admin'));
+
+router.get('/dashboard', getDashboardSummary);
+router.get('/services', getAgentServices);
+router.get('/bookings', getAgentBookings);
+router.get('/earnings', getAgentEarnings);
 
 module.exports = router;
