@@ -2,6 +2,8 @@ import axios from 'axios';
 
 let accessToken = null;
 
+const baseURL = import.meta.env.VITE_API_URL || 'https://gramzo.onrender.com/api';
+
 export const setAccessToken = (token) => {
     accessToken = token;
 };
