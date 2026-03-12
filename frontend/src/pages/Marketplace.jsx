@@ -8,11 +8,20 @@ import { getFallbackImage } from '../utils/imageHelper';
 
 const Marketplace = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const location = useLocation();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState(null);
+
+    const DEFAULT_PHONE = "911234567890"; // Admin's default number
+
+    const handleContact = (product) => {
+        const contactPhone = product.phone || product.agentId?.phone || DEFAULT_PHONE;
+        const message = `Halo, I'm interested in your product: ${product.title}`;
+        window.open(`https://wa.me/${contactPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    };
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -122,21 +131,31 @@ const Marketplace = () => {
                                                 </div>
                                             </div>
 
-                                            {user ? (
-                                                <button 
-                                                    onClick={() => navigate(`/product/${product._id}`)}
-                                                    className="btn-primary btn-full mt-4"
-                                                >
-                                                    Contact Seller
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => navigate('/login')}
-                                                    className="btn-secondary btn-full mt-4"
-                                                >
-                                                    Login to Buy
-                                                </button>
-                                            )}
+                                            <div className="detail-action-footer mt-4">
+                                                {user ? (
+                                                    <div className="flex gap-2">
+                                                        <button 
+                                                            onClick={() => handleContact(product)}
+                                                            className="btn-primary flex-1 flex-center gap-2 py-3 rounded-xl text-sm"
+                                                        >
+                                                            <HiOutlineShoppingBag /> Contact Seller
+                                                        </button>
+                                                        <a 
+                                                            href={`tel:${product.phone || product.agentId?.phone || DEFAULT_PHONE}`}
+                                                            className="btn-secondary p-3 flex-center rounded-xl"
+                                                        >
+                                                            <HiOutlinePhone className="text-xl" />
+                                                        </a>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => navigate('/login')}
+                                                        className="btn-secondary btn-full py-3 rounded-xl text-sm"
+                                                    >
+                                                        Login to Buy
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

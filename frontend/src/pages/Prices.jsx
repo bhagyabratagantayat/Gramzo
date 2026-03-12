@@ -167,8 +167,8 @@ const Prices = () => {
     return (
         <div className="market-prices-container app-container py-8">
             {/* Header Section */}
-            <header className="dash-header mb-12">
-                <div className="dash-title-group">
+            <header className="dash-header mb-8 sm:mb-12">
+                <div className="dash-title-group mb-6 sm:mb-0">
                     <div className="dash-eyebrow flex items-center gap-2">
                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                         Live Market Feed
@@ -179,25 +179,27 @@ const Prices = () => {
                     </p>
                 </div>
 
-                <div className="flex flex-wrap gap-4 flex-1 lg:max-w-2xl">
-                    <div className="relative flex-1 min-w-[280px]">
+                <div className="flex flex-col sm:flex-row gap-4 w-full lg:max-w-2xl">
+                    <div className="relative flex-1">
                         <HiOutlineSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl" />
                         <input
                             type="text"
-                            placeholder="Search commodities or locations..."
-                            className="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-12 pr-4 font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm"
+                            placeholder="Search commodities..."
+                            className="form-input pl-12 h-[56px] w-full"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
 
-                    <div className="relative group">
+                    <div className="relative group min-w-[140px]">
                         <button
                             onClick={() => setShowSortMenu(!showSortMenu)}
-                            className="h-full px-6 flex items-center gap-3 bg-white border border-slate-200 rounded-2xl font-black text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
+                            className="h-[56px] w-full px-6 flex-between gap-3 bg-white border border-slate-200 rounded-2xl font-black text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
                         >
-                            <HiFilter className="text-lg" />
-                            <span className="hidden sm:inline uppercase text-[10px] tracking-widest">Sort By</span>
+                            <div className="flex items-center gap-2">
+                                <HiFilter className="text-lg" />
+                                <span className="uppercase text-[10px] tracking-widest">Sort</span>
+                            </div>
                             <HiChevronDown className={`transition-transform duration-300 ${showSortMenu ? 'rotate-180' : ''}`} />
                         </button>
                         
@@ -328,34 +330,34 @@ const Prices = () => {
             {/* Price Update Modal */}
             {selectedItem && (
                 <div className="fixed inset-0 z-[1000] flex-center p-4">
-                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSelectedItem(null)}></div>
-                    <div className="relative bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
-                        <div className="p-8 pb-0 flex justify-between items-center">
-                            <h2 className="text-2xl font-black text-slate-800">Market Correction</h2>
-                            <button className="w-10 h-10 rounded-full bg-slate-50 flex-center text-slate-400 hover:bg-slate-100 transition-colors" onClick={() => setSelectedItem(null)}>
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setSelectedItem(null)}></div>
+                    <div className="relative bg-white w-full max-w-md rounded-[40px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.3)] animate-in fade-in zoom-in duration-300">
+                        <div className="p-8 pb-4 flex justify-between items-center">
+                            <h2 className="text-2xl font-black text-slate-800 tracking-tight">Market Correction</h2>
+                            <button className="w-10 h-10 rounded-full bg-slate-100 flex-center text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition-all" onClick={() => setSelectedItem(null)}>
                                 <HiX className="text-xl" />
                             </button>
                         </div>
                         
-                        <div className="p-8 text-center pt-6">
-                            <div className="w-20 h-20 rounded-[24px] bg-emerald-50 text-emerald-600 flex-center mx-auto mb-6 text-4xl">
+                        <div className="p-8 text-center pt-2">
+                            <div className="w-20 h-20 rounded-[30px] bg-emerald-100 text-emerald-600 flex-center mx-auto mb-6 text-4xl shadow-inner">
                                 <HiOutlineTrendingUp />
                             </div>
-                            <p className="text-slate-500 font-bold mb-8">
-                                Updating market rate for <strong className="text-slate-800">{selectedItem.itemName}</strong>
+                            <p className="text-slate-500 font-bold mb-8 leading-relaxed">
+                                Updating market rate for <br/><span className="text-slate-800 text-xl font-black">{selectedItem.itemName}</span>
                             </p>
 
                             <form onSubmit={handleUpdatePrice} className="space-y-8">
-                                <div className="space-y-2 text-left">
-                                    <div className="flex justify-between items-end px-1">
+                                <div className="space-y-4 text-left">
+                                    <div className="flex justify-between items-end px-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Set New Rate</label>
-                                        <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">Current: ₹{selectedItem.price}</span>
+                                        <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100">Current: ₹{selectedItem.price}</span>
                                     </div>
                                     <div className="relative">
-                                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-300">₹</span>
+                                        <span className="absolute left-8 top-1/2 -translate-y-1/2 text-3xl font-black text-slate-300">₹</span>
                                         <input
                                             type="number"
-                                            className="w-full bg-slate-50 border-none rounded-3xl py-6 pl-12 pr-6 text-3xl font-black text-slate-800 focus:ring-4 focus:ring-emerald-500/10 transition-all placeholder:text-slate-200"
+                                            className="w-full bg-slate-50 border-2 border-transparent focus:border-emerald-500 focus:bg-white rounded-[28px] py-8 pl-14 pr-8 text-4xl font-black text-slate-800 transition-all placeholder:text-slate-200"
                                             value={newPrice}
                                             onChange={(e) => setNewPrice(e.target.value)}
                                             required
@@ -368,9 +370,14 @@ const Prices = () => {
                                 <button 
                                     type="submit" 
                                     disabled={updating}
-                                    className="btn-primary w-full py-5 rounded-2xl font-black uppercase tracking-widest text-sm bg-emerald-600 shadow-xl shadow-emerald-100 hover:shadow-emerald-200 transition-all disabled:opacity-50 disabled:shadow-none"
+                                    className="btn-primary w-full py-6 rounded-[24px] font-black uppercase tracking-widest text-base bg-emerald-600 shadow-xl shadow-emerald-100 hover:shadow-emerald-200 transition-all disabled:opacity-50 disabled:shadow-none translate-y-0 active:translate-y-1"
                                 >
-                                    {updating ? 'Processing...' : 'Publish Update'}
+                                    {updating ? (
+                                        <div className="flex-center gap-3">
+                                            <span className="spinner w-5 h-5 border-2"></span>
+                                            Publishing...
+                                        </div>
+                                    ) : 'Publish Update'}
                                 </button>
                             </form>
                         </div>
