@@ -43,6 +43,10 @@ const ROLE_COLORS = {
     Admin: { bg: '#fdf4ff', color: '#9333ea' },
 };
 
+import UserNavbar from './UserNavbar';
+import AgentNavbar from './AgentNavbar';
+import AdminNavbar from './AdminNavbar';
+
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -50,7 +54,6 @@ const Navbar = () => {
     const isHomePage = location.pathname === '/';
 
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const drawerRef = useRef(null);
 
     // close drawer on route change
@@ -76,7 +79,17 @@ const Navbar = () => {
         navigate('/');
     };
 
-    const links = user ? (NAV_LINKS[user.role] || []) : NAV_LINKS.User;
+    const renderLinks = (isDrawer = false) => {
+        const props = { onLinkClick: () => setDrawerOpen(false) };
+        if (!user) return <UserNavbar {...props} />;
+
+        switch (user.role) {
+            case 'Admin': return <AdminNavbar {...props} />;
+            case 'Agent': return <AgentNavbar {...props} />;
+            default: return <UserNavbar {...props} />;
+        }
+    };
+
     const roleCfg = user ? (ROLE_COLORS[user.role] || ROLE_COLORS.User) : null;
 
     // Homepage Special Header
@@ -131,24 +144,14 @@ const Navbar = () => {
                     </div>
 
                     <ul className="navbar-nav-links">
-                        {links.map(({ to, label }) => (
-                            <li key={to}>
-                                <NavLink
-                                    to={to}
-                                    className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-                                    end={to === '/'}
-                                >
-                                    {label}
-                                </NavLink>
-                            </li>
-                        ))}
+                        {renderLinks()}
                     </ul>
 
                     <div className="navbar-actions">
                         {user ? (
                             <div className="user-profile-section">
                                 <div className="user-info hide-mobile">
-                                    <span className="user-name">{user.name}</span>
+                                    <span className="user-name">{user.name.split(' ')[0]}</span>
                                     <span className="role-tag" style={{ backgroundColor: roleCfg.bg, color: roleCfg.color }}>
                                         {user.role}
                                     </span>
@@ -177,17 +180,9 @@ const Navbar = () => {
                     </div>
 
                     <div className="drawer-body">
-                        {links.map(({ to, icon: Icon, label }) => (
-                            <NavLink
-                                key={to}
-                                to={to}
-                                className={({ isActive }) => `drawer-item${isActive ? ' active' : ''}`}
-                                onClick={() => setDrawerOpen(false)}
-                            >
-                                <Icon className="drawer-icon" />
-                                <span>{label}</span>
-                            </NavLink>
-                        ))}
+                        <ul className="drawer-links" style={{ listStyle: 'none', padding: 0 }}>
+                            {renderLinks(true)}
+                        </ul>
 
                         <div className="drawer-divider" />
 

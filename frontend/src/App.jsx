@@ -24,6 +24,9 @@ import ServiceDetail from './pages/ServiceDetail';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+import DashboardGateway from './components/DashboardGateway';
+import AdminDashboard from './pages/AdminDashboard';
+
 function AppContent() {
   const { loading } = useAuth();
 
@@ -50,23 +53,23 @@ function AppContent() {
           <Route path="/service/:id" element={<ServiceDetail />} />
           <Route path="/services" element={<Services />} />
 
-          {/* Authenticated Routes (User, Agent, Admin) */}
+          {/* Authenticated Dashboard Gateway */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardGateway />} />
             <Route path="/bookings" element={<Bookings />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/prices" element={<Prices />} />
             <Route path="/user/bookings" element={<AllBookings />} />
           </Route>
 
-          {/* Agent & Admin Routes */}
+          {/* Agent & Admin Restricted Access */}
           <Route element={<ProtectedRoute allowedRoles={['Agent', 'Admin']} />}>
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/earnings" element={<Earnings />} />
             <Route path="/my-listings" element={<MyListings />} />
             <Route path="/agent/marketplace" element={<AgentMarketplace />} />
           </Route>
 
-          {/* Admin Only Routes */}
+          {/* Admin Management Panel */}
           <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
             <Route path="/admin" element={<Admin />} />
             <Route path="/all-bookings" element={<AllBookings />} />

@@ -28,7 +28,10 @@ exports.getUserBookings = async (req, res) => {
 // @route   GET /api/user/dashboard
 exports.getUserDashboardSummary = async (req, res) => {
     try {
-        const bookings = await Booking.find({ userId: req.user._id });
+        const bookings = await Booking.find({ userId: req.user._id })
+            .populate('service')
+            .populate('agent')
+            .sort({ createdAt: -1 });
 
         const totalBookings = bookings.length;
         const completedBookings = bookings.filter(b => b.status === 'completed').length;
@@ -41,7 +44,8 @@ exports.getUserDashboardSummary = async (req, res) => {
                 totalBookings,
                 completedBookings,
                 pendingBookings,
-                totalAmountSpent
+                totalAmountSpent,
+                recentBookings: bookings.slice(0, 5)
             }
         });
     } catch (error) {
