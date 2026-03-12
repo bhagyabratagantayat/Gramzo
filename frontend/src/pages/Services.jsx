@@ -69,17 +69,17 @@ const Services = () => {
     const closeBooking = () => setSelectedService(null);
 
     if (loading) return (
-        <div className="page-loading">
+        <div className="page-loading-full flex-col gap-4">
             <div className="spinner" />
-            <span>Loading services…</span>
+            <span className="text-muted font-bold">Loading services…</span>
         </div>
     );
 
     return (
         <div className="services-container">
             {error && (
-                <div className="alert alert-warning flex-center" style={{ marginTop: '20px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>⚠️</span> {error}
+                <div className="alert alert-warning flex-center mt-4">
+                    <span className="text-xl">⚠️</span> {error}
                 </div>
             )}
 

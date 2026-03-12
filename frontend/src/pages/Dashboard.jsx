@@ -78,7 +78,7 @@ const Dashboard = () => {
     return (
         <div className="page-wrapper">
             {/* Hero header */}
-            <header style={{ marginBottom: '40px', paddingBottom: '28px', borderBottom: '1px solid var(--border-color)' }}>
+            <header className="mb-10 pb-8 border-b border-gray-200">
                 <div className="section-eyebrow">Dashboard Overview</div>
                 <h1 className="section-title">Hey, {user.name}! 👋</h1>
                 <p className="section-sub">
@@ -86,8 +86,8 @@ const Dashboard = () => {
                 </p>
             </header>
 
-            <section style={{ marginBottom: '40px' }}>
-                <h2 style={{ marginBottom: '20px', fontSize: '1.25rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <section className="mb-10">
+                <h2 className="mb-6 text-xl font-extrabold flex items-center gap-2">
                     Quick Actions
                 </h2>
                 <div className="dash-grid">
@@ -97,8 +97,8 @@ const Dashboard = () => {
                                 <Icon />
                             </div>
                             <div>
-                                <h3 style={{ fontSize: '1.05rem', fontWeight: '700', marginBottom: '4px' }}>{label}</h3>
-                                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0 }}>{desc}</p>
+                                <h3 className="text-lg font-bold mb-1">{label}</h3>
+                                <p className="text-sm text-muted mb-0">{desc}</p>
                             </div>
                         </Link>
                     ))}
@@ -106,11 +106,11 @@ const Dashboard = () => {
             </section>
 
             {user.role === 'Agent' && (
-                <section style={{ marginTop: '48px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <section className="mt-8">
+                    <div className="flex-between mb-6">
                         <div>
-                            <h2 style={{ fontSize: '1.25rem', fontWeight: '800', margin: 0 }}>Booking Requests</h2>
-                            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>Manage your upcoming service appointments</p>
+                            <h2 className="text-xl font-extrabold mb-0">Booking Requests</h2>
+                            <p className="text-sm text-muted mt-1">Manage your upcoming service appointments</p>
                         </div>
                         <button onClick={fetchBookings} className="btn-refresh-small" title="Refresh Bookings">
                             <HiOutlineClock />

@@ -80,7 +80,7 @@ const Home = () => {
     }, [categories, showMoreCats]);
 
     if (loading) return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <div className="page-loading-full">
             <div className="spinner"></div>
         </div>
     );
@@ -88,7 +88,7 @@ const Home = () => {
     return (
         <div className="home-container">
             {error && (
-                <div className="alert alert-error flex-center" style={{ marginTop: '20px' }}>
+                <div className="alert alert-error flex-center mt-4">
                     📡 Live data connection limited. Showing latest available content.
                 </div>
             )}

@@ -46,9 +46,8 @@ const Signup = () => {
 
             if (res.data.success) {
                 const { user, accessToken } = res.data;
-                signup(user, accessToken); // Pass token to context
+                signup(user, accessToken);
 
-                // Redirect based on role
                 if (user.role === 'Admin') {
                     navigate('/admin');
                 } else if (user.role === 'Agent') {
@@ -67,40 +66,22 @@ const Signup = () => {
         }
     };
 
-    const iconStyle = (top = '50%') => ({
-        position: 'absolute', left: '14px', top,
-        transform: top === '50%' ? 'translateY(-50%)' : undefined,
-        color: 'var(--text-muted)', fontSize: '1.1rem', pointerEvents: 'none'
-    });
-
-    const fields = [
-        { name: 'name', type: 'text', icon: HiOutlineUser, placeholder: 'Full name', label: 'Full Name' },
-        { name: 'phone', type: 'tel', icon: HiOutlinePhone, placeholder: '10-digit mobile', label: 'Phone Number' },
-        { name: 'location', type: 'text', icon: HiOutlineLocationMarker, placeholder: 'Village or city', label: 'Location' }
-    ];
-
     return (
-        <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            minHeight: 'calc(100vh - 72px)', backgroundColor: 'var(--bg-color)', padding: '24px'
-        }}>
-            <div style={{ width: '100%', maxWidth: '440px' }}>
-
-                {/* Brand */}
-                <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                        <HiLightningBolt style={{ color: 'var(--primary-color)', fontSize: '2rem' }} />
-                        <span style={{ fontSize: '1.6rem', fontWeight: '900', letterSpacing: '-0.04em' }}>Gramzo</span>
+        <div className="auth-page">
+            <div className="auth-container">
+                <div className="auth-brand">
+                    <div className="flex-center gap-2 mb-4">
+                        <HiLightningBolt className="text-primary text-3xl" />
+                        <span className="text-2xl font-black tracking-tighter">Gramzo</span>
                     </div>
-                    <h1 style={{ fontSize: '1.75rem', fontWeight: '900', margin: '0 0 8px', letterSpacing: '-0.025em' }}>Create your account</h1>
-                    <p style={{ color: 'var(--text-muted)', margin: 0 }}>Join thousands of community members on Gramzo</p>
+                    <h1 className="text-3xl font-black mb-2 tracking-tight">Create your account</h1>
+                    <p className="text-muted">Join thousands of community members on Gramzo</p>
                 </div>
 
-                <div className="card" style={{ padding: '32px', borderRadius: '20px', boxShadow: '0 16px 40px rgba(0,0,0,0.1)' }}>
-
+                <div className="auth-card">
                     {error && (
                         <div className="alert alert-error">
-                            <HiOutlineExclamationCircle style={{ flexShrink: 0 }} />
+                            <HiOutlineExclamationCircle className="shrink-0" />
                             {error}
                         </div>
                     )}
@@ -108,98 +89,92 @@ const Signup = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label className="form-label">Full Name</label>
-                            <div style={{ position: 'relative' }}>
-                                <HiOutlineUser style={iconStyle()} />
+                            <div className="relative">
+                                <HiOutlineUser className="auth-input-icon" />
                                 <input
                                     type="text"
                                     name="name"
-                                    className="form-input"
+                                    className="form-input pl-11"
                                     placeholder="Your Full Name"
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    style={{ paddingLeft: '40px' }}
                                 />
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label className="form-label">Email Address</label>
-                            <div style={{ position: 'relative' }}>
-                                <HiOutlineMail style={iconStyle()} />
+                            <div className="relative">
+                                <HiOutlineMail className="auth-input-icon" />
                                 <input
                                     type="email"
                                     name="email"
-                                    className="form-input"
+                                    className="form-input pl-11"
                                     placeholder="Enter your email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    style={{ paddingLeft: '40px' }}
                                 />
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label className="form-label">Phone Number</label>
-                            <div style={{ position: 'relative' }}>
-                                <HiOutlinePhone style={iconStyle()} />
+                            <div className="relative">
+                                <HiOutlinePhone className="auth-input-icon" />
                                 <input
                                     type="tel"
                                     name="phone"
-                                    className="form-input"
+                                    className="form-input pl-11"
                                     placeholder="10-digit mobile"
                                     value={formData.phone}
                                     onChange={handleChange}
                                     required
-                                    style={{ paddingLeft: '40px' }}
                                 />
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label className="form-label">Password</label>
-                            <div style={{ position: 'relative' }}>
-                                <HiOutlineLockClosed style={iconStyle()} />
+                            <div className="relative">
+                                <HiOutlineLockClosed className="auth-input-icon" />
                                 <input
                                     type="password"
                                     name="password"
-                                    className="form-input"
+                                    className="form-input pl-11"
                                     placeholder="At least 6 characters"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    style={{ paddingLeft: '40px' }}
                                 />
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label className="form-label">Location (Optional)</label>
-                            <div style={{ position: 'relative' }}>
-                                <HiOutlineLocationMarker style={iconStyle()} />
+                            <div className="relative">
+                                <HiOutlineLocationMarker className="auth-input-icon" />
                                 <input
                                     type="text"
                                     name="location"
-                                    className="form-input"
+                                    className="form-input pl-11"
                                     placeholder="Village or city"
                                     value={formData.location}
                                     onChange={handleChange}
-                                    style={{ paddingLeft: '40px' }}
                                 />
                             </div>
                         </div>
 
-                        <div className="form-group" style={{ marginBottom: '28px' }}>
+                        <div className="form-group mb-7">
                             <label className="form-label">Join As</label>
-                            <div style={{ position: 'relative' }}>
-                                <HiOutlineUserGroup style={iconStyle()} />
+                            <div className="relative">
+                                <HiOutlineUserGroup className="auth-input-icon" />
                                 <select
                                     name="role"
-                                    className="form-select"
+                                    className="form-select pl-11"
                                     value={formData.role}
                                     onChange={handleChange}
-                                    style={{ paddingLeft: '40px' }}
                                 >
                                     <option value="User">User — Book services</option>
                                     <option value="Agent">Agent Partner — Offer services</option>
@@ -210,18 +185,17 @@ const Signup = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="btn-primary"
-                            style={{ width: '100%', padding: '14px', fontSize: '1rem', justifyContent: 'center', borderRadius: '12px' }}
+                            className="btn-primary btn-full py-3.5 rounded-xl font-bold text-lg flex-center gap-2"
                         >
                             {loading ? (
-                                <><span className="spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }} /> Creating account...</>
+                                <><span className="spinner w-4 h-4 border-2" /> Creating account...</>
                             ) : 'Create Account'}
                         </button>
                     </form>
 
-                    <p style={{ textAlign: 'center', marginTop: '24px', marginBottom: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    <p className="text-center mt-6 mb-0 text-muted text-sm">
                         Already have an account?{' '}
-                        <Link to="/login" style={{ color: 'var(--primary-color)', fontWeight: '700' }}>
+                        <Link to="/login" className="text-primary font-bold">
                             Sign in
                         </Link>
                     </p>

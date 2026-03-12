@@ -144,22 +144,20 @@ const Prices = () => {
     const isRecentlyUpdated = (dateString) => (new Date() - new Date(dateString)) / 1000 < 60;
 
     if (loading) return (
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh', gap: '16px' }}>
-            <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #d1fae5', borderTopColor: '#059669', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Loading Market Intelligence...</span>
+        <div className="page-loading-full flex-col gap-4">
+            <div className="spinner"></div>
+            <span className="text-muted font-bold">Loading Market Intelligence...</span>
         </div>
     );
 
     if (error) return (
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '60vh', padding: '20px', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📡</div>
-            <h2 style={{ fontWeight: '800', marginBottom: '8px' }}>Server Unreachable</h2>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '400px', marginBottom: '24px' }}>{error}</p>
+        <div className="page-loading-full flex-col p-8 text-center">
+            <div className="text-6xl mb-6">📡</div>
+            <h2 className="font-extrabold mb-2">Server Unreachable</h2>
+            <p className="text-muted max-w-sm mb-8">{error}</p>
             <button
                 onClick={() => { setLoading(true); fetchPrices(); }}
-                className="btn-primary"
-                style={{ backgroundColor: '#059669', padding: '12px 32px' }}
+                className="btn-primary py-4 px-12"
             >
                 Try Again
             </button>

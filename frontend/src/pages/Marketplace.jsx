@@ -56,7 +56,7 @@ const Marketplace = () => {
     }, [filteredProducts]);
 
     if (loading) return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: 'var(--text-muted)' }}>
+        <div className="page-loading-full text-muted">
             Opening the marketplace...
         </div>
     );
@@ -64,14 +64,14 @@ const Marketplace = () => {
     return (
         <div className="marketplace-container">
             {error && (
-                <div className="alert alert-warning flex-center" style={{ marginTop: '20px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>⚠️</span> {error}
+                <div className="alert alert-warning flex-center mt-4">
+                    <span className="text-xl">⚠️</span> {error}
                 </div>
             )}
 
             <header className="home-hero">
                 <div className="app-container">
-                    <div className="section-eyebrow" style={{ color: 'var(--accent-color)' }}>Local Trade</div>
+                    <div className="section-eyebrow text-accent">Local Trade</div>
                     <h1 className="hero-title">Gramzo Marketplace</h1>
                     <p className="hero-subtitle">Browse fresh produce and local goods from trusted community sellers.</p>
 
@@ -95,7 +95,7 @@ const Marketplace = () => {
                     Object.keys(groupedProducts).map((category) => (
                         <div key={category} className="section-spacer">
                             <div className="home-section-title">
-                                <h2 className="section-title-premium" style={{ color: 'var(--accent-dark)' }}>{category}</h2>
+                                <h2 className="section-title-premium">{category}</h2>
                             </div>
                             <div className="responsive-grid-4">
                                 {groupedProducts[category].map((product) => (
@@ -126,7 +126,6 @@ const Marketplace = () => {
                                                 <button 
                                                     onClick={() => navigate(`/product/${product._id}`)}
                                                     className="btn-primary btn-full mt-4"
-                                                    style={{ backgroundColor: 'var(--accent-color)' }}
                                                 >
                                                     Contact Seller
                                                 </button>

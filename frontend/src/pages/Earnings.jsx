@@ -13,18 +13,14 @@ import {
 } from 'react-icons/hi';
 
 const StatCard = ({ icon: Icon, label, value, accent, sub }) => (
-    <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '28px' }}>
-        <div style={{
-            width: '56px', height: '56px', borderRadius: '16px', flexShrink: 0,
-            backgroundColor: accent + '18', color: accent,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.7rem'
-        }}>
+    <div className="dash-card flex items-center gap-6 p-8">
+        <div className="stat-icon-box" style={{ backgroundColor: accent + '18', color: accent }}>
             <Icon />
         </div>
         <div>
-            <div style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-0.04em', lineHeight: 1, color: 'var(--text-main)' }}>{value}</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)', marginTop: '4px' }}>{label}</div>
-            {sub && <div style={{ fontSize: '0.78rem', color: accent, fontWeight: '700', marginTop: '2px' }}>{sub}</div>}
+            <div className="stat-value">{value}</div>
+            <div className="stat-label mt-1">{label}</div>
+            {sub && <div className="text-[10px] font-bold mt-1" style={{ color: accent }}>{sub}</div>}
         </div>
     </div>
 );
