@@ -45,7 +45,7 @@ const Login = () => {
         } catch (err) {
             console.error('Login error:', err);
             if (err.message === 'Network Error') {
-                setError('Connection error. Make sure the server is running on port 5000.');
+                setError('Connection error. Please check your internet or try again later.');
             } else {
                 setError(err.response?.data?.error || 'Invalid email or password.');
             }
