@@ -2,10 +2,20 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+// Validation for environment variables
+const checkJWTConfig = () => {
+    const required = ['ACCESS_TOKEN_SECRET', 'REFRESH_TOKEN_SECRET', 'ACCESS_TOKEN_EXPIRE', 'REFRESH_TOKEN_EXPIRE'];
+    const missing = required.filter(key => !process.env[key]);
+    if (missing.length > 0 && process.env.NODE_ENV === 'production') {
+        throw new Error(`MISSING CONFIG: Required environment variables are missing: ${missing.join(', ')}. Please add them to your Render dashboard.`);
+    }
+};
+
 // @desc    Register user
 // @route   POST /api/auth/register
 exports.register = async (req, res) => {
     try {
+        checkJWTConfig();
         const { name, email, password, phone, role, location } = req.body;
 
         if (!email || !password || !name) {
@@ -55,6 +65,7 @@ exports.register = async (req, res) => {
 // @route   POST /api/auth/login
 exports.login = async (req, res) => {
     try {
+        checkJWTConfig();
         const { email, password } = req.body;
 
         if (!email || !password) {
