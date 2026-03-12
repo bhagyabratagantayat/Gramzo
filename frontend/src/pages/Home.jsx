@@ -121,22 +121,28 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── 2. DYNAMIC CATEGORIES ───────────────── */}
-            <section className="section-spacer app-container">
-                <div className="category-grid">
-                    {displayedCats.length > 0 ? (
-                        displayedCats.map((cat) => {
+            {/* ── 2. DYNAMIC CATEGORIES (WhatsApp Status Style) ───────────────── */}
+            <section className="section-spacer app-container overflow-hidden">
+                <div className="status-scroll-container no-scrollbar">
+                    {categories.length > 0 ? (
+                        categories.map((cat) => {
                             const style = getCategoryStyle(cat.name);
                             return (
                                 <div
                                     key={cat._id}
-                                    className="cat-item hover-lift"
+                                    className="status-item"
                                     onClick={() => navigate(cat.type === 'service' ? '/services' : '/marketplace')}
                                 >
-                                    <div className="cat-circle" style={{ backgroundColor: style.bg, color: style.color }}>
-                                        {style.icon}
+                                    <div className="status-circle-wrapper">
+                                        <div 
+                                            className="status-ring" 
+                                            style={{ borderColor: style.color }}
+                                        ></div>
+                                        <div className="status-circle" style={{ backgroundColor: style.bg }}>
+                                            {style.icon}
+                                        </div>
                                     </div>
-                                    <span className="cat-label">{cat.name}</span>
+                                    <span className="status-text">{cat.name}</span>
                                 </div>
                             );
                         })
@@ -146,14 +152,6 @@ const Home = () => {
                         </div>
                     )}
                 </div>
-                {categories.length > 8 && (
-                    <button
-                        onClick={() => setShowMoreCats(!showMoreCats)}
-                        className="btn-link-center"
-                    >
-                        {showMoreCats ? 'Show Less' : 'Explore All Categories'}
-                    </button>
-                )}
             </section>
 
             {/* ── 3. LIVE MARKET PRICES ─────────── */}
