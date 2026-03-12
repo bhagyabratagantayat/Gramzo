@@ -17,109 +17,12 @@ import {
 } from 'react-icons/hi';
 
 /* ─── Shared Styles ─────────────────────────────────────────── */
-const thStyle = {
-    padding: '13px 20px',
-    fontSize: '0.78rem',
-    fontWeight: '700',
-    color: 'var(--text-muted)',
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
-    textAlign: 'left',
-    whiteSpace: 'nowrap'
-};
-
-const tdStyle = {
-    padding: '16px 20px',
-    fontSize: '0.95rem',
-    verticalAlign: 'middle'
-};
-
-const sectionTitle = {
-    fontSize: '1.35rem',
-    fontWeight: '800',
-    margin: '0 0 4px 0',
-    letterSpacing: '-0.02em'
-};
-
-const sectionSub = {
-    fontSize: '0.9rem',
-    color: 'var(--text-muted)',
-    margin: 0
-};
-
-/* ─── Status Badges ────────────────────────────────────────── */
-const agentBadge = (agent) => {
-    if (agent.isBlocked) return { label: 'Blocked', color: '#b91c1c', bg: '#fef2f2', border: '#fecaca' };
-    if (agent.isApproved) return { label: 'Approved', color: '#065f46', bg: '#ecfdf5', border: '#6ee7b7' };
-    return { label: 'Pending', color: '#92400e', bg: '#fffbeb', border: '#fde68a' };
-};
-
-const bookingBadge = (status) => {
-    const map = {
-        pending: { label: 'Pending', color: '#92400e', bg: '#fffbeb', border: '#fde68a' },
-        accepted: { label: 'Accepted', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
-        completed: { label: 'Completed', color: '#065f46', bg: '#ecfdf5', border: '#6ee7b7' }
-    };
-    return map[status] || map.pending;
-};
-
 const Badge = ({ cfg }) => (
-    <span style={{
-        display: 'inline-flex', alignItems: 'center', gap: '5px',
-        padding: '5px 12px', borderRadius: '999px',
-        fontSize: '0.78rem', fontWeight: '700',
-        color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.border}`
-    }}>
+    <span className={`status-badge-flat ${cfg.label.toLowerCase()} px-3 py-1 rounded-full font-black text-[10px] uppercase tracking-widest`}>
         {cfg.label}
     </span>
 );
 
-/* ─── Stat Card ────────────────────────────────────────────── */
-const StatCard = ({ icon: Icon, label, value, accent }) => (
-    <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '24px 28px' }}>
-        <div style={{
-            width: '52px', height: '52px', borderRadius: '14px',
-            backgroundColor: accent + '18', color: accent,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.6rem', flexShrink: 0
-        }}>
-            <Icon />
-        </div>
-        <div>
-            <div style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-0.04em', lineHeight: 1 }}>{value}</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '4px' }}>{label}</div>
-        </div>
-    </div>
-);
-
-/* ─── Tab Button ─────────────────────────────────────────────*/
-const Tab = ({ id, label, icon: Icon, active, onClick }) => (
-    <button
-        onClick={() => onClick(id)}
-        style={{
-            display: 'flex', alignItems: 'center', gap: '7px',
-            padding: '10px 18px', borderRadius: '8px', border: 'none',
-            fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer',
-            backgroundColor: active ? 'var(--primary-color)' : 'transparent',
-            color: active ? '#fff' : 'var(--text-muted)',
-            transition: 'var(--transition)'
-        }}
-    >
-        <Icon style={{ fontSize: '1.1rem' }} />
-        {label}
-    </button>
-);
-
-/* ─── Empty Row ──────────────────────────────────────────────*/
-const EmptyRow = ({ cols, message }) => (
-    <tr>
-        <td colSpan={cols} style={{ ...tdStyle, textAlign: 'center', color: 'var(--text-muted)', padding: '52px 20px' }}>
-            {message}
-        </td>
-    </tr>
-);
-
-/* ═══════════════════════════════════════════════════════════ */
 const Admin = () => {
     const [tab, setTab] = useState('overview');
     const [agents, setAgents] = useState([]);
@@ -127,7 +30,6 @@ const Admin = () => {
     const [notices, setNotices] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Notice form state
     const [noticeTitle, setNoticeTitle] = useState('');
     const [noticeDesc, setNoticeDesc] = useState('');
     const [noticeLoc, setNoticeLoc] = useState('');
@@ -185,320 +87,277 @@ const Admin = () => {
 
     const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
-    const inputStyle = {
-        width: '100%', padding: '10px 14px', borderRadius: '8px', boxSizing: 'border-box',
-        border: '1px solid var(--border-color)', fontSize: '0.95rem', fontFamily: 'inherit',
-        outline: 'none', transition: 'var(--transition)', backgroundColor: '#fff'
-    };
-
     if (loading) return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: 'var(--text-muted)' }}>
-            Loading admin dashboard...
+        <div className="page-loading">
+            <div className="spinner"></div>
+            <span className="font-bold text-slate-400 mt-4">Loading Command Center...</span>
         </div>
     );
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
-
-            {/* ── Page Header ── */}
-            <header style={{ marginBottom: '36px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-                <div>
-                    <div style={{ color: 'var(--danger-color)', fontWeight: '700', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
-                        Management Console
-                    </div>
-                    <h1 style={{ margin: 0, fontSize: '2.25rem', fontWeight: '900', letterSpacing: '-0.03em', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <HiOutlineShieldCheck style={{ color: 'var(--danger-color)' }} /> Admin Dashboard
+        <div className="admin-console-container app-container py-8">
+            {/* Page Header */}
+            <header className="dash-header mb-12">
+                <div className="dash-title-group">
+                    <div className="dash-eyebrow text-rose-600 font-black">Management Console</div>
+                    <h1 className="dash-title flex items-center gap-3">
+                        <HiOutlineShieldCheck className="text-rose-600" /> 
+                        Admin Dashboard
                     </h1>
+                    <p className="dash-subtitle">Complete oversight of agents, appointments, and community updates.</p>
                 </div>
             </header>
 
-            {/* ── Tabs ── */}
-            <div style={{
-                display: 'flex', gap: '6px', padding: '6px',
-                backgroundColor: '#fff', borderRadius: '10px',
-                border: '1px solid var(--border-color)',
-                marginBottom: '32px', flexWrap: 'wrap'
-            }}>
-                <Tab id="overview" label="Overview" icon={HiOutlineChartBar} active={tab === 'overview'} onClick={setTab} />
-                <Tab id="agents" label={`Agents (${agents.length})`} icon={HiOutlineUserGroup} active={tab === 'agents'} onClick={setTab} />
-                <Tab id="bookings" label={`Bookings (${bookings.length})`} icon={HiOutlineCollection} active={tab === 'bookings'} onClick={setTab} />
-                <Tab id="notices" label="Notice Board" icon={HiOutlineSpeakerphone} active={tab === 'notices'} onClick={setTab} />
+            {/* Tabs Navigation */}
+            <div className="flex overflow-x-auto gap-3 pb-8 mb-4 no-scrollbar">
+                {[
+                    { id: 'overview', label: 'Overview', icon: HiOutlineChartBar },
+                    { id: 'agents', label: `Agents (${agents.length})`, icon: HiOutlineUserGroup },
+                    { id: 'bookings', label: `Bookings (${bookings.length})`, icon: HiOutlineCollection },
+                    { id: 'notices', label: 'Notice Board', icon: HiOutlineSpeakerphone }
+                ].map(item => (
+                    <button
+                        key={item.id}
+                        onClick={() => setTab(item.id)}
+                        className={`px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest whitespace-nowrap transition-all flex items-center gap-2 border-2 ${
+                            tab === item.id 
+                                ? 'bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200' 
+                                : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200 shadow-sm'
+                        }`}
+                    >
+                        <item.icon className="text-sm" />
+                        {item.label}
+                    </button>
+                ))}
             </div>
 
-            {/* ══ OVERVIEW TAB ══ */}
-            {tab === 'overview' && (
-                <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-                        <StatCard icon={HiOutlineUserGroup} label="Total Agents" value={agents.length} accent="#2563eb" />
-                        <StatCard icon={HiOutlineCollection} label="Total Bookings" value={bookings.length} accent="#7c3aed" />
-                        <StatCard icon={HiOutlineCheckCircle} label="Approved Agents" value={agents.filter(a => a.isApproved && !a.isBlocked).length} accent="#059669" />
-                        <StatCard icon={HiOutlineClock} label="Pending Approvals" value={agents.filter(a => !a.isApproved && !a.isBlocked).length} accent="#f59e0b" />
-                    </div>
-
-                    {/* Overview — recent bookings snippet */}
-                    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)' }}>
-                            <h2 style={sectionTitle}>Recent Bookings</h2>
-                            <p style={sectionSub}>Last 5 platform bookings</p>
-                        </div>
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
-                                    <tr>
-                                        <th style={thStyle}>User</th>
-                                        <th style={thStyle}>Service</th>
-                                        <th style={thStyle}>Date</th>
-                                        <th style={thStyle}>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {bookings.slice(0, 5).map(b => (
-                                        <tr key={b._id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                            <td style={{ ...tdStyle, fontWeight: '600' }}>{b.userName}</td>
-                                            <td style={{ ...tdStyle, color: 'var(--text-muted)' }}>{b.service?.title || '—'}</td>
-                                            <td style={{ ...tdStyle, color: 'var(--text-muted)' }}>{formatDate(b.date)}</td>
-                                            <td style={tdStyle}><Badge cfg={bookingBadge(b.status)} /></td>
-                                        </tr>
-                                    ))}
-                                    {bookings.length === 0 && <EmptyRow cols={4} message="No bookings yet." />}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ══ AGENTS TAB ══ */}
-            {tab === 'agents' && (
-                <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)' }}>
-                        <h2 style={sectionTitle}>Agent Management</h2>
-                        <p style={sectionSub}>Approve or block agent accounts on the platform.</p>
-                    </div>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
-                                <tr>
-                                    <th style={thStyle}>Agent Name</th>
-                                    <th style={thStyle}>Location</th>
-                                    <th style={thStyle}>Phone</th>
-                                    <th style={thStyle}>Status</th>
-                                    <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {agents.map(agent => (
-                                    <tr key={agent._id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                        <td style={{ ...tdStyle, fontWeight: '700' }}>{agent.name}</td>
-                                        <td style={{ ...tdStyle, color: 'var(--text-muted)' }}>{agent.location || '—'}</td>
-                                        <td style={{ ...tdStyle, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-                                            <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                <HiOutlinePhone /> {agent.phone || '—'}
-                                            </span>
-                                        </td>
-                                        <td style={tdStyle}><Badge cfg={agentBadge(agent)} /></td>
-                                        <td style={{ ...tdStyle, textAlign: 'right' }}>
-                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                                {!agent.isApproved && !agent.isBlocked && (
-                                                    <button
-                                                        onClick={() => handleApprove(agent._id)}
-                                                        className="btn-primary"
-                                                        style={{ padding: '7px 14px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '5px' }}
-                                                    >
-                                                        <HiOutlineCheckCircle /> Approve
-                                                    </button>
-                                                )}
-                                                {agent.isApproved && !agent.isBlocked && (
-                                                    <button
-                                                        onClick={() => handleBlock(agent._id)}
-                                                        style={{
-                                                            padding: '7px 14px', fontSize: '0.82rem', border: '1px solid #fecaca',
-                                                            backgroundColor: '#fef2f2', color: '#b91c1c', borderRadius: '8px',
-                                                            fontWeight: '700', display: 'flex', alignItems: 'center', gap: '5px',
-                                                            cursor: 'pointer', transition: 'var(--transition)'
-                                                        }}
-                                                    >
-                                                        <HiOutlineBan /> Block
-                                                    </button>
-                                                )}
-                                                {agent.isBlocked && (
-                                                    <button
-                                                        onClick={() => handleBlock(agent._id)}
-                                                        style={{
-                                                            padding: '7px 14px', fontSize: '0.82rem', border: '1px solid #bfdbfe',
-                                                            backgroundColor: '#eff6ff', color: '#1d4ed8', borderRadius: '8px',
-                                                            fontWeight: '700', display: 'flex', alignItems: 'center', gap: '5px',
-                                                            cursor: 'pointer', transition: 'var(--transition)'
-                                                        }}
-                                                    >
-                                                        <HiOutlineCheckCircle /> Unblock
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {agents.length === 0 && <EmptyRow cols={5} message="No agents registered yet." />}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-
-            {/* ══ BOOKINGS TAB ══ */}
-            {tab === 'bookings' && (
-                <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                    <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)' }}>
-                        <h2 style={sectionTitle}>All Bookings</h2>
-                        <p style={sectionSub}>Full overview of every service request on the platform.</p>
-                    </div>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
-                                <tr>
-                                    <th style={thStyle}>User</th>
-                                    <th style={thStyle}>Phone</th>
-                                    <th style={thStyle}>Service</th>
-                                    <th style={thStyle}>Agent</th>
-                                    <th style={thStyle}>Date</th>
-                                    <th style={thStyle}>Amount</th>
-                                    <th style={thStyle}>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {bookings.map(b => (
-                                    <tr key={b._id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                        <td style={{ ...tdStyle, fontWeight: '700' }}>{b.userName}</td>
-                                        <td style={{ ...tdStyle, color: 'var(--text-muted)', fontSize: '0.88rem' }}>{b.phone || '—'}</td>
-                                        <td style={{ ...tdStyle, color: 'var(--text-muted)' }}>{b.service?.title || '—'}</td>
-                                        <td style={{ ...tdStyle, color: 'var(--text-muted)' }}>{b.agent?.name || '—'}</td>
-                                        <td style={{ ...tdStyle, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{formatDate(b.date)}</td>
-                                        <td style={{ ...tdStyle, fontWeight: '700', color: 'var(--primary-color)' }}>
-                                            {b.amount ? `₹${b.amount}` : '—'}
-                                        </td>
-                                        <td style={tdStyle}><Badge cfg={bookingBadge(b.status)} /></td>
-                                    </tr>
-                                ))}
-                                {bookings.length === 0 && <EmptyRow cols={7} message="No bookings found." />}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-
-            {/* ══ NOTICE BOARD TAB ══ */}
-            {tab === 'notices' && (
-                <div style={{ display: 'grid', gap: '28px', gridTemplateColumns: '1fr 1.5fr' }}>
-
-                    {/* Left — Post form */}
-                    <div className="card">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                            <HiOutlinePlus style={{ fontSize: '1.2rem', color: 'var(--primary-color)' }} />
-                            <h2 style={{ ...sectionTitle, margin: 0 }}>Post a Notice</h2>
-                        </div>
-
-                        {noticeMsg && (
-                            <div style={{
-                                padding: '10px 14px', borderRadius: '8px', marginBottom: '16px',
-                                fontSize: '0.88rem', fontWeight: '600',
-                                backgroundColor: noticeMsg.type === 'success' ? '#ecfdf5' : '#fef2f2',
-                                color: noticeMsg.type === 'success' ? '#065f46' : '#b91c1c',
-                                border: `1px solid ${noticeMsg.type === 'success' ? '#6ee7b7' : '#fecaca'}`
-                            }}>
-                                {noticeMsg.text}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleNotice} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    Title
-                                </label>
-                                <input
-                                    type="text"
-                                    value={noticeTitle}
-                                    onChange={e => setNoticeTitle(e.target.value)}
-                                    placeholder="e.g. Water supply disruption"
-                                    required
-                                    style={inputStyle}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    Location
-                                </label>
-                                <input
-                                    type="text"
-                                    value={noticeLoc}
-                                    onChange={e => setNoticeLoc(e.target.value)}
-                                    placeholder="e.g. Ward 4, Rampur"
-                                    required
-                                    style={inputStyle}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    Description
-                                </label>
-                                <textarea
-                                    value={noticeDesc}
-                                    onChange={e => setNoticeDesc(e.target.value)}
-                                    placeholder="Details of the community notice..."
-                                    required
-                                    rows={4}
-                                    style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }}
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={noticePosting}
-                                className="btn-primary"
-                                style={{ padding: '11px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}
-                            >
-                                <HiOutlineSpeakerphone />
-                                {noticePosting ? 'Posting...' : 'Post Notice'}
-                            </button>
-                        </form>
-                    </div>
-
-                    {/* Right — Existing notices */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <HiOutlineBell style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }} />
-                            <h2 style={{ ...sectionTitle, margin: 0 }}>Posted Notices</h2>
-                        </div>
-
-                        {notices.length === 0 && (
-                            <div className="card" style={{ textAlign: 'center', padding: '48px 24px', border: '1px dashed var(--border-color)' }}>
-                                <HiOutlineBell style={{ fontSize: '2.5rem', color: 'var(--text-muted)', marginBottom: '12px', opacity: 0.4 }} />
-                                <p style={{ color: 'var(--text-muted)', margin: 0 }}>No notices posted yet.</p>
-                            </div>
-                        )}
-
-                        {notices.map(n => (
-                            <div key={n._id} className="card" style={{ borderLeft: '4px solid var(--primary-color)', padding: '18px 20px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '8px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '800' }}>{n.title}</h3>
-                                    <span style={{
-                                        fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600',
-                                        backgroundColor: 'var(--bg-color)', padding: '3px 10px', borderRadius: '999px',
-                                        border: '1px solid var(--border-color)', whiteSpace: 'nowrap',
-                                        display: 'flex', alignItems: 'center', gap: '4px'
-                                    }}>
-                                        <HiOutlineCalendar style={{ fontSize: '0.85rem' }} />
-                                        {formatDate(n.createdAt)}
-                                    </span>
+            {/* Tab Contents */}
+            <div className="tab-content animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* OVERVIEW TAB */}
+                {tab === 'overview' && (
+                    <div className="space-y-12">
+                        <div className="stat-grid">
+                            <div className="dash-card p-8 flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex-center text-3xl shrink-0"><HiOutlineUserGroup /></div>
+                                <div>
+                                    <div className="text-3xl font-black text-slate-800 tracking-tight">{agents.length}</div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Agents</div>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--primary-color)', fontSize: '0.8rem', fontWeight: '700', marginBottom: '8px' }}>
-                                    <HiOutlineLocationMarker /> {n.location}
-                                </div>
-                                <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.9rem', lineHeight: '1.6' }}>{n.description}</p>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+                            <div className="dash-card p-8 flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-2xl bg-purple-50 text-purple-600 flex-center text-3xl shrink-0"><HiOutlineCollection /></div>
+                                <div>
+                                    <div className="text-3xl font-black text-slate-800 tracking-tight">{bookings.length}</div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Bookings</div>
+                                </div>
+                            </div>
+                            <div className="dash-card p-8 flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex-center text-3xl shrink-0"><HiOutlineCheckCircle /></div>
+                                <div>
+                                    <div className="text-3xl font-black text-slate-800 tracking-tight">{agents.filter(a => a.isApproved && !a.isBlocked).length}</div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Merchants</div>
+                                </div>
+                            </div>
+                            <div className="dash-card p-8 flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex-center text-3xl shrink-0"><HiOutlineClock /></div>
+                                <div>
+                                    <div className="text-3xl font-black text-slate-800 tracking-tight">{agents.filter(a => !a.isApproved && !a.isBlocked).length}</div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Awaiting Approval</div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div className="dash-card">
+                            <div className="dash-card-header">
+                                <h2>Recent Platform Activity</h2>
+                                <p>The latest 5 service requests globally.</p>
+                            </div>
+                            <div className="dash-list">
+                                {bookings.slice(0, 5).map(b => (
+                                    <div key={b._id} className="dash-row">
+                                        <div className="dash-row-info">
+                                            <div className="dash-row-title">{b.userName}</div>
+                                            <div className="dash-row-sub">{b.service?.title || 'Unknown Service'} • {formatDate(b.date)}</div>
+                                        </div>
+                                        <Badge cfg={bookingBadge(b.status)} />
+                                    </div>
+                                ))}
+                                {bookings.length === 0 && (
+                                    <div className="py-12 text-center text-slate-400 font-bold italic">No bookings recorded yet.</div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* AGENTS TAB */}
+                {tab === 'agents' && (
+                    <div className="dash-card">
+                        <div className="dash-card-header">
+                            <h2>Agent Management</h2>
+                            <p>Verify merchant credentials and manage platform access.</p>
+                        </div>
+                        <div className="dash-list">
+                            {agents.map(agent => (
+                                <div key={agent._id} className="dash-row group">
+                                    <div className="dash-row-info">
+                                        <div className="dash-row-title text-base">{agent.name}</div>
+                                        <div className="dash-row-sub flex items-center gap-4">
+                                            <span className="flex items-center gap-1"><HiOutlineLocationMarker /> {agent.location || 'No location'}</span>
+                                            <span className="flex items-center gap-1"><HiOutlinePhone /> {agent.phone || 'No phone'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-6">
+                                        <Badge cfg={agentBadge(agent)} />
+                                        <div className="flex gap-2">
+                                            {!agent.isApproved && !agent.isBlocked && (
+                                                <button onClick={() => handleApprove(agent._id)} className="btn-primary py-2 px-4 rounded-xl text-[10px] bg-emerald-600 border-emerald-600 uppercase font-black tracking-widest">Approve</button>
+                                            )}
+                                            {agent.isApproved && !agent.isBlocked && (
+                                                <button onClick={() => handleBlock(agent._id)} className="btn-primary py-2 px-4 rounded-xl text-[10px] bg-rose-50 text-rose-600 border-rose-100 uppercase font-black tracking-widest hover:bg-rose-600 hover:text-white transition-all">Block Agent</button>
+                                            )}
+                                            {agent.isBlocked && (
+                                                <button onClick={() => handleBlock(agent._id)} className="btn-primary py-2 px-4 rounded-xl text-[10px] bg-blue-50 text-blue-600 border-blue-100 uppercase font-black tracking-widest hover:bg-blue-600 hover:text-white transition-all">Unblock</button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {agents.length === 0 && (
+                                <div className="py-12 text-center text-slate-400 font-bold italic">No merchants registered.</div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* BOOKINGS TAB */}
+                {tab === 'bookings' && (
+                    <div className="dash-card">
+                        <div className="dash-card-header">
+                            <h2>Universal Booking Register</h2>
+                            <p>Full audit trail of every transaction and appointment.</p>
+                        </div>
+                        <div className="dash-list">
+                            {bookings.map(b => (
+                                <div key={b._id} className="dash-row">
+                                    <div className="dash-row-info">
+                                        <div className="dash-row-title leading-tight">{b.userName}</div>
+                                        <div className="dash-row-sub font-black text-indigo-600 py-1">{b.service?.title || 'Service Deleted'}</div>
+                                        <div className="dash-row-sub flex items-center gap-3">
+                                            <span>M: {b.phone || 'N/A'}</span>
+                                            <span>• Provider: {b.agent?.name || '—'}</span>
+                                            <span>• Date: {formatDate(b.date)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-end gap-2">
+                                        <div className="dash-row-amount">₹{b.amount || 0}</div>
+                                        <Badge cfg={bookingBadge(b.status)} />
+                                    </div>
+                                </div>
+                            ))}
+                            {bookings.length === 0 && (
+                                <div className="py-12 text-center text-slate-400 font-bold italic">No marketplace activity found.</div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* NOTICE BOARD TAB */}
+                {tab === 'notices' && (
+                    <div className="grid lg:grid-cols-5 gap-12">
+                        {/* New Notice Form */}
+                        <div className="lg:col-span-2">
+                            <div className="dash-card p-8">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <HiOutlinePlus className="text-indigo-600 text-xl" />
+                                    <h2 className="text-xl font-black text-slate-800">Post a Notice</h2>
+                                </div>
+
+                                {noticeMsg && (
+                                    <div className={`mb-8 p-4 rounded-2xl border font-bold text-sm flex items-center gap-3 ${
+                                        noticeMsg.type === 'success' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'
+                                    }`}>
+                                        <HiOutlineBell className="shrink-0" />
+                                        {noticeMsg.text}
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleNotice} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Notice Title</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-slate-50 border-none rounded-2xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all"
+                                            value={noticeTitle}
+                                            onChange={e => setNoticeTitle(e.target.value)}
+                                            placeholder="e.g. System Wide Update"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Target Area / Office</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-slate-50 border-none rounded-2xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all"
+                                            value={noticeLoc}
+                                            onChange={e => setNoticeLoc(e.target.value)}
+                                            placeholder="e.g. Rampur HQ"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Content description</label>
+                                        <textarea
+                                            className="w-full bg-slate-50 border-none rounded-2xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all min-h-[140px]"
+                                            value={noticeDesc}
+                                            onChange={e => setNoticeDesc(e.target.value)}
+                                            placeholder="Provide complete details..."
+                                            required
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        disabled={noticePosting}
+                                        className="btn-primary w-full py-5 rounded-2xl font-black uppercase tracking-widest text-sm bg-indigo-600 shadow-xl shadow-indigo-100"
+                                    >
+                                        {noticePosting ? 'Synchronizing...' : 'Dispatch Notice'}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        {/* Recent Notices Feed */}
+                        <div className="lg:col-span-3 space-y-6">
+                            <div className="flex items-center gap-3 mb-2 px-2">
+                                <HiOutlineBell className="text-slate-400 text-xl" />
+                                <h2 className="text-xl font-black text-slate-800">Platform Broadcasts</h2>
+                            </div>
+
+                            {notices.length === 0 && (
+                                <div className="dash-card p-16 flex-center flex-col text-center bg-white-bleed border-2 border-dashed border-slate-100">
+                                    <HiOutlineBell className="text-slate-100 text-6xl mb-4" />
+                                    <p className="text-slate-400 font-bold italic">No active notices on the board.</p>
+                                </div>
+                            )}
+
+                            {notices.map(n => (
+                                <div key={n._id} className="dash-card p-8 border-l-8 border-indigo-600 hover:scale-[1.01] transition-transform cursor-default">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h3 className="text-xl font-black text-slate-800 leading-tight">{n.title}</h3>
+                                        <span className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            <HiOutlineCalendar /> {formatDate(n.createdAt)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest mb-4">
+                                        <HiOutlineLocationMarker /> {n.location}
+                                    </div>
+                                    <p className="text-slate-500 leading-relaxed text-sm">{n.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

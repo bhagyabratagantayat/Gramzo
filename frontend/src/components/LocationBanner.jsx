@@ -58,12 +58,14 @@ const LocationBanner = () => {
 
     if (!visible || state === 'deciding') return null;
 
-    /* ── Saved / success state ── */
+    /* Shared banner style helper */
+    const bannerClassName = state === 'saved' ? 'banner-alert alert-success' : (state === 'asking' ? 'banner-alert alert-info' : 'banner-location-manual');
+
     if (state === 'saved') {
         return (
-            <div style={bannerStyle('#ecfdf5', '#059669', '#6ee7b7')}>
-                <HiOutlineCheckCircle style={{ fontSize: '1.1rem', flexShrink: 0 }} />
-                <span style={{ fontSize: '0.88rem', fontWeight: '600' }}>
+            <div className="banner-alert alert-success location-sticky">
+                <HiOutlineCheckCircle className="banner-icon" />
+                <span className="banner-text">
                     {getSavedLocation()?.source === 'gps'
                         ? 'Location detected — showing nearby services.'
                         : `Location set to "${getSavedLocation()?.locationName}".`}
@@ -72,12 +74,11 @@ const LocationBanner = () => {
         );
     }
 
-    /* ── Asking / waiting for browser permission ── */
     if (state === 'asking') {
         return (
-            <div style={bannerStyle('#eff6ff', '#1d4ed8', '#bfdbfe')}>
-                <HiOutlineLocationMarker style={{ fontSize: '1.1rem', flexShrink: 0, animation: 'pulse 1.5s infinite' }} />
-                <span style={{ fontSize: '0.88rem', fontWeight: '600' }}>
+            <div className="banner-alert alert-info location-sticky">
+                <HiOutlineLocationMarker className="banner-icon pulse" />
+                <span className="banner-text">
                     Detecting your location…
                 </span>
             </div>
@@ -86,79 +87,37 @@ const LocationBanner = () => {
 
     /* ── Denied → manual fallback ── */
     return (
-        <div style={{
-            backgroundColor: '#fffbeb',
-            borderBottom: '1px solid #fde68a',
-            padding: '10px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            flexWrap: 'wrap',
-            justifyContent: 'center'
-        }}>
-            <HiOutlineLocationMarker style={{ color: '#d97706', fontSize: '1.1rem', flexShrink: 0 }} />
-            <span style={{ fontSize: '0.88rem', fontWeight: '600', color: '#92400e' }}>
+        <div className="banner-alert alert-warning location-sticky manual-bg">
+            <HiOutlineLocationMarker className="banner-icon warning-icon" />
+            <span className="banner-text warning-text">
                 Location access denied. Enter your village or city:
             </span>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div className="manual-input-group">
                 <input
                     type="text"
                     value={manualInput}
                     onChange={e => setManualInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleManualSave()}
                     placeholder="e.g. Puri, Bhubaneswar"
-                    style={{
-                        padding: '7px 12px',
-                        borderRadius: '8px',
-                        border: '1.5px solid #fcd34d',
-                        fontSize: '0.88rem',
-                        outline: 'none',
-                        width: '200px',
-                        backgroundColor: '#fff'
-                    }}
+                    className="form-input manual-input"
                     autoFocus
                 />
                 <button
                     onClick={handleManualSave}
-                    style={{
-                        padding: '7px 16px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        backgroundColor: '#d97706',
-                        color: '#fff',
-                        fontWeight: '700',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer'
-                    }}
+                    className="btn-primary btn-sm rounded-lg"
                 >
                     Save
                 </button>
                 <button
                     onClick={handleDismiss}
                     title="Skip"
-                    style={{
-                        background: 'none', border: 'none',
-                        cursor: 'pointer', color: '#9ca3af',
-                        display: 'flex', padding: '4px'
-                    }}
+                    className="btn-icon-dismiss"
                 >
-                    <HiOutlineX style={{ fontSize: '1.1rem' }} />
+                    <HiOutlineX />
                 </button>
             </div>
         </div>
     );
 };
-
-/* Shared banner style helper */
-const bannerStyle = (bg, color, border) => ({
-    backgroundColor: bg,
-    borderBottom: `1px solid ${border}`,
-    padding: '10px 20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    color
-});
 
 export default LocationBanner;

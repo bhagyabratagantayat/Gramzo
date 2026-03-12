@@ -50,98 +50,121 @@ const MyListings = () => {
     );
 
     return (
-        <div className="page-wrapper">
-            <header style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '24px' }}>
-                <div>
-                    <h1 className="section-title">Merchant Dashboard</h1>
-                    <p className="section-sub">Manage your professional services and marketplace products.</p>
+        <div className="merchant-listings-container app-container py-8">
+            <header className="dash-header mb-12">
+                <div className="dash-title-group">
+                    <div className="dash-eyebrow">Inventory Management</div>
+                    <h1 className="dash-title">Merchant Dashboard</h1>
+                    <p className="dash-subtitle">Manage your professional services and marketplace products.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <button onClick={() => navigate('/agent/marketplace')} className="btn-primary" style={{ backgroundColor: '#ea580c' }}>
-                        <HiOutlinePlus /> Marketplace
+                <div className="flex gap-4 flex-wrap">
+                    <button onClick={() => navigate('/agent/marketplace')} className="btn-primary bg-amber-600 border-amber-600 hover:bg-amber-700 flex items-center gap-2 py-3 px-6 rounded-2xl">
+                        <HiOutlinePlus className="text-xl" /> 
+                        <span className="font-extrabold text-sm uppercase">Product</span>
                     </button>
-                    <button onClick={() => navigate('/services')} className="btn-primary">
-                        <HiOutlinePlus /> Add Service
+                    <button onClick={() => navigate('/services')} className="btn-primary flex items-center gap-2 py-3 px-6 rounded-2xl">
+                        <HiOutlinePlus className="text-xl" /> 
+                        <span className="font-extrabold text-sm uppercase">Service</span>
                     </button>
                 </div>
             </header>
 
             {/* Products Section */}
-            <section className="section-spacer">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#fff7ed', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <section className="mb-16">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex-center text-xl">
                         <HiOutlineShoppingBag />
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>Listed Products</h2>
+                    <h2 className="text-2xl font-black tracking-tight text-slate-800">Listed Products</h2>
+                    <span className="ml-2 px-3 py-1 rounded-full bg-slate-100 text-slate-500 font-bold text-xs">
+                        {products.length} Items
+                    </span>
                 </div>
 
                 {products.length > 0 ? (
                     <div className="responsive-grid">
                         {products.map(product => (
-                            <div key={product._id} className="service-card">
-                                <div className="service-card-img">
+                            <div key={product._id} className="card-premium group overflow-hidden border border-slate-100 hover:border-amber-200">
+                                <div className="aspect-[4/3] bg-slate-50 relative">
                                     {product.image ? (
-                                        <img src={product.image} alt={product.title} />
+                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                     ) : (
-                                        <HiOutlineShoppingBag />
+                                        <div className="w-full h-full flex-center text-slate-200 text-4xl">
+                                            <HiOutlineShoppingBag />
+                                        </div>
                                     )}
-                                </div>
-                                <div className="service-card-body">
-                                    <h3 className="service-card-title">{product.title}</h3>
-                                    <p className="service-card-desc">{product.description}</p>
-                                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div className="service-card-price">₹{product.price}</div>
-                                        <button onClick={() => handleDelete('product', product._id)} className="logout-btn" style={{ color: '#ef4444' }}>
+                                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onClick={() => handleDelete('product', product._id)} className="p-2 bg-white/90 backdrop-blur rounded-xl text-rose-600 hover:bg-rose-600 hover:text-white shadow-sm transition-all">
                                             <HiOutlineTrash />
                                         </button>
+                                    </div>
+                                </div>
+                                <div className="p-5">
+                                    <h3 className="font-extrabold text-slate-800 line-clamp-1 mb-2">{product.title}</h3>
+                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed h-8 mb-4">{product.description}</p>
+                                    <div className="flex justify-between items-center pt-4 border-t border-slate-50">
+                                        <div className="text-price-large">₹{product.price}</div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-2 py-1 rounded">Product</span>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="empty-state" style={{ padding: '40px' }}>
-                        <p>No products listed yet.</p>
+                    <div className="empty-state py-16 bg-white-bleed rounded-[32px]">
+                        <HiOutlineShoppingBag className="empty-state-icon opacity-10" />
+                        <h3>No products listed yet</h3>
+                        <p>Items you list for sale will appear in this section.</p>
                     </div>
                 )}
             </section>
 
             {/* Services Section */}
-            <section className="section-spacer">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <section className="pb-20">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex-center text-xl">
                         <HiOutlineCalendar />
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>Professional Services</h2>
+                    <h2 className="text-2xl font-black tracking-tight text-slate-800">Professional Services</h2>
+                    <span className="ml-2 px-3 py-1 rounded-full bg-slate-100 text-slate-500 font-bold text-xs">
+                        {services.length} Services
+                    </span>
                 </div>
 
                 {services.length > 0 ? (
                     <div className="responsive-grid">
                         {services.map(service => (
-                            <div key={service._id} className="service-card">
-                                <div className="service-card-img">
+                            <div key={service._id} className="card-premium group overflow-hidden border border-slate-100 hover:border-blue-200">
+                                <div className="aspect-[4/3] bg-slate-50 relative">
                                     {service.image ? (
-                                        <img src={service.image} alt={service.title} />
+                                        <img src={service.image} alt={service.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                     ) : (
-                                        <HiOutlineCalendar />
+                                        <div className="w-full h-full flex-center text-slate-200 text-4xl">
+                                            <HiOutlineCalendar />
+                                        </div>
                                     )}
-                                </div>
-                                <div className="service-card-body">
-                                    <h3 className="service-card-title">{service.title}</h3>
-                                    <p className="service-card-desc">{service.description}</p>
-                                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div className="service-card-price">₹{service.price}</div>
-                                        <button onClick={() => handleDelete('service', service._id)} className="logout-btn" style={{ color: '#ef4444' }}>
+                                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onClick={() => handleDelete('service', service._id)} className="p-2 bg-white/90 backdrop-blur rounded-xl text-rose-600 hover:bg-rose-600 hover:text-white shadow-sm transition-all">
                                             <HiOutlineTrash />
                                         </button>
+                                    </div>
+                                </div>
+                                <div className="p-5">
+                                    <h3 className="font-extrabold text-slate-800 line-clamp-1 mb-2">{service.title}</h3>
+                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed h-8 mb-4">{service.description}</p>
+                                    <div className="flex justify-between items-center pt-4 border-t border-slate-50">
+                                        <div className="text-price-large">₹{service.price}</div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-50 px-2 py-1 rounded">Service</span>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="empty-state" style={{ padding: '40px' }}>
-                        <p>No services listed yet.</p>
+                    <div className="empty-state py-16 bg-white-bleed rounded-[32px]">
+                        <HiOutlineCalendar className="empty-state-icon opacity-10" />
+                        <h3>No services listed yet</h3>
+                        <p>Services you offer will appear in this section.</p>
                     </div>
                 )}
             </section>

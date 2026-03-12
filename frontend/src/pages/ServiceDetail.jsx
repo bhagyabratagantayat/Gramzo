@@ -56,35 +56,33 @@ const ServiceDetail = () => {
     );
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 20px' }}>
+        <div className="service-detail-container app-container py-12">
             <button
                 onClick={() => navigate(-1)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', border: 'none', background: 'none', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer', marginBottom: '32px', fontSize: '1rem' }}
-                onMouseEnter={e => e.target.style.color = 'var(--primary-color)'}
-                onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
+                className="btn-back mb-8"
             >
                 <HiOutlineArrowLeft /> Back
             </button>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '40px' }} className="grid-2-desktop">
+            <div className="detail-grid">
                 {/* Visual Section */}
-                <div style={{ position: 'relative' }}>
-                    <div className="card-premium" style={{ borderRadius: '24px', overflow: 'hidden', backgroundColor: '#fff', boxShadow: 'var(--shadow-lg)' }}>
+                <div className="detail-visual-column">
+                    <div className="detail-image-card">
                         <img
                             src={service.image || getFallbackImage(service.title, service.category?.name)}
                             alt={service.title}
-                            style={{ width: '100%', height: 'auto', maxHeight: '450px', objectFit: 'cover', display: 'block' }}
+                            className="detail-main-img"
                             onError={(e) => { e.target.src = getFallbackImage(service.title, service.category?.name); }}
                         />
                     </div>
 
-                    <div style={{ marginTop: '24px' }}>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '16px' }}>What's Included:</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="detail-features-list mt-8">
+                        <h3 className="text-lg font-extrabold mb-4">What's Included:</h3>
+                        <div className="feature-items">
                             {['Verified Professional', 'Service Warranty', 'Price Transparency', 'On-time Guarantee'].map(item => (
-                                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#374151', fontSize: '0.95rem' }}>
-                                    <HiOutlineCheckCircle style={{ color: 'var(--success-color)', fontSize: '1.3rem' }} />
-                                    {item}
+                                <div key={item} className="feature-item">
+                                    <HiOutlineCheckCircle className="text-emerald-500 text-xl" />
+                                    <span>{item}</span>
                                 </div>
                             ))}
                         </div>
@@ -92,60 +90,62 @@ const ServiceDetail = () => {
                 </div>
 
                 {/* Content Section */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <div>
-                        <div style={{ color: 'var(--primary-color)', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div className="detail-info-pane">
+                    <div className="detail-eyebrow-row">
+                        <div className="detail-eyebrow flex-center gap-1">
                             <HiOutlineLightningBolt /> {service.category?.name || 'Local Service'}
                         </div>
-                        <h1 style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0', letterSpacing: '-0.02em' }}>{service.title}</h1>
+                    </div>
+                    
+                    <h1 className="detail-title">{service.title}</h1>
+
+                    <div className="detail-price-display">
+                        <span className="price-amount">₹{service.price}</span>
+                        <span className="price-unit">/ consultation</span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                        <span style={{ fontSize: '2.4rem', fontWeight: 900, color: '#111827' }}>₹{service.price}</span>
-                        <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600 }}>/ consultation</span>
-                    </div>
-
-                    <div className="card-premium" style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '20px' }}>
-                        <h3 style={{ margin: '0 0 12px', fontSize: '1.1rem', fontWeight: 800 }}>About this Service</h3>
-                        <p style={{ color: '#4b5563', lineHeight: '1.8', margin: 0 }}>
+                    <div className="detail-section-card">
+                        <h3>About this Service</h3>
+                        <p>
                             {service.description || "Our community-verified experts provide high-quality services tailored to your needs. This service is part of Gramzo's initiative to boost local livelihoods."}
                         </p>
                     </div>
 
-                    <div className="responsive-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                        <div className="card-premium" style={{ padding: '16px', backgroundColor: '#f9fafb', textAlign: 'center' }}>
-                            <HiOutlineClock style={{ fontSize: '1.5rem', color: 'var(--primary-color)', marginBottom: '8px' }} />
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Available</div>
-                            <div style={{ fontWeight: 800, color: '#111827' }}>{service.availableTime || 'Flexible'}</div>
+                    <div className="detail-stats-grid">
+                        <div className="detail-stat-card">
+                            <HiOutlineClock className="stat-icon" />
+                            <div className="stat-label">Available</div>
+                            <div className="stat-value">{service.availableTime || 'Flexible'}</div>
                         </div>
-                        <div className="card-premium" style={{ padding: '16px', backgroundColor: '#f9fafb', textAlign: 'center' }}>
-                            <HiOutlineLocationMarker style={{ fontSize: '1.5rem', color: 'var(--primary-color)', marginBottom: '8px' }} />
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Location</div>
-                            <div style={{ fontWeight: 800, color: '#111827' }}>{service.locationName || service.location || 'Local area'}</div>
-                        </div>
-                    </div>
-
-                    <div className="card-premium" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', backgroundColor: '#fff' }}>
-                        <HiOutlineUserCircle style={{ fontSize: '3rem', color: '#cbd5e1' }} />
-                        <div>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700 }}>Service Provided by</div>
-                            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#111827' }}>{service.agentId?.name || 'Verified Agent'}</div>
+                        <div className="detail-stat-card">
+                            <HiOutlineLocationMarker className="stat-icon" />
+                            <div className="stat-label">Location</div>
+                            <div className="stat-value">{service.locationName || service.location || 'Local area'}</div>
                         </div>
                     </div>
 
-                    <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
+                    <div className="provider-info-card">
+                        <div className="provider-avatar">
+                            <HiOutlineUserCircle />
+                        </div>
+                        <div className="provider-details">
+                            <div className="provider-label">Service Provided by</div>
+                            <div className="provider-name">{service.agentId?.name || 'Verified Agent'}</div>
+                        </div>
+                    </div>
+
+                    <div className="detail-action-footer">
                         {isAuthenticated ? (
                             <button
                                 onClick={() => setShowBooking(true)}
-                                className="btn-primary"
-                                style={{ width: '100%', padding: '18px', fontSize: '1.2rem', justifyContent: 'center', borderRadius: '16px' }}
+                                className="btn-primary btn-full py-4 text-xl rounded-2xl"
                             >
                                 <HiOutlineCalendar /> {service.requiresAppointment ? 'Select Slot & Book' : 'Book Instantly'}
                             </button>
                         ) : (
-                            <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#fffbeb', borderRadius: '16px', border: '1px solid #fef3c7' }}>
-                                <p style={{ margin: '0 0 12px', fontWeight: 700, color: '#92400e' }}>Ready to book? Login to see available slots.</p>
-                                <button onClick={() => navigate('/login')} className="btn-primary" style={{ margin: '0 auto', backgroundColor: '#ea580c' }}>Login Now</button>
+                            <div className="detail-login-alert">
+                                <p>Ready to book? Login to see available slots.</p>
+                                <button onClick={() => navigate('/login')} className="btn-primary mt-4 py-3 px-8 mx-auto block">Login Now</button>
                             </div>
                         )}
                     </div>
@@ -161,14 +161,6 @@ const ServiceDetail = () => {
                     onClose={() => setShowBooking(false)}
                 />
             )}
-
-            <style>{`
-                @media (min-width: 1024px) {
-                    .grid-2-desktop {
-                        grid-template-columns: 1fr 1fr !important;
-                    }
-                }
-            `}</style>
         </div>
     );
 };

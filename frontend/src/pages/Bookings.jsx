@@ -69,146 +69,75 @@ const Bookings = () => {
     };
 
     return (
-        <div className="page-wrapper" style={{ maxWidth: '900px' }}>
+        <div className="bookings-container app-container py-8">
             {/* Header */}
-            <header style={{ marginBottom: '40px' }}>
-                <div style={{
-                    color: 'var(--primary-color)',
-                    fontWeight: '700',
-                    fontSize: '0.85rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    marginBottom: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                }}>
-                    <HiOutlineClipboardList style={{ fontSize: '1rem' }} />
-                    Your Activity
+            <header className="dash-header mb-12">
+                <div className="dash-title-group">
+                    <div className="dash-eyebrow">Your Activity</div>
+                    <h1 className="dash-title">My Bookings</h1>
+                    <p className="dash-subtitle">Track and manage all your service appointments in one place.</p>
                 </div>
-                <h1 style={{ margin: 0, fontSize: '2.25rem', fontWeight: '900', letterSpacing: '-0.025em' }}>
-                    My Bookings
-                </h1>
-                <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '10px' }}>
-                    Track and manage all your service appointments in one place.
-                </p>
             </header>
 
-            {/* Loading */}
-            {loading && (
-                <div className="page-loading">
-                    <div className="spinner" />
-                    <span>Loading your bookings...</span>
-                </div>
-            )}
-
             {/* Error */}
-            {!loading && error && (
-                <div className="alert alert-error">
-                    <HiOutlineInformationCircle style={{ flexShrink: 0 }} />
-                    {error}
+            {error && (
+                <div className="alert alert-error mb-8 p-4 bg-rose-50 text-rose-600 rounded-2xl border border-rose-100 flex items-center gap-3">
+                    <HiOutlineInformationCircle className="shrink-0 text-xl" />
+                    <span className="font-bold">{error}</span>
                 </div>
             )}
 
             {/* No phone stored */}
             {!loading && !error && !user?.phone && (
-                <div className="empty-state">
-                    <HiOutlineClipboardList className="empty-state-icon" />
-                    <h3>No phone number linked</h3>
-                    <p>Your bookings are matched by phone number. Please ensure your profile has one.</p>
+                <div className="empty-state py-16 bg-white-bleed rounded-[32px]">
+                    <HiOutlineClipboardList className="empty-state-icon opacity-10" />
+                    <h3 className="text-xl font-black mb-2">No phone number linked</h3>
+                    <p className="text-slate-500 max-w-sm mx-auto">Your bookings are matched by phone number. Please ensure your profile has one to see your history.</p>
                 </div>
             )}
 
             {/* Empty state */}
             {!loading && !error && user?.phone && bookings.length === 0 && (
-                <div className="empty-state">
-                    <HiOutlineCalendar className="empty-state-icon" />
-                    <h3>No bookings yet</h3>
-                    <p>Head over to <strong>Services</strong> to book your first appointment.</p>
+                <div className="empty-state py-16 bg-white-bleed rounded-[32px]">
+                    <HiOutlineCalendar className="empty-state-icon opacity-10" />
+                    <h3 className="text-xl font-black mb-2">No bookings yet</h3>
+                    <p className="text-slate-500 max-w-sm mx-auto">Head over to <strong>Services</strong> to book your first appointment and see it appear here.</p>
                 </div>
             )}
 
             {/* Booking list */}
             {!loading && !error && bookings.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {bookings.map((booking) => {
-                        const cfg = statusConfig[booking.status] || statusConfig.pending;
-                        const StatusIcon = cfg.icon;
-                        return (
-                            <div
-                                key={booking._id}
-                                className="card"
-                                style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: '1fr auto',
-                                    gap: '16px',
-                                    alignItems: 'center',
-                                    padding: '24px 28px'
-                                }}
-                            >
-                                {/* Left: Info */}
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{
-                                        fontSize: '1.15rem',
-                                        fontWeight: '800',
-                                        color: 'var(--text-main)'
-                                    }}>
-                                        {booking.service?.title || 'Service Unavailable'}
-                                    </div>
-
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        color: 'var(--text-muted)',
-                                        fontSize: '0.9rem',
-                                        fontWeight: '600'
-                                    }}>
-                                        <HiOutlineCalendar style={{ flexShrink: 0 }} />
-                                        {formatDate(booking.date)}
-                                    </div>
-
-                                    {booking.service?.location && (
-                                        <div style={{
-                                            fontSize: '0.85rem',
-                                            color: 'var(--text-muted)',
-                                            fontWeight: '500'
-                                        }}>
-                                            📍 {booking.service.location}
+                <div className="dash-card">
+                    <div className="dash-card-header">
+                        <h2>Recent Appointments</h2>
+                    </div>
+                    <div className="dash-list">
+                        {bookings.map((booking) => {
+                            const cfg = statusConfig[booking.status] || statusConfig.pending;
+                            return (
+                                <div key={booking._id} className="dash-row">
+                                    <div className="dash-row-info">
+                                        <div className="dash-row-title text-base">
+                                            {booking.service?.title || 'Service Unavailable'}
                                         </div>
-                                    )}
-
-                                    {booking.amount && (
-                                        <div style={{
-                                            fontSize: '0.85rem',
-                                            color: 'var(--text-muted)',
-                                            fontWeight: '600'
-                                        }}>
-                                            ₹{booking.amount}
+                                        <div className="dash-row-sub flex items-center gap-2">
+                                            <HiOutlineCalendar className="text-sm" />
+                                            {formatDate(booking.date)}
+                                            {booking.service?.location && ` • 📍 ${booking.service.location}`}
                                         </div>
-                                    )}
+                                    </div>
+                                    <div className="flex flex-col items-end gap-2">
+                                        {booking.amount && (
+                                            <div className="dash-row-amount">₹{booking.amount}</div>
+                                        )}
+                                        <span className={`status-badge-flat ${booking.status}`}>
+                                            {cfg.label}
+                                        </span>
+                                    </div>
                                 </div>
-
-                                {/* Right: Status badge */}
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    backgroundColor: cfg.bg,
-                                    color: cfg.color,
-                                    border: `1px solid ${cfg.border}`,
-                                    padding: '8px 16px',
-                                    borderRadius: '999px',
-                                    fontWeight: '700',
-                                    fontSize: '0.85rem',
-                                    whiteSpace: 'nowrap'
-                                }}>
-                                    <StatusIcon style={{ fontSize: '1rem' }} />
-                                    {cfg.label}
-                                </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             )}
         </div>

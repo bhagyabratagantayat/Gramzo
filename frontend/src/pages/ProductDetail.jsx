@@ -122,13 +122,11 @@ const ProductDetail = () => {
     );
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div className="product-detail-container app-container py-12">
+            <header className="flex-between mb-8">
                 <button
                     onClick={() => navigate(-1)}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', border: 'none', background: 'none', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}
-                    onMouseEnter={e => e.target.style.color = 'var(--primary-color)'}
-                    onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
+                    className="btn-back"
                 >
                     <HiOutlineArrowLeft /> Back
                 </button>
@@ -136,71 +134,62 @@ const ProductDetail = () => {
                 {isOwner && (
                     <button
                         onClick={() => setIsEditModalOpen(true)}
-                        className="btn-secondary"
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '12px' }}
+                        className="btn-secondary flex-center gap-2"
                     >
                         <HiOutlinePencilAlt /> Edit Listing
                     </button>
                 )}
-            </div>
+            </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '40px' }} className="grid-2-desktop">
+            <div className="detail-grid">
                 {/* Image Section */}
-                <div className="card-premium" style={{ borderRadius: '24px', overflow: 'hidden', backgroundColor: '#fff', position: 'relative' }}>
+                <div className="detail-image-card">
                     <img
                         src={product.image || getFallbackImage(product.title, product.category?.name)}
                         alt={product.title}
-                        style={{ width: '100%', height: 'auto', maxHeight: '500px', objectFit: 'cover', display: 'block' }}
+                        className="detail-main-img"
                         onError={(e) => { e.target.src = getFallbackImage(product.title, product.category?.name); }}
                     />
-                    <div style={{ position: 'absolute', top: '20px', left: '20px' }} className="badge glass-morphism">
+                    <div className="detail-badge badge glass-morphism">
                         {product.category?.name || 'Local Marketplace'}
                     </div>
                 </div>
 
                 {/* Info Section */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <div>
-                        <div style={{ color: 'var(--primary-color)', fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                            Fresh from Village
+                <div className="detail-info-pane">
+                    <div className="detail-eyebrow">Fresh from Village</div>
+                    <h1 className="detail-title">{product.title}</h1>
+                    
+                    <div className="detail-price-tag">₹{product.price}</div>
+
+                    <div className="detail-section-card">
+                        <h3>Description</h3>
+                        <p>{product.description || "No detailed description provided for this item. Contact the seller for more information about quality and availability."}</p>
+                    </div>
+
+                    <div className="detail-meta-group">
+                        <div className="detail-meta-chip">
+                            <HiOutlineLocationMarker /> {product.location || 'Local area'}
                         </div>
-                        <h1 style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0', letterSpacing: '-0.02em', color: '#111827' }}>{product.title}</h1>
-                    </div>
-
-                    <div style={{ fontSize: '2.2rem', fontWeight: 900, color: 'var(--primary-color)' }}>
-                        ₹{product.price}
-                    </div>
-
-                    <div className="card-premium" style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px' }}>
-                        <h3 style={{ margin: '0 0 12px', fontSize: '1.1rem', fontWeight: 800 }}>Description</h3>
-                        <p style={{ color: '#4b5563', lineHeight: '1.7', margin: 0 }}>
-                            {product.description || "No detailed description provided for this item. Contact the seller for more information about quality and availability."}
-                        </p>
-                    </div>
-
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: '#f3f4f6', borderRadius: '12px', color: '#374151', fontSize: '0.9rem', fontWeight: 700 }}>
-                            <HiOutlineLocationMarker style={{ color: 'var(--primary-color)' }} /> {product.location || 'Local area'}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: '#f3f4f6', borderRadius: '12px', color: '#374151', fontSize: '0.9rem', fontWeight: 700 }}>
-                            <HiOutlineTag style={{ color: 'var(--primary-color)' }} /> {product.sellerName || 'Verified Seller'}
+                        <div className="detail-meta-chip">
+                            <HiOutlineTag /> {product.sellerName || 'Verified Seller'}
                         </div>
                     </div>
 
-                    <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
+                    <div className="detail-action-footer">
                         {isAuthenticated ? (
-                            <div style={{ display: 'flex', gap: '16px' }}>
-                                <button className="btn-primary" style={{ flex: 1, padding: '18px 32px', fontSize: '1.1rem', justifyContent: 'center' }}>
+                            <div className="flex gap-4">
+                                <button className="btn-primary flex-1 py-4 text-lg">
                                     <HiOutlineShoppingBag /> Contact Seller
                                 </button>
-                                <a href={`tel:${product.phone || ''}`} className="btn-secondary" style={{ padding: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <HiOutlinePhone style={{ fontSize: '1.4rem' }} />
+                                <a href={`tel:${product.phone || ''}`} className="btn-secondary p-4 flex-center">
+                                    <HiOutlinePhone className="text-2xl" />
                                 </a>
                             </div>
                         ) : (
-                            <div className="card-premium" style={{ padding: '24px', backgroundColor: '#eff6ff', textAlign: 'center', border: '1px solid #dbeafe' }}>
-                                <p style={{ margin: '0 0 16px', fontWeight: 700, color: '#1e40af' }}>Login to contact the seller and buy this product.</p>
-                                <button onClick={() => navigate('/login')} className="btn-primary" style={{ margin: '0 auto' }}>Login Now</button>
+                            <div className="detail-login-alert">
+                                <p>Login to contact the seller and buy this product.</p>
+                                <button onClick={() => navigate('/login')} className="btn-primary mt-4">Login Now</button>
                             </div>
                         )}
                     </div>
@@ -209,18 +198,18 @@ const ProductDetail = () => {
 
             {/* Edit Product Modal */}
             {isEditModalOpen && (
-                <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: '20px' }}>
-                    <div className="card-premium" style={{ backgroundColor: '#fff', width: '100%', maxWidth: '600px', borderRadius: '24px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px', borderBottom: '1px solid #f3f4f6' }}>
-                            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, margin: 0 }}>Edit Product Information</h2>
-                            <button onClick={() => setIsEditModalOpen(false)} style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                <div className="modal-overlay">
+                    <div className="modal-content max-w-2xl">
+                        <div className="modal-header">
+                            <h2>Edit Product Information</h2>
+                            <button onClick={() => setIsEditModalOpen(false)} className="modal-close">
                                 <HiOutlineX />
                             </button>
                         </div>
 
-                        <form onSubmit={handleEditSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <form onSubmit={handleEditSubmit} className="modal-form">
                             <div className="form-group">
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Product Name *</label>
+                                <label>Product Name *</label>
                                 <input
                                     type="text"
                                     className="fancy-input"
@@ -230,9 +219,9 @@ const ProductDetail = () => {
                                 />
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            <div className="form-row">
                                 <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Price (₹) *</label>
+                                    <label>Price (₹) *</label>
                                     <input
                                         type="number"
                                         className="fancy-input"
@@ -242,7 +231,7 @@ const ProductDetail = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Category</label>
+                                    <label>Category</label>
                                     <select
                                         className="fancy-input"
                                         value={editForm.category}
@@ -257,18 +246,17 @@ const ProductDetail = () => {
                             </div>
 
                             <div className="form-group">
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Image URL</label>
+                                <label>Image URL</label>
                                 <input
                                     type="text"
                                     className="fancy-input"
                                     value={editForm.image}
                                     onChange={(e) => setEditForm({ ...editForm, image: e.target.value })}
-                                    placeholder="https://example.com/image.jpg"
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Location</label>
+                                <label>Location</label>
                                 <input
                                     type="text"
                                     className="fancy-input"
@@ -278,18 +266,17 @@ const ProductDetail = () => {
                             </div>
 
                             <div className="form-group">
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Description</label>
+                                <label>Description</label>
                                 <textarea
-                                    className="fancy-input"
-                                    style={{ minHeight: '100px', resize: 'vertical' }}
+                                    className="fancy-input h-32"
                                     value={editForm.description}
                                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                                 ></textarea>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            <div className="form-row">
                                 <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Seller Name</label>
+                                    <label>Seller Name</label>
                                     <input
                                         type="text"
                                         className="fancy-input"
@@ -298,7 +285,7 @@ const ProductDetail = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 800, fontSize: '0.9rem', color: '#374151' }}>Contact Phone</label>
+                                    <label>Contact Phone</label>
                                     <input
                                         type="text"
                                         className="fancy-input"
@@ -308,19 +295,17 @@ const ProductDetail = () => {
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                            <div className="modal-footer">
                                 <button
                                     type="button"
                                     onClick={() => setIsEditModalOpen(false)}
-                                    className="btn-secondary"
-                                    style={{ flex: 1, justifyContent: 'center' }}
+                                    className="btn-secondary flex-1"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="btn-primary"
-                                    style={{ flex: 2, justifyContent: 'center' }}
+                                    className="btn-primary flex-2"
                                     disabled={isSubmitting}
                                 >
                                     {isSubmitting ? 'Saving...' : <><HiOutlineSave /> Save Changes</>}
@@ -330,30 +315,6 @@ const ProductDetail = () => {
                     </div>
                 </div>
             )}
-
-            {/* CSS for grid layout and inputs */}
-            <style>{`
-                @media (min-width: 1024px) {
-                    .grid-2-desktop {
-                        grid-template-columns: 1fr 1fr !important;
-                    }
-                }
-                .fancy-input {
-                    width: 100%;
-                    padding: 12px 16px;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 12px;
-                    font-size: 0.95rem;
-                    transition: all 0.2s;
-                    background: #f8fafc;
-                }
-                .fancy-input:focus {
-                    outline: none;
-                    border-color: var(--primary-color);
-                    background: #fff;
-                    box-shadow: 0 0 0 4px rgba(0, 153, 0, 0.1);
-                }
-            `}</style>
         </div>
     );
 };

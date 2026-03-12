@@ -41,181 +41,123 @@ const AdminDashboard = () => {
     if (loading) return <div className="flex-center" style={{ height: '60vh' }}><div className="spinner"></div></div>;
 
     return (
-        <div className="page-wrapper dashboard-admin">
+        <div className="admin-dashboard-container app-container py-8">
             <header className="dash-header">
-                <div>
-                    <div className="section-eyebrow">System Administrator</div>
-                    <h1 className="section-title">Control Center</h1>
-                    <p className="section-sub">Real-time system health and management tools.</p>
+                <div className="dash-title-group">
+                    <div className="dash-eyebrow">System Administrator</div>
+                    <h1 className="dash-title">Control Center</h1>
+                    <p className="dash-subtitle">Real-time system health and management tools.</p>
                 </div>
-                <div className="header-badge">
-                    <HiOutlineShieldCheck /> Secure Node
+                <div className="header-badge bg-rose-50 text-rose-600 px-4 py-2 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-2 border border-rose-100">
+                    <HiOutlineShieldCheck className="text-lg" /> Secure Node
                 </div>
             </header>
 
             {/* Platform Stats */}
-            <div className="stats-grid">
-                <div className="stat-card modern blue">
-                    <div className="stat-info">
-                        <span className="label">Total Users</span>
-                        <h3 className="value">{stats.totalUsers}</h3>
+            <div className="stat-grid">
+                <div className="stat-card">
+                    <div className="stat-icon-box primary">
+                        <HiOutlineUserGroup />
                     </div>
-                    <HiOutlineUserGroup className="bg-icon" />
+                    <div>
+                        <div className="stat-label">Total Users</div>
+                        <div className="stat-value">{stats.totalUsers}</div>
+                    </div>
                 </div>
-                <div className="stat-card modern purple">
-                    <div className="stat-info">
-                        <span className="label">Total Agents</span>
-                        <h3 className="value">{stats.totalAgents}</h3>
+                <div className="stat-card">
+                    <div className="stat-icon-box accent">
+                        <HiOutlineCube />
                     </div>
-                    <HiOutlineCube className="bg-icon" />
+                    <div>
+                        <div className="stat-label">Total Agents</div>
+                        <div className="stat-value">{stats.totalAgents}</div>
+                    </div>
                 </div>
-                <div className="stat-card modern orange">
-                    <div className="stat-info">
-                        <span className="label">Active Listings</span>
-                        <h3 className="value">{stats.totalListings}</h3>
+                <div className="stat-card">
+                    <div className="stat-icon-box warning">
+                        <HiOutlineShoppingBag />
                     </div>
-                    <HiOutlineShoppingBag className="bg-icon" />
+                    <div>
+                        <div className="stat-label">Active Listings</div>
+                        <div className="stat-value">{stats.totalListings}</div>
+                    </div>
                 </div>
-                <div className="stat-card modern green">
-                    <div className="stat-info">
-                        <span className="label">Daily Orders</span>
-                        <h3 className="value">{stats.totalOrders}</h3>
+                <div className="stat-card">
+                    <div className="stat-icon-box success">
+                        <HiOutlineTrendingUp />
                     </div>
-                    <HiOutlineTrendingUp className="bg-icon" />
+                    <div>
+                        <div className="stat-label">Daily Orders</div>
+                        <div className="stat-value">{stats.totalOrders}</div>
+                    </div>
                 </div>
             </div>
 
-            <div className="admin-grid">
+            <div className="dash-main-grid">
                 {/* Management Shortcuts */}
-                <div className="management-panels">
-                    <h2 className="group-title">Management Panels</h2>
-                    <div className="panel-grid">
-                        <Link to="/admin" className="panel-card">
-                            <div className="panel-icon"><HiOutlineUserGroup /></div>
-                            <div className="panel-text">
-                                <h4>Verify Agents</h4>
-                                <p>Approve or block registered sellers.</p>
+                <div className="dash-card">
+                    <div className="dash-card-header">
+                        <h2>Management Panels</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Link to="/admin" className="dash-row hover:bg-white border hover:border-primary transition-all">
+                            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl text-xl"><HiOutlineUserGroup /></div>
+                            <div className="dash-row-info">
+                                <div className="dash-row-title">Verify Agents</div>
+                                <div className="dash-row-sub">Approve or block registered sellers.</div>
                             </div>
                         </Link>
-                        <Link to="/all-bookings" className="panel-card">
-                            <div className="panel-icon"><HiOutlineCollection /></div>
-                            <div className="panel-text">
-                                <h4>Global Bookings</h4>
-                                <p>Monitor all transactions & services.</p>
+                        <Link to="/all-bookings" className="dash-row hover:bg-white border hover:border-primary transition-all">
+                            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl text-xl"><HiOutlineCollection /></div>
+                            <div className="dash-row-info">
+                                <div className="dash-row-title">Global Bookings</div>
+                                <div className="dash-row-sub">Monitor all transactions & services.</div>
                             </div>
                         </Link>
-                        <Link to="/notifications" className="panel-card">
-                            <div className="panel-icon"><HiOutlineSpeakerphone /></div>
-                            <div className="panel-text">
-                                <h4>Community Notice</h4>
-                                <p>Broadcast updates to everyone.</p>
+                        <Link to="/notifications" className="dash-row hover:bg-white border hover:border-primary transition-all">
+                            <div className="p-3 bg-amber-50 text-amber-600 rounded-xl text-xl"><HiOutlineSpeakerphone /></div>
+                            <div className="dash-row-info">
+                                <div className="dash-row-title">Community Notice</div>
+                                <div className="dash-row-sub">Broadcast updates to everyone.</div>
                             </div>
                         </Link>
-                        <Link to="/marketplace" className="panel-card">
-                            <div className="panel-icon"><HiOutlineShoppingBag /></div>
-                            <div className="panel-text">
-                                <h4>Manage Products</h4>
-                                <p>Cleanup inappropriate listings.</p>
+                        <Link to="/marketplace" className="dash-row hover:bg-white border hover:border-primary transition-all">
+                            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl text-xl"><HiOutlineShoppingBag /></div>
+                            <div className="dash-row-info">
+                                <div className="dash-row-title">Manage Products</div>
+                                <div className="dash-row-sub">Cleanup inappropriate listings.</div>
                             </div>
                         </Link>
                     </div>
                 </div>
 
-                {/* System Activity Feed (Mock/Basic) */}
-                <div className="activity-panel">
-                    <h2 className="group-title">System Activity</h2>
-                    <div className="activity-list">
-                        <div className="activity-item">
-                            <div className="dot green"></div>
-                            <div className="text">System core is healthy</div>
-                            <span className="time">Just now</span>
+                {/* System Activity Feed */}
+                <div className="dash-card bg-white-bleed">
+                    <h2 className="text-xl font-extrabold mb-6">System Health</h2>
+                    <div className="dash-list">
+                        <div className="activity-item-premium flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></div>
+                            <div className="flex-1 text-sm font-bold text-slate-700">System core is healthy</div>
+                            <div className="text-[10px] uppercase font-black text-gray-400">Just now</div>
                         </div>
-                        <div className="activity-item">
-                            <div className="dot blue"></div>
-                            <div className="text">Database synchronized</div>
-                            <span className="time">2m ago</span>
+                        <div className="activity-item-premium flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                            <div className="flex-1 text-sm font-bold text-slate-700">Database synchronized</div>
+                            <div className="text-[10px] uppercase font-black text-gray-400">2m ago</div>
                         </div>
-                        <div className="activity-item">
-                            <div className="dot orange"></div>
-                            <div className="text">Backup completed</div>
-                            <span className="time">15m ago</span>
+                        <div className="activity-item-premium flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                            <div className="flex-1 text-sm font-bold text-slate-700">Backup completed</div>
+                            <div className="text-[10px] uppercase font-black text-gray-400">15m ago</div>
                         </div>
-                        <div className="activity-item">
-                            <div className="dot purp"></div>
-                            <div className="text">JWT auth verification active</div>
-                            <span className="time">Always</span>
+                        <div className="activity-item-premium flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100">
+                            <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                            <div className="flex-1 text-sm font-bold text-slate-700">JWT auth verification active</div>
+                            <div className="text-[10px] uppercase font-black text-gray-400">Always</div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <style>{`
-                .dashboard-admin { padding-top: 20px; }
-                .header-badge {
-                    display: flex; alignItems: center; gap: 8px;
-                    background: #fdf2f8; color: #db2777; padding: 8px 16px;
-                    border-radius: 999px; font-weight: 800; font-size: 0.85rem;
-                }
-                .stats-grid { 
-                    display: grid; 
-                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-                    gap: 20px; 
-                    margin-bottom: 40px; 
-                }
-                .stat-card.modern {
-                    position: relative; overflow: hidden;
-                    background: #fff; border-radius: 24px; padding: 28px;
-                    border: 1px solid var(--border-color);
-                    transition: transform 0.2s;
-                }
-                .stat-card.modern:hover { transform: translateY(-5px); }
-                .stat-card.modern.blue { border-bottom: 4px solid #3b82f6; }
-                .stat-card.modern.purple { border-bottom: 4px solid #8b5cf6; }
-                .stat-card.modern.orange { border-bottom: 4px solid #f59e0b; }
-                .stat-card.modern.green { border-bottom: 4px solid #10b981; }
-
-                .stat-info { position: relative; z-index: 2; }
-                .stat-info .label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-                .stat-info .value { font-size: 2.5rem; font-weight: 900; margin-top: 8px; letter-spacing: -0.05em; }
-                
-                .bg-icon {
-                    position: absolute; right: -10px; bottom: -10px;
-                    font-size: 5rem; opacity: 0.05; z-index: 1;
-                }
-
-                .admin-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
-                @media (max-width: 1000px) { .admin-grid { grid-template-columns: 1fr; } }
-
-                .group-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 24px; }
-                
-                .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-                @media (max-width: 600px) { .panel-grid { grid-template-columns: 1fr; } }
-
-                .panel-card {
-                    background: #fff; border: 1px solid var(--border-color); border-radius: 20px;
-                    padding: 24px; display: flex; gap: 16px; align-items: center;
-                    transition: all 0.2s;
-                }
-                .panel-card:hover { border-color: var(--primary-color); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-                .panel-icon {
-                    width: 48px; height: 48px; border-radius: 12px; background: #f8fafc;
-                    display: flex; alignItems: center; justifyContent: center;
-                    font-size: 1.4rem; color: var(--primary-color);
-                }
-                .panel-text h4 { margin: 0; font-size: 1rem; font-weight: 700; }
-                .panel-text p { margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted); }
-
-                .activity-panel { background: #fff; border-radius: 24px; border: 1px solid var(--border-color); padding: 24px; }
-                .activity-list { display: flex; flex-direction: column; gap: 20px; }
-                .activity-item { display: flex; align-items: center; gap: 12px; }
-                .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-                .dot.green { background: #10b981; box-shadow: 0 0 10px #10b981; }
-                .dot.blue { background: #3b82f6; }
-                .dot.orange { background: #f59e0b; }
-                .dot.purp { background: #8b5cf6; }
-                .activity-item .text { flex: 1; font-size: 0.9rem; font-weight: 600; }
-                .activity-item .time { font-size: 0.75rem; color: var(--text-muted); }
-            `}</style>
         </div>
     );
 };

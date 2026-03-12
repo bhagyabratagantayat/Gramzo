@@ -92,80 +92,52 @@ const Navbar = () => {
 
     const roleCfg = user ? (ROLE_COLORS[user.role] || ROLE_COLORS.User) : null;
 
-    // Homepage Special Header
-    if (isHomePage) {
-        return (
-            <header className="home-special-header">
-                <div className="header-inner">
-                    <div className="header-left">
-                        {user ? (
-                            <Link to="/dashboard" className="profile-trigger">
-                                <HiUserCircle />
-                            </Link>
-                        ) : (
-                            <Link to="/login" className="profile-trigger">
-                                <HiUserCircle />
-                            </Link>
-                        )}
-                    </div>
-                    <div className="header-center">
-                        <Link to="/" className="home-logo">Gramzo</Link>
-                    </div>
-                    <div className="header-right">
-                        {user ? (
-                            <Link to="/notifications" className="notification-icon">
-                                <HiOutlineBell />
-                            </Link>
-                        ) : (
-                            <Link to="/login" className="btn-signin-small">Login</Link>
-                        )}
-                    </div>
-                </div>
-            </header>
-        );
-    }
-
-    // Other Pages Navbar
+    // Unified Header Structure
     return (
         <>
-            <nav className="main-navbar">
+            <header className={`main-navbar sticky-header ${isHomePage ? 'glass-morphism' : ''}`}>
                 <div className="navbar-inner">
-                    <div className="navbar-brand">
+                    <div className="navbar-left">
                         <button
-                            className={`hamburger-btn${drawerOpen ? ' open' : ''}`}
+                            className={`hamburger-btn mobile-only ${drawerOpen ? 'open' : ''}`}
                             onClick={() => setDrawerOpen(o => !o)}
                         >
                             <span /><span /><span />
                         </button>
-                        <Link to="/" className="navbar-logo">
-                            <HiLightningBolt className="logo-icon" />
-                            <span>Gramzo</span>
-                        </Link>
+                        <div className="desktop-only">
+                            {user && (
+                                <div className="user-profile-section">
+                                    <div className="user-info">
+                                        <span className="user-name">{user.name.split(' ')[0]}</span>
+                                        <span className="role-tag" style={{ backgroundColor: roleCfg.bg, color: roleCfg.color }}>
+                                            {user.role}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <ul className="navbar-nav-links">
-                        {renderLinks()}
-                    </ul>
+                    <div className="navbar-center">
+                        <Link to="/" className="navbar-logo">Gramzo</Link>
+                    </div>
 
-                    <div className="navbar-actions">
+                    <div className="navbar-right">
                         {user ? (
-                            <div className="user-profile-section">
-                                <div className="user-info hide-mobile">
-                                    <span className="user-name">{user.name.split(' ')[0]}</span>
-                                    <span className="role-tag" style={{ backgroundColor: roleCfg.bg, color: roleCfg.color }}>
-                                        {user.role}
-                                    </span>
-                                </div>
-                                <button onClick={handleLogout} className="logout-btn" title="Logout">
+                            <div className="navbar-actions">
+                                <Link to="/notifications" className="notification-icon">
+                                    <HiOutlineBell />
+                                </Link>
+                                <button onClick={handleLogout} className="logout-btn desktop-only" title="Logout">
                                     <HiOutlineLogout />
                                 </button>
                             </div>
                         ) : (
-                            <Link to="/login" className="login-btn-premium">Sign In</Link>
+                            <Link to="/login" className="login-btn-premium">Login</Link>
                         )}
                     </div>
                 </div>
-            </nav>
+            </header>
 
             {/* Mobile Drawer */}
             <div className={`nav-drawer${drawerOpen ? ' open' : ''}`} ref={drawerRef}>

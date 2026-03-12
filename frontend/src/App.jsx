@@ -32,17 +32,17 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-color)' }}>
+      <div className="page-loading">
         <div className="spinner"></div>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex-col-full">
       <Navbar />
       <LocationBanner />
-      <main style={{ flex: 1, maxWidth: '1200px', margin: '0 auto', width: '100%', padding: '0 15px 80px' }}>
+      <main className="main-content-layout">
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />

@@ -109,223 +109,132 @@ const Notifications = () => {
     );
 
     return (
-        <div className="page-wrapper" style={{ maxWidth: '800px' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <div>
-                    <div className="section-eyebrow">Stay Updated</div>
-                    <h1 className="section-title">Notifications</h1>
+        <div className="notifications-container app-container py-8">
+            <header className="dash-header mb-12">
+                <div className="dash-title-group">
+                    <div className="dash-eyebrow">Stay Updated</div>
+                    <h1 className="dash-title">Notifications</h1>
+                    <p className="dash-subtitle">Important updates, booking requests, and community news.</p>
                 </div>
                 {user?.role === 'Admin' && (
-                    <button className="btn-primary" onClick={() => setShowCreateModal(true)}>
-                        <HiOutlinePlusCircle /> Post Update
+                    <button className="btn-primary flex items-center gap-2 py-3 px-6 rounded-2xl" onClick={() => setShowCreateModal(true)}>
+                        <HiOutlinePlusCircle className="text-xl" /> 
+                        <span className="font-extrabold text-sm uppercase">Post Update</span>
                     </button>
                 )}
             </header>
 
-            <div style={{ display: 'grid', gap: '20px' }}>
+            <div className="dash-card">
                 {notifications.length === 0 ? (
-                    <div className="empty-state">
-                        <HiOutlineBell className="empty-icon" />
-                        <h3>No notifications</h3>
-                        <p>You're all caught up! Important updates will appear here.</p>
+                    <div className="empty-state py-20 bg-white-bleed rounded-[32px]">
+                        <div className="w-20 h-20 rounded-full bg-slate-50 flex-center mx-auto mb-6 text-slate-200 text-4xl">
+                            <HiOutlineBell />
+                        </div>
+                        <h3 className="text-xl font-black mb-2">No notifications yet</h3>
+                        <p className="text-slate-500 max-w-sm mx-auto">You're all caught up! Important updates will appear here as they arrive.</p>
                     </div>
                 ) : (
-                    notifications.map((notif) => (
-                        <div key={notif._id} className="notif-card">
-                            <div className="notif-card-main">
-                                <div className="notif-icon-box">
-                                    {getIcon(notif.type)}
-                                    {notif.type === 'admin_notice' && (
-                                        <div className="service-card-badge" style={{ fontSize: '0.6rem', padding: '2px 6px', top: '-6px', right: '-6px' }}>
-                                            Notice
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="notif-content">
-                                    <div className="notif-header">
-                                        <h3 className="notif-title">{notif.title}</h3>
-                                        <span className="notif-date">
-                                            {new Date(notif.createdAt).toLocaleString('en-IN', {
-                                                day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-                                            })}
-                                        </span>
+                    <div className="dash-list">
+                        {notifications.map((notif) => (
+                            <div key={notif._id} className="dash-row group">
+                                <div className="flex gap-5 flex-1 min-w-0">
+                                    <div className={`notification-icon-wrapper rounded-2xl flex-center w-14 h-14 shrink-0 transition-transform group-hover:scale-105 ${
+                                        notif.type === 'admin_notice' ? 'bg-amber-50 text-amber-600' :
+                                        notif.type === 'booking_request' ? 'bg-blue-50 text-blue-600' :
+                                        notif.type === 'booking_update' ? 'bg-emerald-50 text-emerald-600' :
+                                        'bg-purple-50 text-purple-600'
+                                    }`}>
+                                        <div className="text-2xl">{getIcon(notif.type)}</div>
                                     </div>
-                                    <p className="notif-message">{notif.message}</p>
-
-                                    {notif.type === 'booking_request' && user?.role === 'Agent' && (
-                                        <div className="notif-actions">
-                                            <button
-                                                className="btn-action accept"
-                                                onClick={() => handleBookingResponse(notif.bookingId, notif._id, 'accepted')}
-                                            >
-                                                <HiOutlineCheck /> Accept
-                                            </button>
-                                            <button
-                                                className="btn-action reject"
-                                                onClick={() => handleBookingResponse(notif.bookingId, notif._id, 'rejected')}
-                                            >
-                                                <HiOutlineX /> Reject
-                                            </button>
+                                    
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className="font-black text-slate-800 text-lg leading-tight truncate pr-4">
+                                                {notif.title}
+                                            </h3>
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap bg-slate-50 px-2 py-1 rounded">
+                                                {new Date(notif.createdAt).toLocaleDateString('en-IN', {
+                                                    day: 'numeric', month: 'short'
+                                                })}
+                                            </span>
                                         </div>
-                                    )}
-                                </div>
-                            </div>
+                                        <p className="text-slate-500 text-sm leading-relaxed mb-4">
+                                            {notif.message}
+                                        </p>
 
-                            {user?.role === 'Admin' && notif.type === 'admin_notice' && (
-                                <button className="notif-delete-btn" onClick={() => handleDelete(notif._id)}>
-                                    <HiOutlineTrash />
-                                </button>
-                            )}
-                        </div>
-                    ))
+                                        {notif.type === 'booking_request' && user?.role === 'Agent' && (
+                                            <div className="flex gap-3 pt-2">
+                                                <button
+                                                    className="btn-primary py-2 px-5 rounded-xl text-xs bg-emerald-600 border-emerald-600 hover:bg-emerald-700 font-extrabold uppercase flex items-center gap-2"
+                                                    onClick={() => handleBookingResponse(notif.bookingId, notif._id, 'accepted')}
+                                                >
+                                                    <HiOutlineCheck /> Accept
+                                                </button>
+                                                <button
+                                                    className="btn-primary py-2 px-5 rounded-xl text-xs bg-white text-slate-600 border-slate-200 hover:bg-slate-50 font-extrabold uppercase flex items-center gap-2"
+                                                    onClick={() => handleBookingResponse(notif.bookingId, notif._id, 'rejected')}
+                                                >
+                                                    <HiOutlineX /> Reject
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {user?.role === 'Admin' && notif.type === 'admin_notice' && (
+                                    <button 
+                                        className="w-10 h-10 rounded-xl flex-center text-slate-300 hover:bg-rose-50 hover:text-rose-600 transition-all opacity-0 group-hover:opacity-100"
+                                        onClick={() => handleDelete(notif._id)}
+                                    >
+                                        <HiOutlineTrash />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
 
             {/* Create Modal */}
             {showCreateModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h2>Create Notification</h2>
-                            <button className="close-btn" onClick={() => setShowCreateModal(false)}><HiOutlineX /></button>
+                <div className="fixed inset-0 z-[1000] flex-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowCreateModal(false)}></div>
+                    <div className="relative bg-white w-full max-w-lg rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+                        <div className="p-8 pb-0 flex justify-between items-center">
+                            <h2 className="text-2xl font-black text-slate-800">New Public Notice</h2>
+                            <button className="w-10 h-10 rounded-full bg-slate-50 flex-center text-slate-400 hover:bg-slate-100 transition-colors" onClick={() => setShowCreateModal(false)}>
+                                <HiOutlineX className="text-xl" />
+                            </button>
                         </div>
-                        <form onSubmit={handleCreateNotif}>
-                            <div className="form-group">
-                                <label>Title</label>
+                        <form onSubmit={handleCreateNotif} className="p-8 space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Notice Title</label>
                                 <input
                                     type="text"
+                                    className="w-full bg-slate-50 border-none rounded-2xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all"
                                     required
                                     value={newNotif.title}
                                     onChange={e => setNewNotif({ ...newNotif, title: e.target.value })}
                                     placeholder="e.g. System Maintenance"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Message</label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Message Content</label>
                                 <textarea
-                                    rows="4"
+                                    className="w-full bg-slate-50 border-none rounded-2xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all min-h-[120px]"
                                     required
                                     value={newNotif.message}
                                     onChange={e => setNewNotif({ ...newNotif, message: e.target.value })}
-                                    placeholder="Provide details..."
+                                    placeholder="Provide details about the update..."
                                 ></textarea>
                             </div>
-                            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Post Notification</button>
+                            <button type="submit" className="btn-primary w-full py-5 rounded-2xl font-black uppercase tracking-widest text-sm bg-indigo-600 shadow-xl shadow-indigo-100 hover:shadow-indigo-200 transition-all">
+                                Post to Platform
+                            </button>
                         </form>
                     </div>
                 </div>
             )}
-
-            <style>{`
-                .notif-card {
-                    background: #fff;
-                    border-radius: 16px;
-                    padding: 20px;
-                    border: 1px solid var(--border-color);
-                    display: flex;
-                    justify-content: space-between;
-                    position: relative;
-                    transition: all 0.2s ease;
-                }
-                .notif-card:hover {
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-                    transform: translateY(-2px);
-                }
-                .notif-card-main {
-                    display: flex;
-                    gap: 20px;
-                    flex: 1;
-                }
-                .notif-icon-box {
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #f8fafc;
-                    flex-shrink: 0;
-                }
-                .notif-type-icon { font-size: 1.5rem; }
-                .notif-type-icon.notice { color: #f59e0b; }
-                .notif-type-icon.booking { color: #3b82f6; }
-                .notif-type-icon.update { color: #10b981; }
-                .notif-type-icon.order { color: #8b5cf6; }
-
-                .notif-content { flex: 1; }
-                .notif-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-                .notif-title { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-                .notif-date { font-size: 0.8rem; color: var(--text-muted); }
-                .notif-message { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
-
-                .notif-actions { display: flex; gap: 12px; margin-top: 16px; }
-                .btn-action {
-                    padding: 8px 16px;
-                    border-radius: 8px;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    cursor: pointer;
-                    border: none;
-                    font-size: 0.9rem;
-                    transition: all 0.2s;
-                }
-                .btn-action.accept { background: #ecfdf5; color: #10b981; }
-                .btn-action.accept:hover { background: #d1fae5; }
-                .btn-action.reject { background: #fef2f2; color: #ef4444; }
-                .btn-action.reject:hover { background: #fee2e2; }
-
-                .notif-delete-btn {
-                    padding: 8px;
-                    color: #94a3b8;
-                    cursor: pointer;
-                    background: none;
-                    border: none;
-                    border-radius: 6px;
-                    transition: all 0.2s;
-                    height: fit-content;
-                }
-                .notif-delete-btn:hover { background: #f1f5f9; color: #ef4444; }
-
-                .modal-overlay {
-                    position: fixed;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    background: rgba(0,0,0,0.5);
-                    backdrop-filter: blur(4px);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                    padding: 20px;
-                }
-                .modal-content {
-                    background: #fff;
-                    width: 100%;
-                    max-width: 500px;
-                    border-radius: 20px;
-                    padding: 32px;
-                }
-                .modal-header h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
-                .form-group { margin-bottom: 20px; }
-                .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
-                .form-group input, .form-group textarea {
-                    width: 100%;
-                    padding: 12px;
-                    border: 1px solid var(--border-color);
-                    border-radius: 10px;
-                    font-family: inherit;
-                }
-
-                .empty-state {
-                    text-align: center;
-                    padding: 80px 20px;
-                    background: #fff;
-                    border-radius: 20px;
-                    border: 1px dashed var(--border-color);
-                }
-                .empty-icon { font-size: 4rem; color: var(--border-color); margin-bottom: 16px; }
-            `}</style>
         </div>
     );
 };

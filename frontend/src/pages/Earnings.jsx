@@ -107,147 +107,165 @@ const Earnings = () => {
     const pendingBookings = bookings.filter(b => b.status === 'pending');
 
     return (
-        <div className="page-wrapper">
+        <div className="earnings-container app-container py-8">
             {/* Header */}
-            <header className="section-header">
-                <div className="section-eyebrow">Agent Finance</div>
-                <h1 className="section-title">Earnings Overview</h1>
-                <p className="section-sub">Track your revenue, respond to bookings, and review history.</p>
+            <header className="dash-header">
+                <div className="dash-title-group">
+                    <div className="dash-eyebrow">Agent Finance</div>
+                    <h1 className="dash-title">Earnings Overview</h1>
+                    <p className="dash-subtitle">Track your revenue, respond to bookings, and review history.</p>
+                </div>
             </header>
 
             {error && (
-                <div className="alert alert-error" style={{ marginBottom: '28px' }}>
-                    <HiOutlineInformationCircle style={{ flexShrink: 0 }} />
-                    {error}
-                    <button onClick={() => setError(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+                <div className="alert alert-error mb-8 p-4 bg-rose-50 text-rose-600 rounded-2xl border border-rose-100 flex items-center gap-3">
+                    <HiOutlineInformationCircle className="shrink-0 text-xl" />
+                    <span className="font-bold flex-1">{error}</span>
+                    <button onClick={() => setError(null)} className="p-1 hover:bg-rose-100 rounded-lg transition-all">
                         <HiOutlineX />
                     </button>
                 </div>
             )}
 
             {/* Stat Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-                <StatCard icon={HiOutlineCurrencyRupee} label="Total Earnings" value={`₹${totalEarnings.toLocaleString('en-IN')}`} accent="#059669" />
-                <StatCard icon={HiOutlineCheckCircle} label="Completed Jobs" value={completedCount} accent="#2563eb" />
-                <StatCard icon={HiOutlineClock} label="Pending Jobs" value={pendingCount} accent="#f59e0b" />
-                <StatCard icon={HiOutlineChartBar} label="Pending Payout" value={`₹${pendingAmount.toLocaleString('en-IN')}`} accent="#7c3aed" sub="Unlocks on completion" />
+            <div className="stat-grid">
+                <div className="stat-card">
+                    <div className="stat-icon-box success">
+                        <HiOutlineCurrencyRupee />
+                    </div>
+                    <div>
+                        <div className="stat-label">Total Earnings</div>
+                        <div className="stat-value">₹{totalEarnings.toLocaleString('en-IN')}</div>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon-box primary">
+                        <HiOutlineCheckCircle />
+                    </div>
+                    <div>
+                        <div className="stat-label">Completed Jobs</div>
+                        <div className="stat-value">{completedCount}</div>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon-box warning">
+                        <HiOutlineClock />
+                    </div>
+                    <div>
+                        <div className="stat-label">Pending Jobs</div>
+                        <div className="stat-value">{pendingCount}</div>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon-box accent">
+                        <HiOutlineChartBar />
+                    </div>
+                    <div>
+                        <div className="stat-label">Pending Payout</div>
+                        <div className="stat-value">₹{pendingAmount.toLocaleString('en-IN')}</div>
+                        <div className="stat-trend neutral">Unlocks on completion</div>
+                    </div>
+                </div>
             </div>
 
-            {/* ── Pending Bookings — action required ── */}
-            {pendingBookings.length > 0 && (
-                <div className="table-card" style={{ marginBottom: '32px' }}>
-                    <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{
-                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                            width: '22px', height: '22px', borderRadius: '50%',
-                            backgroundColor: '#f59e0b', color: '#fff', fontSize: '0.75rem', fontWeight: '800'
-                        }}>
-                            {pendingBookings.length}
-                        </span>
-                        <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800' }}>Action Required — Pending Requests</h2>
-                    </div>
-                    <div className="table-scroll">
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
-                                <tr>
-                                    {['Customer', 'Service', 'Date', 'Fee', 'Action'].map(h => (
-                                        <th key={h} style={{ padding: '12px 20px', fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
+            <div className="dash-main-grid">
+                {/* ── Pending Bookings — action required ── */}
+                <div className="flex flex-col gap-8">
+                    {pendingBookings.length > 0 && (
+                        <div className="dash-card">
+                            <div className="dash-card-header">
+                                <div className="flex items-center gap-3">
+                                    <span className="w-8 h-8 rounded-full bg-amber-500 text-white flex-center font-black text-xs">
+                                        {pendingBookings.length}
+                                    </span>
+                                    <h2>Pending Requests</h2>
+                                </div>
+                            </div>
+                            
+                            <div className="dash-list">
                                 {pendingBookings.map(b => (
-                                    <tr key={b._id} style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#fffbeb' }}>
-                                        <td style={{ padding: '14px 20px', fontWeight: '700' }}>{b.userName}<br /><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500' }}>{b.phone}</span></td>
-                                        <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>{b.service?.title || '—'}</td>
-                                        <td style={{ padding: '14px 20px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                                            {formatDate(b.date)}
-                                            {b.time && <><br /><span style={{ fontSize: '0.82rem' }}>🕐 {b.time}</span></>}
-                                        </td>
-                                        <td style={{ padding: '14px 20px', fontWeight: '700', color: '#059669' }}>₹{b.agentEarning ?? '—'}</td>
-                                        <td style={{ padding: '14px 20px' }}>
-                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                    <div key={b._id} className="dash-row bg-amber-50/50 border-amber-100">
+                                        <div className="dash-row-info">
+                                            <div className="dash-row-title">{b.userName}</div>
+                                            <div className="dash-row-sub">{b.service?.title || '—'} • {formatDate(b.date)}</div>
+                                        </div>
+                                        <div className="flex flex-col items-end gap-3">
+                                            <div className="dash-row-amount text-emerald-600">₹{b.agentEarning ?? '—'}</div>
+                                            <div className="flex gap-2">
                                                 <button
                                                     onClick={() => respond(b._id, 'accepted')}
                                                     disabled={!!responding[b._id]}
-                                                    style={{
-                                                        display: 'flex', alignItems: 'center', gap: '5px',
-                                                        padding: '7px 14px', borderRadius: '8px', border: 'none',
-                                                        backgroundColor: responding[b._id] === 'accepting' ? '#6ee7b7' : '#059669',
-                                                        color: '#fff', fontWeight: '700', fontSize: '0.82rem',
-                                                        cursor: responding[b._id] ? 'not-allowed' : 'pointer',
-                                                        opacity: responding[b._id] && responding[b._id] !== 'accepting' ? 0.5 : 1,
-                                                        transition: 'all 0.2s'
-                                                    }}
+                                                    className={`btn-icon-sq bg-emerald-500 text-white hover:bg-emerald-600 ${responding[b._id] ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                 >
                                                     {responding[b._id] === 'accepting'
-                                                        ? <span className="spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }} />
+                                                        ? <div className="spinner-mini" />
                                                         : <HiOutlineThumbUp />}
-                                                    Accept
                                                 </button>
                                                 <button
                                                     onClick={() => respond(b._id, 'rejected')}
                                                     disabled={!!responding[b._id]}
-                                                    style={{
-                                                        display: 'flex', alignItems: 'center', gap: '5px',
-                                                        padding: '7px 14px', borderRadius: '8px', border: 'none',
-                                                        backgroundColor: responding[b._id] === 'rejecting' ? '#fca5a5' : '#dc2626',
-                                                        color: '#fff', fontWeight: '700', fontSize: '0.82rem',
-                                                        cursor: responding[b._id] ? 'not-allowed' : 'pointer',
-                                                        opacity: responding[b._id] && responding[b._id] !== 'rejecting' ? 0.5 : 1,
-                                                        transition: 'all 0.2s'
-                                                    }}
+                                                    className={`btn-icon-sq bg-rose-500 text-white hover:bg-rose-600 ${responding[b._id] ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                 >
                                                     {responding[b._id] === 'rejecting'
-                                                        ? <span className="spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }} />
+                                                        ? <div className="spinner-mini" />
                                                         : <HiOutlineThumbDown />}
-                                                    Reject
                                                 </button>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </div>
                                 ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
+                            </div>
+                        </div>
+                    )}
 
-            {/* ── Full Booking History ── */}
-            <div className="table-card">
-                <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)' }}>
-                    <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800' }}>Booking History</h2>
-                </div>
-                <div className="table-scroll">
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)' }}>
-                            <tr>
-                                {['User', 'Service', 'Date', 'Amount', 'Status'].map(h => (
-                                    <th key={h} style={{ padding: '13px 20px', fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
+                    {/* ── Full Booking History ── */}
+                    <div className="dash-card">
+                        <div className="dash-card-header">
+                            <h2>Booking History</h2>
+                        </div>
+                        
+                        <div className="dash-list">
                             {bookings.length === 0 ? (
-                                <tr><td colSpan="5" style={{ padding: '52px', textAlign: 'center', color: 'var(--text-muted)' }}>No bookings found.</td></tr>
+                                <div className="empty-state py-8">
+                                    <p>No bookings found.</p>
+                                </div>
                             ) : bookings.map(b => {
                                 const cfg = STATUS_MAP[b.status] || STATUS_MAP.pending;
                                 return (
-                                    <tr key={b._id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                        <td style={{ padding: '16px 20px', fontWeight: '700' }}>{b.userName}</td>
-                                        <td style={{ padding: '16px 20px', color: 'var(--text-muted)' }}>{b.service?.title || '—'}</td>
-                                        <td style={{ padding: '16px 20px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{formatDate(b.date)}</td>
-                                        <td style={{ padding: '16px 20px', fontWeight: '700', color: '#059669' }}>₹{b.agentEarning ?? '—'}</td>
-                                        <td style={{ padding: '16px 20px' }}>
-                                            <span style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}>
-                                                {cfg.label}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                    <div key={b._id} className="dash-row">
+                                        <div className="dash-row-info">
+                                            <div className="dash-row-title">{b.userName}</div>
+                                            <div className="dash-row-sub">{b.service?.title || '—'} • {formatDate(b.date)}</div>
+                                        </div>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <div className="dash-row-amount">₹{b.agentEarning ?? '—'}</div>
+                                            <span className={`status-badge-flat ${b.status}`}>{cfg.label}</span>
+                                        </div>
+                                    </div>
                                 );
                             })}
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-6">
+                    <div className="dash-card bg-indigo-900 text-white">
+                        <HiOutlineTrendingUp className="text-4xl text-indigo-300 mb-6" />
+                        <h3 className="text-xl font-black mb-2">Finance Tips</h3>
+                        <p className="text-indigo-200 text-sm leading-relaxed">
+                            Maintain a high completion rate to unlock faster payouts and better visibility in the community marketplace.
+                        </p>
+                    </div>
+
+                    <div className="promo-card border-none bg-emerald-50 p-6 rounded-3xl">
+                        <div className="flex items-center gap-4 text-emerald-800">
+                            <HiOutlineInformationCircle className="text-2xl" />
+                            <div className="font-bold text-sm">Synchronized Payouts</div>
+                        </div>
+                        <p className="text-xs text-emerald-700/70 mt-3 leading-relaxed">
+                            Our system ensures all payments are safely held until service completion, protecting both agents and customers.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

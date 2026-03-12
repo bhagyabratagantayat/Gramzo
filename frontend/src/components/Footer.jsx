@@ -6,11 +6,11 @@ const Footer = () => {
         <footer className="main-footer">
             <div className="footer-grid">
                 <div className="footer-info">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                        <HiLightningBolt style={{ color: 'var(--primary-color)', fontSize: '1.6rem' }} />
-                        <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--text-main)', letterSpacing: '-0.04em' }}>Gramzo</span>
+                    <div className="footer-logo-wrapper">
+                        <HiLightningBolt className="logo-icon" />
+                        <span className="footer-brand">Gramzo</span>
                     </div>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', maxWidth: '300px' }}>
+                    <p className="footer-tagline">
                         Empowering local communities by bridging the gap between neighborhood services and community members through technology.
                     </p>
                 </div>

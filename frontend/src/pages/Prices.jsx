@@ -167,219 +167,215 @@ const Prices = () => {
     );
 
     return (
-        <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 20px 60px' }}>
-            {/* Sticky Header Section */}
-            <div style={{ position: 'sticky', top: '0', backgroundColor: 'rgba(255, 255, 255, 0.95)', zIndex: 100, paddingTop: '24px', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', backdropFilter: 'blur(12px)', margin: '0 -20px 48px', padding: '24px 20px 16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', maxWidth: '1400px', margin: '0 auto' }}>
-                    <div>
-                        <div style={{ color: '#059669', fontWeight: '800', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ width: '8px', height: '8px', backgroundColor: '#10b981', borderRadius: '50%', animation: 'pulse 2s infinite' }}></span>
-                            Live Market Feed
-                            <span style={{ color: '#94a3b8', textTransform: 'none', fontWeight: '500', fontSize: '0.75rem' }}>
-                                (Next sync in {Math.max(0, 5 - Math.floor((new Date() - lastSync) / 1000))}s)
-                            </span>
-                        </div>
-                        <h1 style={{ margin: 0, fontSize: '1.8rem', fontWeight: '900', color: '#0f172a' }}>Explore Prices</h1>
+        <div className="market-prices-container app-container py-8">
+            {/* Header Section */}
+            <header className="dash-header mb-12">
+                <div className="dash-title-group">
+                    <div className="dash-eyebrow flex items-center gap-2">
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        Live Market Feed
                     </div>
-
-                    <div style={{ display: 'flex', gap: '12px', flex: 1, maxWidth: '600px', minWidth: '300px' }}>
-                        <div style={{ position: 'relative', flex: 1 }}>
-                            <HiOutlineSearch style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '1.2rem' }} />
-                            <input
-                                type="text"
-                                placeholder="Search by item, category or location..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{ padding: '14px 14px 14px 48px', width: '100%', borderRadius: '14px', border: '1px solid #e2e8f0', fontSize: '1rem', outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}
-                            />
-                        </div>
-
-                        {/* Sort Dropdown */}
-                        <div style={{ position: 'relative' }}>
-                            <button
-                                onClick={() => setShowSortMenu(!showSortMenu)}
-                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 20px', borderRadius: '14px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', fontWeight: '700', cursor: 'pointer', color: '#475569' }}
-                            >
-                                <HiFilter /> Sort By <HiChevronDown style={{ transform: showSortMenu ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
-                            </button>
-                            {showSortMenu && (
-                                <div style={{ position: 'absolute', top: '110%', right: '0', width: '220px', padding: '12px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                    {[
-                                        { id: 'newest', label: 'Recently Updated', icon: <HiOutlineClock /> },
-                                        { id: 'price-low', label: 'Price: Low to High', icon: <HiSortAscending /> },
-                                        { id: 'price-high', label: 'Price: High to Low', icon: <HiSortDescending /> },
-                                        { id: 'name', label: 'Item Name: A-Z', icon: <HiOutlineSearch /> }
-                                    ].map(opt => (
-                                        <button
-                                            key={opt.id}
-                                            onClick={() => { setSortBy(opt.id); setShowSortMenu(false); }}
-                                            style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '10px 12px', borderRadius: '10px', border: 'none', backgroundColor: sortBy === opt.id ? '#f0fdf4' : 'transparent', color: sortBy === opt.id ? '#059669' : '#64748b', fontWeight: '600', cursor: 'pointer', textAlign: 'left' }}
-                                        >
-                                            {opt.icon} {opt.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                    <h1 className="dash-title">Explore Prices</h1>
+                    <p className="dash-subtitle">
+                        Real-time agricultural commodity prices. Last sync {Math.max(0, 5 - Math.floor((new Date() - lastSync) / 1000))}s ago.
+                    </p>
                 </div>
 
-                {/* Category Chips Bar */}
-                <div style={{ display: 'flex', overflowX: 'auto', gap: '10px', marginTop: '20px', paddingBottom: '4px', scrollbarWidth: 'none' }} className="no-scrollbar">
-                    <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-                    {categories.map(cat => (
+                <div className="flex flex-wrap gap-4 flex-1 lg:max-w-2xl">
+                    <div className="relative flex-1 min-w-[280px]">
+                        <HiOutlineSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl" />
+                        <input
+                            type="text"
+                            placeholder="Search commodities or locations..."
+                            className="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-12 pr-4 font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="relative group">
                         <button
-                            key={cat}
-                            onClick={() => setActiveCategory(cat)}
-                            style={{
-                                padding: '10px 24px',
-                                borderRadius: '100px',
-                                whiteSpace: 'nowrap',
-                                fontSize: '0.9rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                border: '1px solid',
-                                backgroundColor: activeCategory === cat ? '#059669' : '#fff',
-                                color: activeCategory === cat ? '#fff' : '#475569',
-                                borderColor: activeCategory === cat ? '#059669' : '#e2e8f0',
-                                boxShadow: activeCategory === cat ? '0 4px 12px rgba(5, 150, 105, 0.2)' : 'none'
-                            }}
+                            onClick={() => setShowSortMenu(!showSortMenu)}
+                            className="h-full px-6 flex items-center gap-3 bg-white border border-slate-200 rounded-2xl font-black text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
                         >
-                            {cat}
+                            <HiFilter className="text-lg" />
+                            <span className="hidden sm:inline uppercase text-[10px] tracking-widest">Sort By</span>
+                            <HiChevronDown className={`transition-transform duration-300 ${showSortMenu ? 'rotate-180' : ''}`} />
                         </button>
-                    ))}
+                        
+                        {showSortMenu && (
+                            <div className="absolute top-full right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 p-3 z-50 animate-in fade-in slide-in-from-top-4 duration-200">
+                                {[
+                                    { id: 'newest', label: 'Recently Updated', icon: <HiOutlineClock /> },
+                                    { id: 'price-low', label: 'Price: Low to High', icon: <HiSortAscending /> },
+                                    { id: 'price-high', label: 'Price: High to Low', icon: <HiSortDescending /> },
+                                    { id: 'name', label: 'Item Name: A-Z', icon: <HiOutlineSearch /> }
+                                ].map(opt => (
+                                    <button
+                                        key={opt.id}
+                                        onClick={() => { setSortBy(opt.id); setShowSortMenu(false); }}
+                                        className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl font-bold transition-all text-sm ${
+                                            sortBy === opt.id ? 'bg-emerald-50 text-emerald-600' : 'text-slate-500 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        <span className="text-lg">{opt.icon}</span>
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
+            </header>
+
+            {/* Category Navigation */}
+            <div className="flex overflow-x-auto gap-3 pb-8 mb-4 no-scrollbar">
+                {categories.map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest whitespace-nowrap transition-all border-2 ${
+                            activeCategory === cat 
+                                ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-100' 
+                                : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200 shadow-sm'
+                        }`}
+                    >
+                        {cat}
+                    </button>
+                ))}
             </div>
 
-            {/* Main Content Areas */}
+            {/* Market Content */}
             {Object.keys(groupedPrices).length > 0 ? (
                 Object.keys(groupedPrices).map(category => (
-                    <div key={category} style={{ marginBottom: '56px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                            <h2 style={{ fontSize: '1.6rem', fontWeight: '900', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '16px', margin: 0 }}>
+                    <section key={category} className="mb-16">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-4">
                                 {category}
-                                <span style={{ fontSize: '0.9rem', color: '#94a3b8', fontWeight: '600', backgroundColor: '#f1f5f9', padding: '4px 12px', borderRadius: '100px' }}>
+                                <span className="bg-slate-100 text-slate-500 text-[10px] uppercase font-black px-3 py-1 rounded-full">
                                     {groupedPrices[category].length} items
                                 </span>
                             </h2>
-                            {activeCategory === 'All' && (
-                                <button onClick={() => setActiveCategory(category)} style={{ background: 'none', border: 'none', color: '#059669', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
-                                    View All <HiOutlineArrowRight />
-                                </button>
-                            )}
                         </div>
 
-                        <div style={{ display: 'grid', gap: '24px' }} className="market-grid">
-                            <style>{`
-                                .market-grid { grid-template-columns: repeat(1, 1fr); }
-                                @media (min-width: 640px) { .market-grid { grid-template-columns: repeat(2, 1fr); } }
-                                @media (min-width: 1024px) { .market-grid { grid-template-columns: repeat(4, 1fr); } }
-                                .price-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-                            `}</style>
-
+                        <div className="responsive-grid">
                             {groupedPrices[category].map((item) => (
                                 <div
                                     key={item._id}
-                                    className={`price-card ${updatingItemId === item._id ? 'price-update-animate' : ''}`}
-                                    style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', borderRadius: '24px', border: '1px solid #eef2f6', overflow: 'hidden', transition: 'all 0.3s' }}
+                                    className={`card-premium group overflow-hidden border border-slate-100 hover:border-emerald-200 transition-all ${
+                                        updatingItemId === item._id ? 'animate-pulse scale-[1.02] shadow-2xl' : ''
+                                    }`}
                                 >
-                                    <div style={{ position: 'relative', height: '200px', backgroundColor: '#f3f4f6' }}>
+                                    <div className="aspect-video bg-slate-50 relative overflow-hidden">
                                         <img
                                             src={item.image || getFallbackImage(item.itemName, item.category)}
                                             alt={item.itemName}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             onError={(e) => { e.target.src = getFallbackImage(item.itemName, item.category); }}
                                         />
-                                        <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: 'rgba(255, 255, 255, 0.95)', padding: '6px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800', color: '#059669', backdropFilter: 'blur(4px)' }}>
+                                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-black text-emerald-600 flex items-center gap-1.5 shadow-sm border border-emerald-50">
+                                            <HiOutlineLocationMarker className="text-sm" />
                                             {item.location || 'Local Mandi'}
                                         </div>
                                     </div>
 
-                                    <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                                            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#1e293b' }}>{item.itemName}</h3>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#10b981', fontWeight: '700', fontSize: '0.85rem' }}>
+                                    <div className="p-6">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="text-lg font-black text-slate-800 line-clamp-1">{item.itemName}</h3>
+                                            <div className="flex items-center gap-1 text-emerald-500 font-bold text-xs uppercase tracking-wider">
                                                 <HiOutlineTrendingUp /> Stable
                                             </div>
                                         </div>
-                                        <p style={{ margin: '0 0 20px 0', fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>Updated {formatRelativeTime(item.createdAt)}</p>
+                                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <HiOutlineClock /> Updated {formatRelativeTime(item.createdAt)}
+                                        </p>
 
-                                        <div style={{ marginTop: 'auto' }}>
-                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                                                <span style={{ fontSize: '2.4rem', fontWeight: '900', color: '#0f172a' }}>₹{item.price}</span>
-                                                <span style={{ fontSize: '1rem', color: '#94a3b8', fontWeight: '600' }}>/ unit</span>
+                                        <div className="flex items-end justify-between">
+                                            <div>
+                                                <span className="text-3xl font-black text-slate-800">₹{item.price}</span>
+                                                <span className="text-xs font-bold text-slate-400 ml-1">/ unit</span>
                                             </div>
+                                            {user && (
+                                                <button
+                                                    onClick={() => setSelectedItem(item)}
+                                                    className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                    title="Update Price"
+                                                >
+                                                    <HiOutlinePencilAlt className="text-xl" />
+                                                </button>
+                                            )}
                                         </div>
-
-                                        {user && (
-                                            <button
-                                                onClick={() => setSelectedItem(item)}
-                                                style={{ marginTop: '20px', width: '100%', padding: '14px', borderRadius: '14px', border: 'none', backgroundColor: '#0f172a', color: '#fff', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: '0.2s' }}
-                                            >
-                                                <HiOutlinePencilAlt /> Update Price
-                                            </button>
-                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </section>
                 ))
             ) : (
-                <div style={{ textAlign: 'center', padding: '120px 20px', backgroundColor: '#f8fafc', borderRadius: '40px', border: '2px dashed #e2e8f0' }}>
-                    <div style={{ fontSize: '5rem', marginBottom: '24px' }}>🔍</div>
-                    <h2 style={{ fontSize: '2rem', fontWeight: '900', color: '#1e293b', margin: '0 0 12px 0' }}>No matches found</h2>
-                    <p style={{ color: '#64748b', fontSize: '1.1rem', maxWidth: '400px', margin: '0 auto' }}>We couldn't find any commodities matching your current filters. Try resetting your search or category.</p>
+                <div className="empty-state py-32 bg-white-bleed rounded-[48px] border-2 border-dashed border-slate-100">
+                    <div className="w-24 h-24 rounded-full bg-slate-50 flex-center mx-auto mb-8 text-slate-100 text-6xl">
+                        <HiOutlineSearch />
+                    </div>
+                    <h2 className="text-2xl font-black text-slate-800 mb-4">No results found</h2>
+                    <p className="text-slate-500 max-w-sm mx-auto mb-10">We couldn't find any commodities matching your current search or filters.</p>
                     <button
                         onClick={() => { setSearchTerm(''); setActiveCategory('All'); }}
-                        style={{ marginTop: '32px', padding: '14px 32px', borderRadius: '14px', border: 'none', backgroundColor: '#059669', color: '#fff', fontWeight: '800', cursor: 'pointer' }}
+                        className="btn-primary py-4 px-10 rounded-2xl font-black text-sm uppercase tracking-widest bg-emerald-600 shadow-xl shadow-emerald-100"
                     >
                         Reset All Filters
                     </button>
                 </div>
             )}
 
-            {/* Update Modal */}
+            {/* Price Update Modal */}
             {selectedItem && (
-                <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(15, 23, 42, 0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, backdropFilter: 'blur(8px)' }}>
-                    <div style={{ backgroundColor: '#fff', width: '90%', maxWidth: '440px', borderRadius: '32px', padding: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', position: 'relative' }}>
-                        <button onClick={() => setSelectedItem(null)} style={{ position: 'absolute', top: '24px', right: '24px', background: '#f8fafc', border: 'none', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#64748b', cursor: 'pointer' }}>
-                            <HiX />
-                        </button>
-
-                        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                            <div style={{ width: '72px', height: '72px', backgroundColor: '#f0fdf4', color: '#059669', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '2.5rem' }}>
+                <div className="fixed inset-0 z-[1000] flex-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSelectedItem(null)}></div>
+                    <div className="relative bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+                        <div className="p-8 pb-0 flex justify-between items-center">
+                            <h2 className="text-2xl font-black text-slate-800">Market Correction</h2>
+                            <button className="w-10 h-10 rounded-full bg-slate-50 flex-center text-slate-400 hover:bg-slate-100 transition-colors" onClick={() => setSelectedItem(null)}>
+                                <HiX className="text-xl" />
+                            </button>
+                        </div>
+                        
+                        <div className="p-8 text-center pt-6">
+                            <div className="w-20 h-20 rounded-[24px] bg-emerald-50 text-emerald-600 flex-center mx-auto mb-6 text-4xl">
                                 <HiOutlineTrendingUp />
                             </div>
-                            <h2 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#0f172a', margin: '0 0 8px 0' }}>New Market Rate</h2>
-                            <p style={{ color: '#64748b', fontSize: '1rem' }}>Updating price for <strong>{selectedItem.itemName}</strong></p>
+                            <p className="text-slate-500 font-bold mb-8">
+                                Updating market rate for <strong className="text-slate-800">{selectedItem.itemName}</strong>
+                            </p>
+
+                            <form onSubmit={handleUpdatePrice} className="space-y-8">
+                                <div className="space-y-2 text-left">
+                                    <div className="flex justify-between items-end px-1">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Set New Rate</label>
+                                        <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">Current: ₹{selectedItem.price}</span>
+                                    </div>
+                                    <div className="relative">
+                                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-300">₹</span>
+                                        <input
+                                            type="number"
+                                            className="w-full bg-slate-50 border-none rounded-3xl py-6 pl-12 pr-6 text-3xl font-black text-slate-800 focus:ring-4 focus:ring-emerald-500/10 transition-all placeholder:text-slate-200"
+                                            value={newPrice}
+                                            onChange={(e) => setNewPrice(e.target.value)}
+                                            required
+                                            autoFocus
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    disabled={updating}
+                                    className="btn-primary w-full py-5 rounded-2xl font-black uppercase tracking-widest text-sm bg-emerald-600 shadow-xl shadow-emerald-100 hover:shadow-emerald-200 transition-all disabled:opacity-50 disabled:shadow-none"
+                                >
+                                    {updating ? 'Processing...' : 'Publish Update'}
+                                </button>
+                            </form>
                         </div>
-
-                        <form onSubmit={handleUpdatePrice}>
-                            <div style={{ marginBottom: '32px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                    <label style={{ fontSize: '0.9rem', fontWeight: '700', color: '#475569' }}>Set New Price</label>
-                                    <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#059669' }}>Current: ₹{selectedItem.price}</span>
-                                </div>
-                                <div style={{ position: 'relative' }}>
-                                    <span style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', fontWeight: '800', color: '#0f172a', fontSize: '1.2rem' }}>₹</span>
-                                    <input
-                                        type="number"
-                                        value={newPrice}
-                                        onChange={(e) => setNewPrice(e.target.value)}
-                                        required
-                                        autoFocus
-                                        style={{ width: '100%', padding: '18px 20px 18px 48px', borderRadius: '16px', border: '2px solid #e2e8f0', fontSize: '1.4rem', fontWeight: '900', outline: 'none', transition: '0.2s' }}
-                                        placeholder="0.00"
-                                    />
-                                </div>
-                            </div>
-
-                            <button type="submit" disabled={updating} style={{ width: '100%', backgroundColor: '#059669', color: '#fff', padding: '18px', borderRadius: '18px', border: 'none', fontSize: '1.1rem', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', boxShadow: '0 10px 15px -3px rgba(5, 150, 105, 0.4)' }}>
-                                {updating ? 'Saving Changes...' : 'Publish Update'}
-                            </button>
-                        </form>
                     </div>
                 </div>
             )}
