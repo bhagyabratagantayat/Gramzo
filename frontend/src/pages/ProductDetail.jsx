@@ -14,6 +14,8 @@ import {
 } from 'react-icons/hi';
 import { getFallbackImage } from '../utils/imageHelper';
 
+const DEFAULT_PHONE = "911234567890"; // Admin's default number
+
 const ProductDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -21,6 +23,13 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const contactPhone = product?.phone || product?.agentId?.phone || DEFAULT_PHONE;
+
+    const handleContact = () => {
+        const message = `Halo, I'm interested in your product: ${product.title}`;
+        window.open(`https://wa.me/${contactPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    };
 
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -179,10 +188,13 @@ const ProductDetail = () => {
                     <div className="detail-action-footer">
                         {isAuthenticated ? (
                             <div className="flex gap-4">
-                                <button className="btn-primary flex-1 py-4 text-lg">
+                                <button 
+                                    onClick={handleContact}
+                                    className="btn-primary flex-1 py-4 text-lg"
+                                >
                                     <HiOutlineShoppingBag /> Contact Seller
                                 </button>
-                                <a href={`tel:${product.phone || ''}`} className="btn-secondary p-4 flex-center">
+                                <a href={`tel:${contactPhone}`} className="btn-secondary p-4 flex-center">
                                     <HiOutlinePhone className="text-2xl" />
                                 </a>
                             </div>

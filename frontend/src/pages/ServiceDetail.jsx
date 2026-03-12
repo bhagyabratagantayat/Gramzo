@@ -10,9 +10,13 @@ import {
     HiOutlineUserCircle,
     HiOutlineLightningBolt,
     HiOutlineClock,
-    HiOutlineCheckCircle
+    HiOutlineCheckCircle,
+    HiOutlinePhone,
+    HiOutlineChatAlt2
 } from 'react-icons/hi';
 import { getFallbackImage } from '../utils/imageHelper';
+
+const DEFAULT_PHONE = "911234567890"; // Admin's default number
 
 const ServiceDetail = () => {
     const { id } = useParams();
@@ -22,6 +26,13 @@ const ServiceDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showBooking, setShowBooking] = useState(false);
+
+    const contactPhone = service?.phone || service?.agentId?.phone || DEFAULT_PHONE;
+
+    const handleContact = () => {
+        const message = `Halo, I'm interested in your service: ${service.title}`;
+        window.open(`https://wa.me/${contactPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    };
 
     useEffect(() => {
         const fetchService = async () => {
@@ -136,12 +147,20 @@ const ServiceDetail = () => {
 
                     <div className="detail-action-footer">
                         {isAuthenticated ? (
-                            <button
-                                onClick={() => setShowBooking(true)}
-                                className="btn-primary btn-full py-4 text-xl rounded-2xl"
-                            >
-                                <HiOutlineCalendar /> {service.requiresAppointment ? 'Select Slot & Book' : 'Book Instantly'}
-                            </button>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setShowBooking(true)}
+                                    className="btn-primary flex-2 py-4 text-lg rounded-2xl"
+                                >
+                                    <HiOutlineCalendar /> {service.requiresAppointment ? 'Select Slot & Book' : 'Book Instantly'}
+                                </button>
+                                <button
+                                    onClick={handleContact}
+                                    className="btn-secondary flex-1 py-4 text-lg rounded-2xl flex-center gap-2"
+                                >
+                                    <HiOutlineChatAlt2 /> Contact
+                                </button>
+                            </div>
                         ) : (
                             <div className="detail-login-alert">
                                 <p>Ready to book? Login to see available slots.</p>
