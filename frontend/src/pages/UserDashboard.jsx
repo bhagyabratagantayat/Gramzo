@@ -90,8 +90,8 @@ const UserDashboard = () => {
                 {/* Community Hub / Quick Links */}
                 <div className="flex flex-col gap-6">
                     <div className="dash-card bg-white-bleed">
-                        <h2 className="text-xl font-extrabold mb-6">Community Hub</h2>
-                        <div className="grid grid-cols-2 gap-4">
+                        <h2 className="text-xl font-black mb-6">Community Hub</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Link to="/marketplace" className="hub-card-fancy bg-indigo-600 text-white">
                                 <HiOutlineShoppingBag className="text-2xl mb-2" />
                                 <span>Marketplace</span>
@@ -100,19 +100,19 @@ const UserDashboard = () => {
                                 <HiOutlineInformationCircle className="text-2xl mb-2" />
                                 <span>Market Prices</span>
                             </Link>
-                            <Link to="/notifications" className="hub-card-fancy bg-amber-600 text-white col-span-2">
+                            <Link to="/notifications" className="hub-card-fancy bg-amber-600 text-white sm:col-span-2">
                                 <HiOutlineBell className="text-2xl mb-2" />
                                 <span>Help & Alerts</span>
                             </Link>
                         </div>
                     </div>
 
-                    <div className="promo-card card-premium p-8 bg-gradient-to-br from-indigo-50 to-white border-indigo-100">
-                        <div className="flex items-start gap-4">
-                            <div className="p-3 bg-white rounded-xl shadow-sm"><HiOutlineUser /></div>
+                    <div className="promo-card card-premium p-6 sm:p-8 bg-gradient-to-br from-indigo-50 to-white border-indigo-100">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                            <div className="p-3 bg-white rounded-xl shadow-sm text-indigo-600"><HiOutlineUser className="text-2xl" /></div>
                             <div>
-                                <h4 className="font-extrabold text-indigo-900">Support Local Agents</h4>
-                                <p className="text-sm text-indigo-700/70 mt-1">Book verified experts from your own community and help local businesses grow.</p>
+                                <h4 className="font-black text-indigo-900 leading-tight">Support Local Agents</h4>
+                                <p className="text-sm text-indigo-700/70 mt-2">Book verified experts from your community and help local businesses grow.</p>
                             </div>
                         </div>
                     </div>

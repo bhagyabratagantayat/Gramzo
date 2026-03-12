@@ -24,11 +24,11 @@ const UserNavbar = ({ onLinkClick }) => {
                 <li key={to}>
                     <NavLink
                         to={to}
-                        className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+                        className={({ isActive }) => `drawer-item${isActive ? ' active' : ''}`}
                         onClick={onLinkClick}
                         end={to === '/'}
                     >
-                        <Icon className="nav-icon hide-desktop" />
+                        <Icon className="drawer-icon" />
                         <span>{label}</span>
                     </NavLink>
                 </li>

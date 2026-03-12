@@ -482,21 +482,32 @@ img {
 .drawer-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  color: var(--text-main);
-  font-weight: 600;
-  transition: var(--transition);
+  gap: 16px;
+  padding: 12px 20px;
+  border-radius: 100px;
+  color: #475569;
+  font-weight: 800;
+  font-size: 0.95rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid transparent;
+  margin-bottom: 4px;
 }
 
 .drawer-item.active {
-  background: var(--primary-light);
+  background: #eff6ff;
   color: var(--primary-color);
+  border-color: rgba(37, 99, 235, 0.08);
+}
+
+.drawer-item:hover:not(.active) {
+  background: #f8fafc;
+  color: var(--text-main);
+  transform: translateX(4px);
 }
 
 .drawer-icon {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  flex-shrink: 0;
 }
 
 .drawer-footer {

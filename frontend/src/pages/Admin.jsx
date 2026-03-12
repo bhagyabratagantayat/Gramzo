@@ -23,6 +23,22 @@ const Badge = ({ cfg }) => (
     </span>
 );
 
+const agentBadge = (agent) => {
+    if (agent.isBlocked) return { label: 'Blocked', color: '#ef4444' };
+    if (agent.isApproved) return { label: 'Verified', color: '#10b981' };
+    return { label: 'Pending', color: '#f59e0b' };
+};
+
+const bookingBadge = (status) => {
+    switch (status) {
+        case 'pending': return { label: 'Pending', color: '#f59e0b' };
+        case 'accepted': return { label: 'Accepted', color: '#10b981' };
+        case 'completed': return { label: 'Completed', color: '#3b82f6' };
+        case 'rejected': return { label: 'Rejected', color: '#ef4444' };
+        default: return { label: 'Unknown', color: '#94a3b8' };
+    }
+};
+
 const Admin = () => {
     const [tab, setTab] = useState('overview');
     const [agents, setAgents] = useState([]);
