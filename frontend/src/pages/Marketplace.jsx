@@ -15,7 +15,7 @@ const Marketplace = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState(null);
 
-    const DEFAULT_PHONE = "911234567890"; // Admin's default number
+    const DEFAULT_PHONE = "917855091725"; // Admin's default number
 
     const handleContact = (product) => {
         const contactPhone = product.phone || product.agentId?.phone || DEFAULT_PHONE;
